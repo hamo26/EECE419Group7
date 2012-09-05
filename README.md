@@ -9,7 +9,7 @@ GIT Repo Setup
 the cygwin based git bash which can be downloaded here: http://code.google.com/p/msysgit/downloads/list?q=full+installer+official+git
 
 2) Next you will want to clone your repo. This is done by navigating to any directory on your machine (there is a file length
-limitation in Windows so I would suggest C: in case our paths grow. Linux and MAC users don;t need to worry :P). Once in 
+limitation in Windows so I would suggest C: in case our paths grow. Linux and MAC users don't need to worry). Once in 
 the directory, execute the following : git clone https://github.com/hamo26/EECE419Group7.git. 
 
 3) Once you have cloned your directory, you chould see the EECE419Group7 folder which will now serve as your repo endpoint.
