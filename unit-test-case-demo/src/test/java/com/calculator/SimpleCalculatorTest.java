@@ -43,7 +43,8 @@ public class SimpleCalculatorTest extends TestCase {
 	 * Test subtract.
 	 */
 	public void testSubtract() {
-		fail("Not yet implemented");
+		double subtractionResult = calculator.subtract(VALUE_X, VALUE_Y);
+		assertEquals("Did not get right subtraction result", VALUE_X - VALUE_Y, subtractionResult);
 	}
 
 }
