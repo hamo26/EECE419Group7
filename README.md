@@ -1,4 +1,3 @@
-
 EECE419Group7
 =============
 
@@ -21,10 +20,6 @@ UPDATE: I have updated the .ignore file with files and directories that should n
 staging your commits and pushing to the repo alot easier than the command line. For more information on rebases, pushes and pull
 take a look at this cheatsheet: https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf
 
-DEV ENVIRONMENT
-===============
-
-Tools needed:
 
 Setting up Eclipse
 ==================
