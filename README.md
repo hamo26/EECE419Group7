@@ -56,3 +56,39 @@ INSTALLING MAVEN
 ================
 
 
+1) Download and install from maven 3.0.4 from: http://maven.apache.org/download.html
+
+2) Again, you will need to have the JRE pre-installed.
+
+3) Define the following environment variables (in windows this is done through MyComputer->(right click) properties
+->Advanced System Settings->Environment Variable. Through Linux you can export environment variables):
+
+JAVA_HOME = {You java home directory. e.g C:\Program Files\Java\jdk1.7.0_07}
+
+M2_HOME =  {Where you have installed maven. e.g C:\Program Files\Apache Software Foundation\apache-maven-3.0.4}
+
+MAVEN_OPTS = -Xms256m -Xmx512m
+
+Add both the maven install and the jdk install to your path if the installation hasn;t already done so.
+(e.g C:\Program Files\Apache Software Foundation\apache-maven-3.0.4\bin;C:\Program Files\Java\jdk1.7.0_07\bin)
+
+4) Navigate to your .m2 folder which is in your C:\Users\{your-name} folder for windows or your home directory for linux.
+
+5) Copy the change-to-settings.xml file committed to your .m2 folder. 
+
+6) Change the name of the file copied to settings.xml.
+
+7) Open up your favourite command prompt. 
+
+8) Type and execute:  mvn --version
+
+9) You should see maven versioning information.
+
+10) Go to your checkout folder and into the schedushare-core project.
+
+11) Execute a: mvn clean install 
+
+12) You should see a build success message if everything was setup correctly.
+
+
+
