@@ -1,3 +1,4 @@
+
 EECE419Group7
 =============
 
@@ -13,8 +14,24 @@ limitation in Windows so I would suggest C: in case our paths grow. Linux and MA
 the directory, execute the following : git clone https://github.com/hamo26/EECE419Group7.git. 
 
 3) Once you have cloned your directory, you chould see the EECE419Group7 folder which will now serve as your repo endpoint.
-You will notice a .gitignore file which is analogous to an svn ignore file. 
+You will notice a .gitignore file which is analogous to an svn ignore file.
+UPDATE: I have updated the .ignore file with files and directories that should not be included for staging.
 
 4) You will mainly be pushing and pulling from the repo. if you execute: git gui, you should see an interface which 
 staging your commits and pushing to the repo alot easier than the command line. For more information on rebases, pushes and pull
 take a look at this cheatsheet: https://git.wiki.kernel.org/images-git/7/78/Git-svn-cheatsheet.pdf
+
+DEV ENVIRONMENT
+===============
+
+Tools needed:
+
+Setting up Eclipse
+==================
+
+1) Download eclipse from: http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/junosr1. 
+Please use the specified release.
+
+2) You will need the JRE for the Eclipse (and other things) to run.
+
+3) Run eclipse and go to Window->Install New Software
