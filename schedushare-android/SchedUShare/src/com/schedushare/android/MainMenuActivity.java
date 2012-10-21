@@ -20,7 +20,7 @@ public class MainMenuActivity extends RoboActivity {
         String message = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
 
         // Create the text view
-        this.outputTextView.setTextSize(50);
+        this.outputTextView.setTextSize(30);
         this.outputTextView.setText(message);
     }
 }
