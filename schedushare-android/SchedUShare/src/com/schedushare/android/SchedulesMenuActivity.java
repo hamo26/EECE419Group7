@@ -1,6 +1,8 @@
 package com.schedushare.android;
 
 import com.schedushare.android.fragments.ScheduleListFragment;
+import com.schedushare.android.util.TabListener;
+
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
 import android.app.ActionBar;

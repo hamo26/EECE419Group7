@@ -1,4 +1,4 @@
-package com.schedushare.android;
+package com.schedushare.android.util;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
