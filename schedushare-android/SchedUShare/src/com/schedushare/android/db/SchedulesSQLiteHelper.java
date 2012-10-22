@@ -20,8 +20,9 @@ public class SchedulesSQLiteHelper extends SQLiteOpenHelper {
 	// Database creation SQL statement.
 	private static final String DATABASE_CREATE_SCHEDULES = "CREATE TABLE "
 			+ TABLE_SCHEDULES + "("
-			+ COLUMN_OWNER + "INTEGER NOT NULL, "
-			+ COLUMN_NAME + "VARCHAR(250) NOT NULL, "
+			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
+			+ COLUMN_OWNER + " INTEGER NOT NULL, "
+			+ COLUMN_NAME + " VARCHAR(250) NOT NULL"
 			+ ");";
 	
 	// Constructor.

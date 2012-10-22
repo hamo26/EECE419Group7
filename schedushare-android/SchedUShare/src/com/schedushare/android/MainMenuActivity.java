@@ -30,7 +30,7 @@ public class MainMenuActivity extends RoboActivity {
         dataSource.open();
         dataSource.dropAllTables();
         for (int i = 0; i < 100; i++) {
-        	dataSource.createSchedule(i, "Schedule Name" + i);
+        	dataSource.createSchedule(i, " Schedule Name ");
         }
         dataSource.close();
     }

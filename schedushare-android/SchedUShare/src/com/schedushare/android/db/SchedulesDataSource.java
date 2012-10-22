@@ -12,7 +12,7 @@ public class SchedulesDataSource {
 	private SchedulesSQLiteHelper dbHelper;
 	
 	// All column names of schedule table.
-	private String[] allScheduleColumns = {
+	public static String[] allScheduleColumns = {
 			SchedulesSQLiteHelper.COLUMN_ID,
 			SchedulesSQLiteHelper.COLUMN_OWNER,
 			SchedulesSQLiteHelper.COLUMN_NAME};

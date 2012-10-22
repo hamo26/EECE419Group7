@@ -14,8 +14,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 @ContentView(R.layout.activity_schedules_menu)
-public class SchedulesMenuActivity extends RoboFragmentActivity {
-
+public class SchedulesMenuActivity extends RoboFragmentActivity {	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
