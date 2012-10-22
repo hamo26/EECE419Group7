@@ -1,5 +1,7 @@
 package com.schedushare.android;
 
+import com.schedushare.android.db.SchedulesDataSource;
+
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -23,6 +25,14 @@ public class MainMenuActivity extends RoboActivity {
         // Create the text view
         this.outputTextView.setTextSize(30);
         this.outputTextView.setText(message);
+        
+        SchedulesDataSource dataSource = new SchedulesDataSource(this);
+        dataSource.open();
+        dataSource.dropAllTables();
+        for (int i = 0; i < 100; i++) {
+        	dataSource.createSchedule(i, "Schedule Name" + i);
+        }
+        dataSource.close();
     }
     
     // Called when user clicks schedules button.
