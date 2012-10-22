@@ -35,7 +35,7 @@ public class BaseRestHandlerImpl extends Application {
         		new ServiceModule(),
         		new SelfInjectingServerResourceModule());
         
-       // router.attach("/user/login", AuthenticationResourceImpl.class);  
+      // router.attach("/user/login", AuthenticationResourceImpl.class);  
         return router;  
     }  
 }
