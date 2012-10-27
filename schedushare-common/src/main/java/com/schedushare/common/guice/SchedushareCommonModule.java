@@ -3,8 +3,8 @@ package com.schedushare.common.guice;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
-import com.schedushare.common.domain.dto.SchedushareException;
-import com.schedushare.common.domain.dto.SchedushareExceptionFactory;
+import com.schedushare.common.domain.exception.SchedushareException;
+import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
 import com.schedushare.common.domain.rest.RestResultHandler;
 import com.schedushare.common.util.JSONUtil;
 

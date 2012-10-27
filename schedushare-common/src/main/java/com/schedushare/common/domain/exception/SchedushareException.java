@@ -1,8 +1,9 @@
-package com.schedushare.common.domain.dto;
+package com.schedushare.common.domain.exception;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
+import com.schedushare.common.domain.dto.SchedushareExceptionEntity;
 import com.schedushare.common.util.JSONUtil;
 
 

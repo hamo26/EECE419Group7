@@ -1,4 +1,4 @@
-package com.schedushare.common.domain.dto;
+package com.schedushare.common.domain.exception;
 
 import static org.junit.Assert.assertEquals;
 
