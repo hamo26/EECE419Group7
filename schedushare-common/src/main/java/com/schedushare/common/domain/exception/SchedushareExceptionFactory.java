@@ -1,4 +1,5 @@
-package com.schedushare.common.domain.dto;
+package com.schedushare.common.domain.exception;
+
 
 /**
  * Factory wired into Guice to instantiate insieme exception.
