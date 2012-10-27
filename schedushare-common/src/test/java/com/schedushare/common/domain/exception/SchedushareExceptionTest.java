@@ -32,7 +32,7 @@ public class SchedushareExceptionTest {
 		}
 		
 		public SchedushareException get() {
-			return this.insiemeExceptionFactory.createInsiemeException("test");
+			return this.insiemeExceptionFactory.createSchedushareException("test");
 		}
 	}
 
