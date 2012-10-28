@@ -47,14 +47,14 @@ public class UserRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedushar
 	 * The table column <code>schedushare.user.PASSWORD</code>
 	 */
 	public void setPassword(java.lang.String value) {
-		setValue(com.schedushare.core.database.tables.User.USER.PASSWORD, value);
+		setValue(com.schedushare.core.database.tables.User.USER.AUTHTOKEN, value);
 	}
 
 	/**
 	 * The table column <code>schedushare.user.PASSWORD</code>
 	 */
 	public java.lang.String getPassword() {
-		return getValue(com.schedushare.core.database.tables.User.USER.PASSWORD);
+		return getValue(com.schedushare.core.database.tables.User.USER.AUTHTOKEN);
 	}
 
 	/**

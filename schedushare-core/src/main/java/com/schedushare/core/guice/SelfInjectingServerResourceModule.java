@@ -2,8 +2,8 @@ package com.schedushare.core.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.MembersInjector;
 import com.google.inject.Provides;
+import com.schedushare.core.guice.SelfInjectingServerResource.MembersInjector;
 
 /**
  * Guice module for self injecting resources.

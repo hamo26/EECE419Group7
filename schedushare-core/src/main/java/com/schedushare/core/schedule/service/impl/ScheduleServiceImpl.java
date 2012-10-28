@@ -1,6 +1,8 @@
 package com.schedushare.core.schedule.service.impl;
 
 import java.sql.Connection;
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,9 +59,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 		SchedushareFactory createScheduleQuery = new SchedushareFactory(connection);
 		
 		try {
-			createScheduleQuery.insertInto(Tables.SCHEDULE, Tables.SCHEDULE.ID, Tables.SCHEDULE.NAME, 
+			createScheduleQuery.insertInto(Tables.SCHEDULE, Tables.SCHEDULE.NAME, 
 							Tables.SCHEDULE.LAST_MODIFIED, Tables.SCHEDULE.ACTIVE, Tables.SCHEDULE.OWNER_ID)
-						   .values("", scheduleEntity.getScheduleName(), "", scheduleEntity.isScheduleActive(), userId).execute();
+						   .values(scheduleEntity.getScheduleName(), new Time(Calendar.getInstance().getTimeInMillis()).getTime(), 
+								   scheduleEntity.isScheduleActive(), userId).execute();
 		} catch (Exception e) {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
 		}

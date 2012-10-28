@@ -5,8 +5,12 @@ import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
 import com.google.inject.Guice;
+import com.schedushare.common.guice.SchedushareCommonModule;
 import com.schedushare.core.guice.SelfInjectingServerResourceModule;
 import com.schedushare.core.guice.ServiceModule;
+import com.schedushare.core.guice.TransactionModule;
+import com.schedushare.core.schedule.rest.resource.impl.UserScheduleResourceImpl;
+import com.schedushare.core.user.rest.resource.impl.RegisterUserResourceImpl;
 
 /**
  * The Base Rest Handler which defines all url binding and delegates to the appropriate resource.
@@ -33,9 +37,12 @@ public class BaseRestHandlerImpl extends Application {
         
         Guice.createInjector(
         		new ServiceModule(),
-        		new SelfInjectingServerResourceModule());
+        		new SelfInjectingServerResourceModule(),
+        		new SchedushareCommonModule(),
+        		new TransactionModule());
         
-      // router.attach("/user/login", AuthenticationResourceImpl.class);  
+        router.attach("/schedules/user/{userId}", UserScheduleResourceImpl.class);
+        router.attach("/register/user", RegisterUserResourceImpl.class);
         return router;  
     }  
 }

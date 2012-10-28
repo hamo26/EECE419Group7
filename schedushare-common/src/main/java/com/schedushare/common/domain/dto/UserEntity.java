@@ -19,12 +19,16 @@ public class UserEntity extends RestEntity implements Serializable{
 
 	public static final String AUTH_TOKEN = "auth-token";
 	public static final String USER_ID = "user-id";
+	public static final String NAME = "name";
 
 	@SerializedName(USER_ID)
-	private String userId;
+	private int userId;
 	
 	@SerializedName(AUTH_TOKEN)
 	private String authToken;
+
+	@SerializedName(NAME)
+	private String name;
 	
 	/**
 	 * Default constructor.
@@ -34,16 +38,21 @@ public class UserEntity extends RestEntity implements Serializable{
 	 * @param USER_ID the user id
 	 * @param AUTH_TOKEN the auth token
 	 */
-	public UserEntity(final String USER_ID, final String AUTH_TOKEN) {
+	public UserEntity(final int USER_ID, final String NAME, final String AUTH_TOKEN) {
 		this.userId = USER_ID;
+		this.name = NAME;
 		this.authToken = AUTH_TOKEN;
 	}
 
-	public String getUserId() {
+	public int getUserId() {
 		return this.userId;
 	}
 	
 	public String getAuthToken() {
 		return this.authToken;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 }

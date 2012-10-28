@@ -16,7 +16,7 @@ public class RestletDriver {
 	    component.getServers().add(Protocol.HTTP, 8189);  
 	  
 	    // Attach the sample application.  
-	    component.getDefaultHost().attach("/insieme",  
+	    component.getDefaultHost().attach("/schedushare",  
 	            new BaseRestHandlerImpl());  
 	  
 	    // Start the component.  

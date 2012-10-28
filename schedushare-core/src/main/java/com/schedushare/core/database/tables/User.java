@@ -34,9 +34,15 @@ public class User extends org.jooq.impl.UpdatableTableImpl<com.schedushare.core.
 	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>schedushare.user.PASSWORD</code>
+	 * The table column <code>schedushare.user.AUTHTOKEN</code>
 	 */
-	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> PASSWORD = createField("PASSWORD", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> AUTHTOKEN = createField("AUTHTOKEN", org.jooq.impl.SQLDataType.VARCHAR, this);
+	
+	/**
+	 * The table column <code>schedushare.user.NAME</code>
+	 */
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> NAME = createField("NAME", org.jooq.impl.SQLDataType.VARCHAR, this);
+	
 
 	public User() {
 		super("user", com.schedushare.core.database.Schedushare.SCHEDUSHARE);
@@ -54,7 +60,7 @@ public class User extends org.jooq.impl.UpdatableTableImpl<com.schedushare.core.
 	@Override
 	@SuppressWarnings("unchecked")
 	public java.util.List<org.jooq.UniqueKey<com.schedushare.core.database.tables.records.UserRecord>> getKeys() {
-		return java.util.Arrays.<org.jooq.UniqueKey<com.schedushare.core.database.tables.records.UserRecord>>asList(com.schedushare.core.database.Keys.KEY_USER_PRIMARY, com.schedushare.core.database.Keys.KEY_USER_PASSWORD_UNIQUE);
+		return java.util.Arrays.<org.jooq.UniqueKey<com.schedushare.core.database.tables.records.UserRecord>>asList(com.schedushare.core.database.Keys.KEY_USER_PRIMARY);
 	}
 
 	@Override

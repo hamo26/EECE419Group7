@@ -30,7 +30,6 @@ public class Keys {
 	public static final UniqueKey<ScheduleRecord> KEY_SCHEDULE_PRIMARY = UniqueKeys0.KEY_SCHEDULE_PRIMARY;
 	public static final UniqueKey<TimeblockRecord> KEY_TIMEBLOCK_PRIMARY = UniqueKeys0.KEY_TIMEBLOCK_PRIMARY;
 	public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = UniqueKeys0.KEY_USER_PRIMARY;
-	public static final UniqueKey<UserRecord> KEY_USER_PASSWORD_UNIQUE = UniqueKeys0.KEY_USER_PASSWORD_UNIQUE;
 
 	// FOREIGN KEY definitions
 	public static final ForeignKey<ScheduleRecord, UserRecord> SCHEDULEOWNER = ForeignKeys0.SCHEDULEOWNER;
@@ -46,7 +45,6 @@ public class Keys {
 		public static final UniqueKey<ScheduleRecord> KEY_SCHEDULE_PRIMARY = createUniqueKey(Schedule.SCHEDULE, Schedule.SCHEDULE.ID);
 		public static final UniqueKey<TimeblockRecord> KEY_TIMEBLOCK_PRIMARY = createUniqueKey(Timeblock.TIMEBLOCK, Timeblock.TIMEBLOCK.ID);
 		public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = createUniqueKey(User.USER, User.USER.ID);
-		public static final UniqueKey<UserRecord> KEY_USER_PASSWORD_UNIQUE = createUniqueKey(User.USER, User.USER.PASSWORD);
 	}
 
 	@SuppressWarnings({"hiding", "unchecked"})
