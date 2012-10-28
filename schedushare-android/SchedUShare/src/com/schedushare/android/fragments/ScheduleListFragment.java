@@ -22,18 +22,14 @@ public class ScheduleListFragment extends Fragment {
 		this.dataSource.open();
 		
 		Cursor cursor = this.dataSource.getAllSchedulesCursor();
-		int[] toViews = new int[] { R.id.id_entry, R.id.owner_entry, R.id.name_entry };
+		int[] toViews = new int[] {R.id.owner_entry, R.id.name_entry};
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
-				R.layout.list_item_schedule, cursor, SchedulesDataSource.allScheduleColumns, toViews, 0);
+				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
 		
 		ListView listView = new ListView(getActivity());
 		listView.setAdapter(adapter);
 		
-		ScrollView scrollView = new ScrollView(getActivity());
-		scrollView.addView(listView);
-		scrollView.setFillViewport(true);
-		
-		return scrollView;
+		return listView;
     }
 	
 	@Override
