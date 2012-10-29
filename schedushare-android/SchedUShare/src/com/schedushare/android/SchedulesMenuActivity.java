@@ -22,6 +22,7 @@ import android.widget.SimpleCursorAdapter;
 
 @ContentView(R.layout.activity_schedules_menu)
 public class SchedulesMenuActivity extends RoboFragmentActivity implements NoticeDialogListener {
+	// List views connected to the database for both user and friend schedules.
 	private TabListener<ScheduleListFragment> userSchedulesTabListener;
 	private TabListener<CheckableScheduleListFragment> friendSchedulesTabListener;
 	
@@ -29,12 +30,15 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Notic
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
+	    // Only create action bar if the fragment container exists in view.
 	    if (findViewById(R.id.schedule_list_container) != null) {
+	    	// Create the tab listeners which will facilitate user clicking on the tabs.
 			this.userSchedulesTabListener = new TabListener<ScheduleListFragment>(
 					this, "user_schedules", ScheduleListFragment.class);
 			this.friendSchedulesTabListener = new TabListener<CheckableScheduleListFragment>(
 					this, "friend_schedules", CheckableScheduleListFragment.class);
 			
+			// Set action bar to navigation mode and add the user and friend tabs.
 			ActionBar actionBar = getActionBar();
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 			
@@ -52,6 +56,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Notic
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		// Create menu with new schedule button.
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.schedules_menu, menu);
 		
@@ -62,6 +67,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Notic
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.create_schedule:
+				// Open dialog box to create new schedule.
 				RoboDialogFragment newFragment = new NewScheduleDialogFragment();
 			    newFragment.show(getSupportFragmentManager(), "new_schedule");
 			default:

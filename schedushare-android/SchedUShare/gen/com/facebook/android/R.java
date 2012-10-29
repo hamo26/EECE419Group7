@@ -38,13 +38,14 @@ public final class R {
         public static final int username_text=0x7f070000;
     }
     public static final class layout {
-        public static final int activity_login=0x7f030000;
-        public static final int activity_main_menu=0x7f030001;
-        public static final int activity_schedules_menu=0x7f030002;
-        public static final int dialog_new_schedule=0x7f030003;
-        public static final int fragment_schedule_list=0x7f030004;
-        public static final int list_item_checkable_schedule=0x7f030005;
-        public static final int list_item_schedule=0x7f030006;
+        public static final int activity_edit_schedule=0x7f030000;
+        public static final int activity_login=0x7f030001;
+        public static final int activity_main_menu=0x7f030002;
+        public static final int activity_schedules_menu=0x7f030003;
+        public static final int dialog_new_schedule=0x7f030004;
+        public static final int fragment_schedule_list=0x7f030005;
+        public static final int list_item_checkable_schedule=0x7f030006;
+        public static final int list_item_schedule=0x7f030007;
     }
     public static final class menu {
         public static final int schedules_menu=0x7f060000;
@@ -68,6 +69,7 @@ public final class R {
         public static final int tab_create_schedule=0x7f040010;
         public static final int tab_friend_schedules=0x7f04000f;
         public static final int tab_user_schedules=0x7f04000e;
+        public static final int title_activity_edit_schedule=0x7f040016;
         public static final int title_activity_login=0x7f040003;
         public static final int title_activity_main_menu=0x7f040006;
         public static final int title_activity_schedules_menu=0x7f04000d;

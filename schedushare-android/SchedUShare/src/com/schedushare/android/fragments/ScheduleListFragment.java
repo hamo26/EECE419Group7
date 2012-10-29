@@ -1,14 +1,19 @@
 package com.schedushare.android.fragments;
 
+import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.SchedulesDataSource;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -28,6 +33,7 @@ public class ScheduleListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		
+		// Only create the cursor and adapter the first time fragment is created.
 		if (savedInstanceState == null) {
 			setListViewAdapter();
 		}
@@ -52,7 +58,16 @@ public class ScheduleListFragment extends Fragment {
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
 				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
 		
+		// Create view with callback method when user selects an item from the list.
 		this.listView = new ListView(getActivity());
+		this.listView.setOnItemClickListener(new OnItemClickListener() {  
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// Start EditScheduleActivity with the selected schedule.
+				Intent intent = new Intent(getActivity(), EditScheduleActivity.class);
+		        startActivity(intent);
+				
+			}  
+		});
 		this.listView.setAdapter(adapter);
 	}
 }

@@ -15,6 +15,7 @@ public class MainMenuActivity extends RoboActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        // For testing only.
         if (savedInstanceState == null) {
 	        SchedulesDataSource dataSource = new SchedulesDataSource(this);
 	        dataSource.open();

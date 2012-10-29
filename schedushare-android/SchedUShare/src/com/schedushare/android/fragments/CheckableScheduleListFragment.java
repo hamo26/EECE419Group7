@@ -16,6 +16,7 @@ public class CheckableScheduleListFragment extends ScheduleListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		
+		// Only create cursor and adapter the first time fragment is created.
 		if (savedInstanceState == null) {
 			setListViewAdapter();
 		}

@@ -27,7 +27,7 @@ public class CheckboxScheduleCursorAdapter extends SimpleCursorAdapter {
 		View view = super.getView(position, convertView, parent);
 		
 		CheckBox checkbox = (CheckBox)view.findViewById(R.id.checkable_schedule_list_checkbox);
-		checkbox.setOnClickListener(new OnClickListener(){  
+		checkbox.setOnClickListener(new OnClickListener() {  
 			public void onClick(View v) {  
 			    Cursor cursor = getCursor();  
 			    cursor.moveToPosition(position);

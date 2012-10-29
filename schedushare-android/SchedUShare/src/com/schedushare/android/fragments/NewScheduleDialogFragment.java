@@ -59,12 +59,16 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
                .setPositiveButton(R.string.create_button_text, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        createNewSchedule();
+                       
+                       // Notify activity of confirm.
                        NewScheduleDialogFragment.this.listener.onNewScheduleDialogPositiveClick(NewScheduleDialogFragment.this);
                    }
                })
                .setNegativeButton(R.string.cancel_button_text, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        NewScheduleDialogFragment.this.getDialog().cancel();
+                       
+                       // Notify activity of cancel.
                        NewScheduleDialogFragment.this.listener.onNewScheduleDialogNegativeClick(NewScheduleDialogFragment.this);
                    }
                });
