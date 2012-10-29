@@ -10,36 +10,49 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleCursorAdapter;
 
 public class ScheduleListFragment extends Fragment {
-	private SchedulesDataSource dataSource;
+	public ListView listView;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		// Set so that fragment does not get recreated every time configuration changes.
+		// (e.g. orientation change)
+		setRetainInstance(true);
+	}
     
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.dataSource = new SchedulesDataSource(getActivity());
-		this.dataSource.open();
+		super.onCreateView(inflater, container, savedInstanceState);
 		
-		Cursor cursor = this.dataSource.getAllSchedulesCursor();
-		int[] toViews = new int[] { R.id.id_entry, R.id.owner_entry, R.id.name_entry };
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
-				R.layout.list_item_schedule, cursor, SchedulesDataSource.allScheduleColumns, toViews, 0);
+		if (savedInstanceState == null) {
+			setListViewAdapter();
+		}
 		
-		ListView listView = new ListView(getActivity());
-		listView.setAdapter(adapter);
-		
-		ScrollView scrollView = new ScrollView(getActivity());
-		scrollView.addView(listView);
-		scrollView.setFillViewport(true);
-		
-		return scrollView;
+		return this.listView;
     }
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+	
+	public void setListViewAdapter() {
+		// Get new cursor from database.
+		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
+		dataSource.open();
+		Cursor cursor = dataSource.getAllSchedulesCursor();
+		dataSource.close();
 		
-		this.dataSource.close();
+		// Create new adapter and attach to listView.
+		int[] toViews = new int[] {R.id.owner_entry, R.id.name_entry};
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
+				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
+		
+		this.listView = new ListView(getActivity());
+		this.listView.setAdapter(adapter);
 	}
 }

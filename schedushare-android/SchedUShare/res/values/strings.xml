@@ -17,5 +17,10 @@
     <string name="tab_user_schedules">Me</string>
     <string name="tab_friend_schedules">Friends</string>
     <string name="tab_create_schedule">New</string>
+    <string name="app_id">100990793398405</string>
+    <string name="new_schedule_dialog_title">New Schedule</string>
+    <string name="new_schedule_dialog_name_input_hint">Name of Schedule</string>
+    <string name="create_button_text">Create</string>
+    <string name="cancel_button_text">Canel</string>
 
 </resources>

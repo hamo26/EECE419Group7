@@ -12,8 +12,6 @@ import roboguice.inject.InjectView;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.service.textservice.SpellCheckerService.Session;
-import android.view.View;
 import android.widget.EditText;
 
 @ContentView(R.layout.activity_login)
@@ -60,9 +58,8 @@ public class LoginActivity extends RoboActivity {
 	            	public void onCancel() {}
 	        });
         }
+        
         Intent intent = new Intent(this, MainMenuActivity.class);
-        String message = this.userIdInput.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
     

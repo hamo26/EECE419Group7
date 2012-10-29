@@ -5,7 +5,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="16" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -25,15 +25,18 @@
             android:label="@string/title_activity_main_menu" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.schedushare.LoginActivity" />
+                android:value="com.schedushare.LoginActivity"
+                android:configChanges="orientation|keyboardHidden|screenSize" />
         </activity>
         <activity
             android:name=".SchedulesMenuActivity"
-            android:label="@string/title_activity_schedules_menu" >
+            android:label="@string/title_activity_schedules_menu"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.schedushare.android.MainMenuActivity" />
         </activity>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>
