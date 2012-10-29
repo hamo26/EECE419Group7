@@ -13,8 +13,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class ScheduleListFragment extends Fragment {
-	private SchedulesDataSource dataSource;
-	private ListView listView;
+	public ListView listView;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -30,16 +29,7 @@ public class ScheduleListFragment extends Fragment {
 		super.onCreateView(inflater, container, savedInstanceState);
 		
 		if (savedInstanceState == null) {
-			this.dataSource = new SchedulesDataSource(getActivity());
-			this.dataSource.open();
-			
-			Cursor cursor = this.dataSource.getAllSchedulesCursor();
-			int[] toViews = new int[] {R.id.owner_entry, R.id.name_entry};
-			SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
-					R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
-			
-			this.listView = new ListView(getActivity());
-			this.listView.setAdapter(adapter);
+			setListViewAdapter();
 		}
 		
 		return this.listView;
@@ -48,7 +38,21 @@ public class ScheduleListFragment extends Fragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+	
+	public void setListViewAdapter() {
+		// Get new cursor from database.
+		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
+		dataSource.open();
+		Cursor cursor = dataSource.getAllSchedulesCursor();
+		dataSource.close();
 		
-		this.dataSource.close();
+		// Create new adapter and attach to listView.
+		int[] toViews = new int[] {R.id.owner_entry, R.id.name_entry};
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
+				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
+		
+		this.listView = new ListView(getActivity());
+		this.listView.setAdapter(adapter);
 	}
 }

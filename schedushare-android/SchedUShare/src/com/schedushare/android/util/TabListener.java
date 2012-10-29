@@ -7,10 +7,10 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 
 public class TabListener<T extends Fragment> implements ActionBar.TabListener {
-    private Fragment mFragment;
-    private final Activity mActivity;
-    private final String mTag;
-    private final Class<T> mClass;
+    public Fragment fragment;
+    private final Activity activity;
+    private final String tag;
+    private final Class<T> fragClass;
 
     /** Constructor used each time a new tab is created.
       * @param activity  The host Activity, used to instantiate the fragment
@@ -18,29 +18,29 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
       * @param clz  The fragment's Class, used to instantiate the fragment
       */
     public TabListener(Activity activity, String tag, Class<T> clz) {
-        mActivity = activity;
-        mTag = tag;
-        mClass = clz;
+        this.activity = activity;
+        this.tag = tag;
+        this.fragClass = clz;
     }
 
     /* The following are each of the ActionBar.TabListener callbacks */
 
     public void onTabSelected(Tab tab, FragmentTransaction ft) {
         // Check if the fragment is already initialized
-        if (mFragment == null) {
+        if (this.fragment == null) {
             // If not, instantiate and add it to the activity
-            mFragment = Fragment.instantiate(mActivity, mClass.getName());
-            ft.add(android.R.id.content, mFragment, mTag);
+            this.fragment = Fragment.instantiate(this.activity, this.fragClass.getName());
+            ft.add(android.R.id.content, this.fragment, this.tag);
         } else {
             // If it exists, simply attach it in order to show it
-            ft.attach(mFragment);
+            ft.attach(this.fragment);
         }
     }
 
     public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-        if (mFragment != null) {
+        if (this.fragment != null) {
             // Detach the fragment, because another one is being attached
-            ft.detach(mFragment);
+            ft.detach(this.fragment);
         }
     }
 
