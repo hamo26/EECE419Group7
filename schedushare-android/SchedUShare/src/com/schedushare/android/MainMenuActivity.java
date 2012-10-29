@@ -15,14 +15,16 @@ public class MainMenuActivity extends RoboActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        SchedulesDataSource dataSource = new SchedulesDataSource(this);
-        dataSource.open();
-        dataSource.dropAllTables();
-        dataSource.createUser(1, "oscarlee");
-        for (int i = 0; i < 100; i++) {
-        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, "whatever");
+        if (savedInstanceState == null) {
+	        SchedulesDataSource dataSource = new SchedulesDataSource(this);
+	        dataSource.open();
+	        dataSource.dropAllTables();
+	        dataSource.createUser(1, "oscarlee");
+	        for (int i = 0; i < 100; i++) {
+	        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, "whatever");
+	        }
+	        dataSource.close();
         }
-        dataSource.close();
     }
     
     // Called when user clicks schedules button.

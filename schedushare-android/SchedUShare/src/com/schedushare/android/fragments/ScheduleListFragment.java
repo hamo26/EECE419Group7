@@ -10,26 +10,39 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleCursorAdapter;
 
 public class ScheduleListFragment extends Fragment {
 	private SchedulesDataSource dataSource;
+	private ListView listView;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		// Set so that fragment does not get recreated every time configuration changes.
+		// (e.g. orientation change)
+		setRetainInstance(true);
+	}
     
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		this.dataSource = new SchedulesDataSource(getActivity());
-		this.dataSource.open();
+		super.onCreateView(inflater, container, savedInstanceState);
 		
-		Cursor cursor = this.dataSource.getAllSchedulesCursor();
-		int[] toViews = new int[] {R.id.owner_entry, R.id.name_entry};
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
-				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
+		if (savedInstanceState == null) {
+			this.dataSource = new SchedulesDataSource(getActivity());
+			this.dataSource.open();
+			
+			Cursor cursor = this.dataSource.getAllSchedulesCursor();
+			int[] toViews = new int[] {R.id.owner_entry, R.id.name_entry};
+			SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
+					R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
+			
+			this.listView = new ListView(getActivity());
+			this.listView.setAdapter(adapter);
+		}
 		
-		ListView listView = new ListView(getActivity());
-		listView.setAdapter(adapter);
-		
-		return listView;
+		return this.listView;
     }
 	
 	@Override
