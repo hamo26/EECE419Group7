@@ -1,6 +1,7 @@
 package com.schedushare.android;
 
 import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.fragments.CheckableScheduleListFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment.NoticeDialogListener;
 import com.schedushare.android.fragments.ScheduleListFragment;
@@ -22,30 +23,30 @@ import android.widget.SimpleCursorAdapter;
 @ContentView(R.layout.activity_schedules_menu)
 public class SchedulesMenuActivity extends RoboFragmentActivity implements NoticeDialogListener {
 	private TabListener<ScheduleListFragment> userSchedulesTabListener;
-	private TabListener<ScheduleListFragment> friendSchedulesTabListener;
+	private TabListener<CheckableScheduleListFragment> friendSchedulesTabListener;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
 	    if (findViewById(R.id.schedule_list_container) != null) {
-	    	this.userSchedulesTabListener = new TabListener<ScheduleListFragment>(
-		            this, "user_schedules", ScheduleListFragment.class);
-			this.friendSchedulesTabListener = new TabListener<ScheduleListFragment>(
-		            this, "friend_schedules", ScheduleListFragment.class);
+			this.userSchedulesTabListener = new TabListener<ScheduleListFragment>(
+					this, "user_schedules", ScheduleListFragment.class);
+			this.friendSchedulesTabListener = new TabListener<CheckableScheduleListFragment>(
+					this, "friend_schedules", CheckableScheduleListFragment.class);
 			
-	    	ActionBar actionBar = getActionBar();
-	        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-	        
-	        Tab tab = actionBar.newTab()
-	                .setText(R.string.tab_user_schedules)
-	                .setTabListener(this.userSchedulesTabListener);
-	        actionBar.addTab(tab);
-	
-	        tab = actionBar.newTab()
-	            .setText(R.string.tab_friend_schedules)
-	            .setTabListener(this.friendSchedulesTabListener);
-	        actionBar.addTab(tab);
+			ActionBar actionBar = getActionBar();
+			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+			
+			Tab tab = actionBar.newTab()
+					.setText(R.string.tab_user_schedules)
+					.setTabListener(this.userSchedulesTabListener);
+			actionBar.addTab(tab);
+			
+			tab = actionBar.newTab()
+					.setText(R.string.tab_friend_schedules)
+					.setTabListener(this.friendSchedulesTabListener);
+			actionBar.addTab(tab);
 	    }
 	}
 	

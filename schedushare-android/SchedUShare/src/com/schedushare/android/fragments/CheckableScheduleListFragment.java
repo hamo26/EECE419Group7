@@ -1,29 +1,17 @@
 package com.schedushare.android.fragments;
 
-import com.schedushare.android.R;
-import com.schedushare.android.db.SchedulesDataSource;
-
-import android.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
-public class ScheduleListFragment extends Fragment {
-	public ListView listView;
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		// Set so that fragment does not get recreated every time configuration changes.
-		// (e.g. orientation change)
-		setRetainInstance(true);
-	}
-    
+import com.schedushare.android.R;
+import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.util.CheckboxScheduleCursorAdapter;
+
+public class CheckableScheduleListFragment extends ScheduleListFragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
@@ -35,11 +23,6 @@ public class ScheduleListFragment extends Fragment {
 		return this.listView;
     }
 	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-	
 	private void setListViewAdapter() {
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
@@ -48,9 +31,9 @@ public class ScheduleListFragment extends Fragment {
 		dataSource.close();
 		
 		// Create new adapter and attach to listView.
-		int[] toViews = new int[] {R.id.schedule_list_owner_entry, R.id.schedule_list_name_entry};
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
-				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
+		int[] toViews = new int[] {R.id.checkable_schedule_list_owner_entry, R.id.checkable_schedule_list_name_entry};
+		CheckboxScheduleCursorAdapter adapter = new CheckboxScheduleCursorAdapter(getActivity(), 
+				R.layout.list_item_checkable_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
 		
 		this.listView = new ListView(getActivity());
 		this.listView.setAdapter(adapter);
