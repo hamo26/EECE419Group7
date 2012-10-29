@@ -49,9 +49,15 @@ public class Timeblock extends org.jooq.impl.UpdatableTableImpl<com.schedushare.
 	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, com.schedushare.core.database.enums.TimeblockDay> DAY = createField("DAY", org.jooq.util.mysql.MySQLDataType.VARCHAR.asEnumDataType(com.schedushare.core.database.enums.TimeblockDay.class), this);
 
 	/**
-	 * The table column <code>schedushare.timeblock.BLOCK_TYPE</code>
+	 * The table column <code>schedushare.timeblock.LATITUDE</code>
 	 */
-	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.String> BLOCK_TYPE = createField("BLOCK_TYPE", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.Double> LATITUDE = createField("LATITUDE", org.jooq.util.mysql.MySQLDataType.DOUBLE, this);
+
+	/**
+	 * The table column <code>schedushare.timeblock.LONGITUDE</code>
+	 */
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.Double> LONGITUDE = createField("LONGITUDE", org.jooq.util.mysql.MySQLDataType.DOUBLE, this);
+
 
 	/**
 	 * The table column <code>schedushare.timeblock.SCHEDULE_ID</code>
@@ -65,7 +71,7 @@ public class Timeblock extends org.jooq.impl.UpdatableTableImpl<com.schedushare.
 	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.Integer> SCHEDULE_ID = createField("SCHEDULE_ID", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public Timeblock() {
-		super("timeblock", com.schedushare.core.database.Schedushare.SCHEDUSHARE);
+		super("TIME_BLOCK", com.schedushare.core.database.Schedushare.SCHEDUSHARE);
 	}
 
 	public Timeblock(java.lang.String alias) {

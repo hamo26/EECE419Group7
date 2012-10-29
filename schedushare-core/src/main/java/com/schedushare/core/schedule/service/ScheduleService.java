@@ -31,17 +31,18 @@ public interface ScheduleService {
 	 * @param userId the user id
 	 * @return the active schedule for user
 	 */
-	ScheduleEntity getActiveScheduleForUser(final Connection connection, final String userId);
+	ScheduleEntity getActiveScheduleForUser(final Connection connection, final String userId) throws SchedushareException;
 	
 	/**
 	 * Creates a schedule for a user.
 	 *
 	 * @param connection the connection
-	 * @param userId the user id
+	 * @param userEmail the user email
 	 * @param scheduleEntity the schedule entity
 	 * @return the schedule entity
+	 * @throws SchedushareException the schedushare exception
 	 */
-	ScheduleEntity createScheduleForUser(final Connection connection, final String userId, final ScheduleEntity scheduleEntity) throws SchedushareException;
+	ScheduleEntity createScheduleForUser(final Connection connection, final String userEmail, final ScheduleEntity scheduleEntity) throws SchedushareException;
 	
 	/**
 	 * Gets all schedules for a user.

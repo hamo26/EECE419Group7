@@ -60,14 +60,14 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	/**
 	 * The table column <code>schedushare.schedule.ACTIVE</code>
 	 */
-	public void setActive(java.lang.Byte value) {
+	public void setActive(java.lang.Boolean value) {
 		setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.ACTIVE, value);
 	}
 
 	/**
 	 * The table column <code>schedushare.schedule.ACTIVE</code>
 	 */
-	public java.lang.Byte getActive() {
+	public java.lang.Boolean getActive() {
 		return getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.ACTIVE);
 	}
 
@@ -81,7 +81,7 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	 * </pre></code>
 	 */
 	public void setOwnerId(java.lang.Integer value) {
-		setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.OWNER_ID, value);
+		setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID, value);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	 * </pre></code>
 	 */
 	public java.lang.Integer getOwnerId() {
-		return getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.OWNER_ID);
+		return getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID);
 	}
 
 	/**
@@ -103,10 +103,10 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	 */
 	public void setOwnerId(com.schedushare.core.database.tables.records.UserRecord value) {
 		if (value == null) {
-			setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.OWNER_ID, null);
+			setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID, null);
 		}
 		else {
-			setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.OWNER_ID, value.getValue(com.schedushare.core.database.tables.User.USER.ID));
+			setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID, value.getValue(com.schedushare.core.database.tables.User.USER.ID));
 		}
 	}
 
@@ -122,21 +122,21 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	public com.schedushare.core.database.tables.records.UserRecord fetchUser() {
 		return create()
 			.selectFrom(com.schedushare.core.database.tables.User.USER)
-			.where(com.schedushare.core.database.tables.User.USER.ID.equal(getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.OWNER_ID)))
+			.where(com.schedushare.core.database.tables.User.USER.ID.equal(getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID)))
 			.fetchOne();
 	}
 
 	/**
 	 * The table column <code>schedushare.schedule.LAST_MODIFIED</code>
 	 */
-	public void setLastModified(java.sql.Timestamp value) {
+	public void setLastModified(java.sql.Time value) {
 		setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.LAST_MODIFIED, value);
 	}
 
 	/**
 	 * The table column <code>schedushare.schedule.LAST_MODIFIED</code>
 	 */
-	public java.sql.Timestamp getLastModified() {
+	public java.sql.Time getLastModified() {
 		return getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.LAST_MODIFIED);
 	}
 

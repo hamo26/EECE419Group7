@@ -1,5 +1,6 @@
 package com.schedushare.common.domain.dto;
 
+import java.sql.Time;
 import java.util.Collection;
 
 import com.google.gson.annotations.SerializedName;
@@ -12,30 +13,67 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ScheduleEntity extends RestEntity {
 
+
+
+	@SerializedName("time-blocks")
 	private final Collection<TimeBlockEntity> timeBlocks;
 	
-	
+	public static final String LAST_MODIFIED = "last-modified";
+	public static final String USER_ID = "user-id";
+	public static final String SCHEDULE_ID = "schedule-id";
 	public static final String SCHEDULE_NAME = "schedule-name";
 	public static final String SCHEDULE_ACTIVE = "active";
+	
+	@SerializedName(SCHEDULE_ID)
+	private final int scheduleId;
 	
 	@SerializedName(SCHEDULE_NAME)
 	private final String scheduleName;
 	
 	@SerializedName(SCHEDULE_ACTIVE)
 	private final Boolean scheduleActive;
+
+	@SerializedName(USER_ID)
+	private String userId;
+	
+	@SerializedName(LAST_MODIFIED)
+	private String lastModified;
+	
+	private Time t_lastModified;
+	
+	
 	
 	/**
-	 * Default Constructor.
+	 * SQL constructor.
 	 *
 	 * @param scheduleName the schedule name
 	 * @param scheduleActive the schedule active
 	 * @param timeblocks the timeblocks
 	 */
-	public ScheduleEntity(final String scheduleName, final Boolean scheduleActive, 
+	public ScheduleEntity(final int ID, final String NAME,
+			final Boolean ACTIVE, final String USER_ID, final Time LAST_MODIFIED) {
+		this.scheduleId = ID;
+		this.scheduleName = NAME;
+		this.scheduleActive = ACTIVE;
+		this.t_lastModified = LAST_MODIFIED;
+		this.timeBlocks = null;
+	}
+	
+	/**
+	 * JSON Constructor.
+	 *
+	 * @param scheduleName the schedule name
+	 * @param scheduleActive the schedule active
+	 * @param timeblocks the timeblocks
+	 */
+	public ScheduleEntity(final int ID, final String NAME,
+			final Boolean ACTIVE, final String USER_ID, final String LAST_MODIFIED,
 			final Collection<TimeBlockEntity> timeblocks) {
-		this.scheduleName = scheduleName;
-		this.scheduleActive = scheduleActive;
-		timeBlocks = timeblocks;
+		this.scheduleId = ID;
+		this.scheduleName = NAME;
+		this.scheduleActive = ACTIVE;
+		this.lastModified = LAST_MODIFIED;
+		this.timeBlocks = timeblocks;
 	}
 	
 	public Collection<TimeBlockEntity> getTimeBlocks() {
@@ -49,6 +87,22 @@ public class ScheduleEntity extends RestEntity {
 	public Boolean isScheduleActive() {
 		return this.scheduleActive;
 	}
-	
+
+	public int getScheduleId() {
+		return scheduleId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public String getLastModified() {
+		return lastModified;
+	}
+
+	public Time getT_lastModified() {
+		return t_lastModified;
+	}
+
 	
 }

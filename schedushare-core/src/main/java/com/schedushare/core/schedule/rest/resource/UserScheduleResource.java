@@ -23,7 +23,7 @@ public interface UserScheduleResource {
 	 * @throws SchedushareException the schedushare exception
 	 */
 	@Put
-	public String createSchedule(String scheduleRepresentation) throws SchedushareException;
+	public String createSchedule(String scheduleRepresentation);
 	
 	/**
 	 * Update schedule.
@@ -33,7 +33,7 @@ public interface UserScheduleResource {
 	 * @throws SchedushareException the schedushare exception
 	 */
 	@Post
-	public String updateSchedule(String scheduleRepresentation) throws SchedushareException;
+	public String updateSchedule(String scheduleRepresentation);
 	
 	/**
 	 * Gets the schedule.
@@ -43,5 +43,5 @@ public interface UserScheduleResource {
 	 * @throws SchedushareException the schedushare exception
 	 */
 	@Get
-	public String getSchedule(String scheduleRepresentation) throws SchedushareException;
+	public String getSchedule();
 }

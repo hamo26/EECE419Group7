@@ -11,6 +11,7 @@ import com.schedushare.core.guice.ServiceModule;
 import com.schedushare.core.guice.TransactionModule;
 import com.schedushare.core.schedule.rest.resource.impl.UserScheduleResourceImpl;
 import com.schedushare.core.user.rest.resource.impl.RegisterUserResourceImpl;
+import com.schedushare.core.user.rest.resource.impl.UserResourceImpl;
 
 /**
  * The Base Rest Handler which defines all url binding and delegates to the appropriate resource.
@@ -41,8 +42,9 @@ public class BaseRestHandlerImpl extends Application {
         		new SchedushareCommonModule(),
         		new TransactionModule());
         
-        router.attach("/schedules/user/{userId}", UserScheduleResourceImpl.class);
+        router.attach("/schedules/user/{userEmail}/{active}", UserScheduleResourceImpl.class);
         router.attach("/register/user", RegisterUserResourceImpl.class);
+        router.attach("/user/{userEmail}", UserResourceImpl.class);
         return router;  
     }  
 }

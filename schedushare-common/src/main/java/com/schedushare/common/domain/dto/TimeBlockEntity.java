@@ -1,5 +1,7 @@
 package com.schedushare.common.domain.dto;
 
+import java.sql.Time;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -10,32 +12,75 @@ import com.google.gson.annotations.SerializedName;
  */
 public class TimeBlockEntity extends RestEntity {
 
+	public static final String TIME_BLOCK_ID = "time-block-id";
 	public static final String START_TIME = "start-time";
 	public static final String END_TIME = "end-time";
 	public static final String DAY = "day";
+	public static final String LONGITUDE = "longitude";
+	public static final String LATITUDE = "latitude";
+	public static final String SCHEDULE_ID = "schedule-id";
+	
+	
+	@SerializedName(TIME_BLOCK_ID)
+	private final int timeBlockId;
 	
 	@SerializedName(START_TIME)
-	private final String startTime;
+	private String startTime;
 	
 	@SerializedName(END_TIME)
-	private final String endTime;
+	private String endTime;
 	
 	@SerializedName(DAY)
 	private final String day;
 	
+	@SerializedName(LATITUDE)
+	private final Double latitude;
+
+	@SerializedName(LONGITUDE)
+	private final Double longitude;
+	
+	@SerializedName(SCHEDULE_ID)
+	private final int scheduleId;
+	
+	private Time t_startTime;
+	
+	private Time t_endTime;
 	
 	/**
-	 * Default Constructor.
+	 * SQL Constructor.
 	 *
 	 * @param START_TIME the start time
 	 * @param END_TIME the end time
 	 * @param DAY the day
 	 */
-	public TimeBlockEntity(final String START_TIME, final String END_TIME, final String DAY) {
-		this.startTime = START_TIME;
+	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, 
+			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
+		this.timeBlockId = ID;
+		this.t_startTime = START_TIME;
+		this.t_endTime = END_TIME;
+		this.day = DAY;
+		this.latitude = LATITUDE;
+		this.longitude = LONGITUDE;
+		this.scheduleId = SCHEDULE_ID;
+		
+	}
+	
+	/**
+	 * JSON Constructor.
+	 *
+	 * @param START_TIME the start time
+	 * @param END_TIME the end time
+	 * @param DAY the day
+	 */
+	public TimeBlockEntity(final int ID, final String STARTTIME, final String END_TIME, final String DAY, 
+			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
+		this.timeBlockId = ID;
+		this.startTime = STARTTIME;
 		this.endTime = END_TIME;
 		this.day = DAY;
-		
+		this.latitude = LATITUDE;
+		this.longitude = LONGITUDE;
+		this.scheduleId = SCHEDULE_ID;
 	}
 
 	public String getStartTime() {
@@ -51,4 +96,29 @@ public class TimeBlockEntity extends RestEntity {
 	public String getDay() {
 		return day;
 	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public int getTimeBlockId() {
+		return timeBlockId;
+	}
+
+	public Time getT_startTime() {
+		return t_startTime;
+	}
+	
+	public Time getT_endTime() {
+		return t_endTime;
+	}
+	
+	public int getScheduleId() {
+		return this.scheduleId;
+	}
+
 }

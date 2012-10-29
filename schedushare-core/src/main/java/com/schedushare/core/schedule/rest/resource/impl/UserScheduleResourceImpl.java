@@ -25,6 +25,8 @@ import com.schedushare.core.schedule.service.ScheduleService;
  */
 public class UserScheduleResourceImpl extends SelfInjectingServerResource implements UserScheduleResource {
 
+	private static final String ACTIVE = "active";
+
 	private Connection connection;
 	
 	@Inject
@@ -37,18 +39,20 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 	@Inject
 	private SchedushareExceptionFactory schedushareExceptionFactory;
 
-	private String userId;
+	private String userEmail;
+
+	private String active;
 	
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
-		this.userId = (String) getRequestAttributes().get("userId");
+		this.userEmail = (String) getRequestAttributes().get("userEmail");
+		this.active = (String) getRequestAttributes().get(ACTIVE);
     }
 
 	@Override
-	@Put
-	public String createSchedule(String scheduleRepresentation)
-			throws SchedushareException {
+	@Post
+	public String createSchedule(String scheduleRepresentation) {
 		try{
 			ScheduleEntity postedSchedule = jsonUtil.deserializeRepresentation(scheduleRepresentation, ScheduleEntity.class);
 			
@@ -58,7 +62,7 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
 			
-			ScheduleEntity postedScheduleEntity = scheduleService.createScheduleForUser(connection, userId, postedSchedule);
+			ScheduleEntity postedScheduleEntity = scheduleService.createScheduleForUser(connection, userEmail, postedSchedule);
 			
 			return jsonUtil.serializeRepresentation(postedScheduleEntity);
 		} catch (SchedushareException e) {
@@ -70,19 +74,33 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 	}
 
 	@Override
-	@Post
-	public String updateSchedule(String scheduleRepresentation)
-			throws SchedushareException {
+	@Put
+	public String updateSchedule(String scheduleRepresentation) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	@Get
-	public String getSchedule(String scheduleRepresentation)
-			throws SchedushareException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getSchedule() {
+		if (active.equals(ACTIVE)) {
+			try {
+				Class.forName("com.mysql.jdbc.Driver").newInstance();
+				connection = DriverManager.getConnection(
+						SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+						SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+						SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+				ScheduleEntity scheduleEntity = scheduleService.getActiveScheduleForUser(connection, userEmail);
+				return jsonUtil.serializeRepresentation(scheduleEntity);
+			} catch (SchedushareException e) {
+				return e.serializeJsonException();
+			} catch (Exception e) {
+				return schedushareExceptionFactory.createSchedushareException(
+						e.getMessage()).serializeJsonException();
+			}	
+		} else {
+			return null;
+		}
 	}
 
 }
