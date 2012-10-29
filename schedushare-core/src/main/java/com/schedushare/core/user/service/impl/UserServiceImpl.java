@@ -3,6 +3,7 @@ package com.schedushare.core.user.service.impl;
 import java.sql.Connection;
 import java.util.List;
 
+import com.google.inject.Inject;
 import com.schedushare.common.domain.dto.UserEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
@@ -17,16 +18,17 @@ public class UserServiceImpl implements UserService {
 
 	private final SchedushareExceptionFactory schedushareExceptionFactory;
 	
+	@Inject
 	public UserServiceImpl(final SchedushareExceptionFactory schedushareExceptionFactory) {
 		this.schedushareExceptionFactory = schedushareExceptionFactory;
 	}
 	
 	@Override
-	public UserEntity getUser(Connection connection, int userId) throws SchedushareException {
+	public UserEntity getUser(Connection connection, String userEmail) throws SchedushareException {
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
-		List<UserEntity> userResult = getUserQuery.select().from(Tables.SCHEDULE)
-								.where(Tables.USER.ID.equal(userId))
+		List<UserEntity> userResult = getUserQuery.select().from(Tables.USER)
+								.where(Tables.USER.EMAIL.equal(userEmail))
 								.fetchInto(UserEntity.class);
 		if(userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id does not exist");
@@ -36,14 +38,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserEntity getUser(Connection connection, int userId, String authToken)
+	public UserEntity getUser(Connection connection, String userEmail, String authToken)
 			throws SchedushareException {
 		
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
 		List<UserEntity> userResult = getUserQuery.select().from(Tables.SCHEDULE)
-								.where(Tables.USER.ID.equal(userId))
-								.and(Tables.USER.AUTHTOKEN.equal(authToken))
+								.where(Tables.USER.EMAIL.equal(userEmail))
+								.and(Tables.USER.AUTH_TOKEN.equal(authToken))
 								.fetchInto(UserEntity.class);
 		if(userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id and password does not exist");
@@ -59,15 +61,15 @@ public class UserServiceImpl implements UserService {
 		
 		List<UserEntity> userResult = createUserQuery.select()
 											.from(Tables.USER)
-											.where(Tables.USER.ID.equal(userEntity.getUserId()))
+											.where(Tables.USER.EMAIL.equal(userEntity.getEmail()))
 											.fetchInto(UserEntity.class);
 		if (!userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id was not unique.");
 		} else {
 			try {
-				createUserQuery.insertInto(Tables.USER, Tables.USER.NAME, 
-														Tables.USER.AUTHTOKEN)
-													   .values(userEntity.getName(), userEntity.getAuthToken())
+				createUserQuery.insertInto(Tables.USER, Tables.USER.EMAIL, Tables.USER.NAME, 
+														Tables.USER.AUTH_TOKEN)
+													   .values(userEntity.getEmail(), userEntity.getName(), userEntity.getAuthToken())
 													   .execute();
 				return userEntity;
 			} catch (Exception e) {
@@ -75,6 +77,30 @@ public class UserServiceImpl implements UserService {
 			}
 													   
 		}
+	}
+
+	@Override
+	public UserEntity updateUser(Connection connection, UserEntity userEntity)
+			throws SchedushareException {
+		SchedushareFactory updateUserQuery = new SchedushareFactory(connection);
+		List<UserEntity> result = updateUserQuery.select()
+					   .from(Tables.USER)
+					   .where(Tables.USER.EMAIL.equal(userEntity.getEmail()))
+					   .fetchInto(UserEntity.class);
+		if(result.isEmpty()) {
+			throw schedushareExceptionFactory.createSchedushareException("Attempting to update track that does not exist.");
+		} else {
+			try {
+				updateUserQuery.update(Tables.USER)
+							   .set(Tables.USER.NAME, userEntity.getName())
+							   .set(Tables.USER.AUTH_TOKEN, userEntity.getAuthToken())
+							   .where(Tables.USER.EMAIL.equal(userEntity.getEmail()))
+							   .execute();
+			} catch (Exception e) {
+				throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
+			}
+		}
+		return userEntity;
 	}
 
 

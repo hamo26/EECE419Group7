@@ -49,7 +49,7 @@ public class Keys {
 
 	@SuppressWarnings({"hiding", "unchecked"})
 	private static class ForeignKeys0 extends org.jooq.impl.AbstractKeys {
-		public static final ForeignKey<ScheduleRecord, UserRecord> SCHEDULEOWNER = createForeignKey(Keys.KEY_USER_PRIMARY, Schedule.SCHEDULE, Schedule.SCHEDULE.OWNER_ID);
+		public static final ForeignKey<ScheduleRecord, UserRecord> SCHEDULEOWNER = createForeignKey(Keys.KEY_USER_PRIMARY, Schedule.SCHEDULE, Schedule.SCHEDULE.USER_ID);
 		public static final ForeignKey<TimeblockRecord, ScheduleRecord> TIMEBLOCKOWNER = createForeignKey(Keys.KEY_SCHEDULE_PRIMARY, Timeblock.TIMEBLOCK, Timeblock.TIMEBLOCK.SCHEDULE_ID);
 	}
 }

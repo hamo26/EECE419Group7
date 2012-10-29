@@ -18,11 +18,15 @@ public class UserEntity extends RestEntity implements Serializable{
 	private static final long serialVersionUID = -5832677761522878554L;
 
 	public static final String AUTH_TOKEN = "auth-token";
-	public static final String USER_ID = "user-id";
+	public static final String EMAIL = "email";
 	public static final String NAME = "name";
+	public static final String USER_ID = "user-id";
 
 	@SerializedName(USER_ID)
 	private int userId;
+	
+	@SerializedName(EMAIL)
+	private String email;
 	
 	@SerializedName(AUTH_TOKEN)
 	private String authToken;
@@ -35,17 +39,21 @@ public class UserEntity extends RestEntity implements Serializable{
 	 * 
 	 * Used by jooq to read from/into database.
 	 *
-	 * @param USER_ID the user id
+	 * @param ID the id
 	 * @param AUTH_TOKEN the auth token
+	 * @param Name the name
+	 * @param EMAIL the email
 	 */
-	public UserEntity(final int USER_ID, final String NAME, final String AUTH_TOKEN) {
-		this.userId = USER_ID;
+	public UserEntity(final int ID, final String AUTH_TOKEN, final String NAME, 
+			final String EMAIL) {
+		this.setUserId(ID);
+		this.email = EMAIL;
 		this.name = NAME;
 		this.authToken = AUTH_TOKEN;
 	}
 
-	public int getUserId() {
-		return this.userId;
+	public String getEmail() {
+		return this.email;
 	}
 	
 	public String getAuthToken() {
@@ -54,5 +62,13 @@ public class UserEntity extends RestEntity implements Serializable{
 
 	public String getName() {
 		return this.name;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 }

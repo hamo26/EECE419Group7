@@ -36,7 +36,7 @@ public class User extends org.jooq.impl.UpdatableTableImpl<com.schedushare.core.
 	/**
 	 * The table column <code>schedushare.user.AUTHTOKEN</code>
 	 */
-	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> AUTHTOKEN = createField("AUTHTOKEN", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> AUTH_TOKEN = createField("AUTH_TOKEN", org.jooq.impl.SQLDataType.VARCHAR, this);
 	
 	/**
 	 * The table column <code>schedushare.user.NAME</code>
@@ -44,8 +44,14 @@ public class User extends org.jooq.impl.UpdatableTableImpl<com.schedushare.core.
 	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> NAME = createField("NAME", org.jooq.impl.SQLDataType.VARCHAR, this);
 	
 
+	/**
+	 * The table column <code>schedushare.user.EMAIL</code>
+	 */
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> EMAIL = createField("EMAIL", org.jooq.impl.SQLDataType.VARCHAR, this);
+	
+
 	public User() {
-		super("user", com.schedushare.core.database.Schedushare.SCHEDUSHARE);
+		super("USER", com.schedushare.core.database.Schedushare.SCHEDUSHARE);
 	}
 
 	public User(java.lang.String alias) {
