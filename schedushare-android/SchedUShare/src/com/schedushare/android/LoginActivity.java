@@ -1,7 +1,14 @@
 package com.schedushare.android;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
+import com.facebook.android.Util;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
@@ -59,6 +66,29 @@ public class LoginActivity extends RoboActivity {
 	        });
         }
         
+        String response;
+		try {
+			response = facebook.request("me");
+	        JSONObject obj = Util.parseJson(response);
+	        String userEmail = obj.getString("email");	
+	        
+	        //put user's email in shared preferences
+	        SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putString("email", userEmail);
+            editor.commit();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FacebookError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         Intent intent = new Intent(this, MainMenuActivity.class);
         startActivity(intent);
     }
