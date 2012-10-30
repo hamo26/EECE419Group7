@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <resources> 
+    <string-array name="roboguice_modules">
+    <item>com.schedushare.android.guice.ResourceUriModule</item>
+    <item>com.schedushare.android.guice.ServicesModule</item>
+    <item>com.schedushare.common.guice.SchedushareCommonModule</item>
+  </string-array>
+</resources>
