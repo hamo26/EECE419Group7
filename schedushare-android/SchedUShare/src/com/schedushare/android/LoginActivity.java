@@ -1,6 +1,5 @@
 package com.schedushare.android;
 
-import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -21,14 +20,15 @@ public class LoginActivity extends RoboActivity {
 	@InjectView(R.id.username_input) private EditText userIdInput;
 	@InjectView(R.id.password_input) private EditText userPasswordInput;
 
-	Facebook facebook = new Facebook("100990793398405");
-    AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
+	private Facebook facebook;
 	private SharedPreferences mPrefs;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
+        facebook = new Facebook(getString(R.string.app_id));
+        
         //get access token if any
         mPrefs = getPreferences(MODE_PRIVATE);
         String access_token = mPrefs.getString("access_token",null);
@@ -39,7 +39,7 @@ public class LoginActivity extends RoboActivity {
         if(expires != 0){
         	facebook.setAccessExpires(expires);
         }
-        
+
         //only call authorize if access_token has expired
         if(!facebook.isSessionValid()){        
 	        facebook.authorize(this, new String[] {"email", "rsvp_event","read_friendlists","create_event"},
