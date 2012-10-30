@@ -94,6 +94,7 @@ public class LoginActivity extends RoboActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
         Intent intent = new Intent(this, MainMenuActivity.class);
         startActivity(intent);
     }
