@@ -51,5 +51,5 @@ public interface ScheduleService {
 	 * @param userId the user id
 	 * @return the schedules for user
 	 */
-	Collection<ScheduleEntity> getSchedulesForUser(final Connection connection, final String userId);
+	Collection<ScheduleEntity> getSchedulesForUser(final Connection connection, final String userId) throws SchedushareException;
 }

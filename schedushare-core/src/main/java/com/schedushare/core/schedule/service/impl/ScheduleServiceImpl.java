@@ -95,8 +95,23 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public Collection<ScheduleEntity> getSchedulesForUser(
-			Connection connection, String userEmail) {
-		return null;
+			Connection connection, String userEmail) throws SchedushareException {
+		SchedushareFactory getSchedulesQuery = new SchedushareFactory(connection);
+		
+		UserEntity user;
+		try {
+			user = userService.getUser(connection, userEmail);
+			List<ScheduleEntity> queryResult = getSchedulesQuery.select()
+					.from(Tables.SCHEDULE)
+					.where(Tables.SCHEDULE.USER_ID.equal(user.getUserId()))
+					.fetchInto(ScheduleEntity.class);
+			return queryResult;
+		} catch (SchedushareException e) {
+			// TODO Auto-generated catch block
+			throw e;
+		} catch (Exception e) {
+			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
+		}
 	}
 
 
