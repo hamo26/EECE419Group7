@@ -62,7 +62,7 @@ public class ResourceUriBuilder {
 	 */
 	public String build () {
 		assert resourceUri != null : "resource uri must not be null.";
-		String resourceResult = "http://"+this.hostUri+":"+String.valueOf(this.hostPort)+"/insieme/"+this.resourceUri;
+		String resourceResult = "http://"+this.hostUri+":"+String.valueOf(this.hostPort)+"/schedushare/"+this.resourceUri;
 		return this.id != null 
 				? resourceResult+"/"+this.id : resourceResult;
 	}

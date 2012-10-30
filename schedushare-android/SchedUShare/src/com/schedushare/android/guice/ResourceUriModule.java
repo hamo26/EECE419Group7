@@ -20,13 +20,13 @@ public class ResourceUriModule extends AbstractModule {
 	protected void configure() {
 		//System specific bindings. 
 		//TODO: should put these in properties files.
-		bind(String.class).annotatedWith(Names.named("host")).toInstance("localhost");
+		bind(String.class).annotatedWith(Names.named("host")).toInstance("10.0.2.2");
 		bind(Integer.class).annotatedWith(Names.named("hostPort")).toInstance(8189);
 		
 		//Resource bindings.
 		bind(String.class).annotatedWith(Names.named("loginResource")).toInstance("user");
 		bind(String.class).annotatedWith(Names.named("registrationResource")).toInstance("register/user");
-		
+		bind(String.class).annotatedWith(Names.named("scheduleResource")).toInstance("schedules/user");
 		//Util Bindings
 		bind(ResourceUriBuilder.class).annotatedWith(Names.named("resourceUriBuilder")).to(ResourceUriBuilder.class);
 		

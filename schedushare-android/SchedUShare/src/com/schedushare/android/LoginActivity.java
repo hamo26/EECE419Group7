@@ -2,10 +2,12 @@ package com.schedushare.android;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Util;
@@ -14,6 +16,8 @@ import com.facebook.android.FacebookError;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.user.task.LoginTask;
+import com.schedushare.common.domain.dto.UserEntity;
+import com.schedushare.common.domain.rest.RestResult;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -22,6 +26,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.EditText;
+import android.widget.Toast;
 
 @ContentView(R.layout.activity_login)
 public class LoginActivity extends RoboActivity {
@@ -33,6 +38,7 @@ public class LoginActivity extends RoboActivity {
 	@Inject private Provider<LoginTask> getLoginTaskProvider;
 	
 	private Facebook facebook;
+	AsyncFacebookRunner mAsyncRunner = new AsyncFacebookRunner(facebook);
 	private SharedPreferences mPrefs;
 	
     @Override
@@ -71,32 +77,54 @@ public class LoginActivity extends RoboActivity {
 	        });
         }
         
-        String response;
 		try {
-			response = facebook.request("me");
-	        JSONObject obj = Util.parseJson(response);
-	        String userEmail = obj.getString("email");	
+			
+	        String userEmail = "test@email.com";	
 	        
 	        //put user's email in shared preferences
 	        SharedPreferences.Editor editor = mPrefs.edit();
             editor.putString("email", userEmail);
             editor.commit();
+            
+            RestResult<UserEntity> loginResult = getLoginTaskProvider.get().execute(userEmail).get();
+            if (loginResult.isFailure()) {
+            	Toast.makeText(this, loginResult.getError().getException(), Toast.LENGTH_LONG).show();
+            } else {
+            	Toast.makeText(this, "Welcome user: " + loginResult.getRestResult().getName(), Toast.LENGTH_LONG).show();
+
+            }
+		} catch (FacebookError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        startActivity(intent);
+    }
+    
+    private String getEmail() throws JSONException{
+    	String response;
+    	String email=null;
+    	try {
+			response = facebook.request("me");
+	        JSONObject obj = Util.parseJson(response);
+	        email= obj.getString("email");
+
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FacebookError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
-        Intent intent = new Intent(this, MainMenuActivity.class);
-        startActivity(intent);
+		return email;
+    	
     }
     
     @Override

@@ -2,6 +2,7 @@ package com.schedushare.core.schedule.rest.resource.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Collection;
 
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -11,6 +12,7 @@ import org.restlet.resource.ResourceException;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
 import com.schedushare.common.util.JSONUtil;
@@ -83,7 +85,7 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 	@Override
 	@Get
 	public String getSchedule() {
-		if (active.equals(ACTIVE)) {
+		if (active != null && active.equals(ACTIVE)) {
 			try {
 				Class.forName("com.mysql.jdbc.Driver").newInstance();
 				connection = DriverManager.getConnection(
@@ -99,7 +101,20 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 						e.getMessage()).serializeJsonException();
 			}	
 		} else {
-			return null;
+			try {
+				Class.forName("com.mysql.jdbc.Driver").newInstance();
+				connection = DriverManager.getConnection(
+						SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+						SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+						SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+				Collection<ScheduleEntity> schedulesForUser = scheduleService.getSchedulesForUser(connection, userEmail);
+				return jsonUtil.serializeRepresentation(new ScheduleListEntity(schedulesForUser));
+			} catch (SchedushareException e) {
+				return e.serializeJsonException();
+			} catch (Exception e) {
+				return schedushareExceptionFactory.createSchedushareException(
+						e.getMessage()).serializeJsonException();
+			}
 		}
 	}
 

@@ -1,8 +1,8 @@
 package com.schedushare.android.fragments;
 
-import com.schedushare.android.R;
-import com.schedushare.android.db.SchedulesDataSource;
+import java.util.concurrent.ExecutionException;
 
+import roboguice.fragment.RoboDialogFragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,7 +11,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import roboguice.fragment.RoboDialogFragment;
+import android.widget.Toast;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.schedushare.android.R;
+import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.schedule.task.CreateScheduleTask;
+import com.schedushare.android.schedule.task.GetSchedulesTask;
+import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.dto.ScheduleListEntity;
+import com.schedushare.common.domain.rest.RestResult;
 
 public class NewScheduleDialogFragment extends RoboDialogFragment {
 	// The activity that creates an instance of this dialog fragment must
@@ -22,6 +32,12 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
         public void onNewScheduleDialogNegativeClick(RoboDialogFragment dialog);
     }
     
+    @Inject
+    Provider<CreateScheduleTask> getCreateScheduleTaskProvider;
+    
+    @Inject
+    Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
+
     // Container for dialog's view.
     private View dialogView;
     
@@ -79,7 +95,32 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
     private void createNewSchedule() {
     	// Get user input.
     	EditText userInput = (EditText)this.dialogView.findViewById(R.id.new_schedule_dialog_name_input);
-    	
+    	String scheduleName = userInput.getText().toString();
+    	try {
+			RestResult<ScheduleEntity> createScheduleResult = getCreateScheduleTaskProvider.get().execute("test@email.com", scheduleName).get();
+			
+			if (createScheduleResult.isFailure()) {
+				Toast.makeText(getActivity(), createScheduleResult.getError().getException(), Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(getActivity(), createScheduleResult.getRestResult().getScheduleName(), Toast.LENGTH_LONG).show();
+			}
+			
+			RestResult<ScheduleListEntity> getSchedulesResult = getGetSchedulesTaskProvider.get().execute("test@email.com").get();
+			if (getSchedulesResult.isFailure()) {
+				Toast.makeText(getActivity(), getSchedulesResult.getError().getException(), Toast.LENGTH_LONG).show();
+			} else {
+				for (ScheduleEntity schedule : getSchedulesResult.getRestResult().getScheduleList()) {
+					Toast.makeText(getActivity(), schedule.getScheduleName() + " ", Toast.LENGTH_LONG).show();
+				}
+			}
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	// Open connection to db and create new schedule.
     	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
     	dataSource.open();
