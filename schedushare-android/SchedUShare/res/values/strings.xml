@@ -17,5 +17,6 @@
     <string name="tab_user_schedules">Me</string>
     <string name="tab_friend_schedules">Friends</string>
     <string name="tab_create_schedule">New</string>
+    <string name="app_id">100990793398405</string>
 
 </resources>
