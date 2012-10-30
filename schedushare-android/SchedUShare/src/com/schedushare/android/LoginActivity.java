@@ -4,6 +4,9 @@ import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.schedushare.android.user.task.LoginTask;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -20,6 +23,8 @@ public class LoginActivity extends RoboActivity {
 	@InjectView(R.id.username_input) private EditText userIdInput;
 	@InjectView(R.id.password_input) private EditText userPasswordInput;
 
+	@Inject private Provider<LoginTask> getLoginTaskProvider;
+	
 	private Facebook facebook;
 	private SharedPreferences mPrefs;
 	
