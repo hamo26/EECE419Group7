@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,9 +35,6 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
     
     @Inject
     Provider<CreateScheduleTask> getCreateScheduleTaskProvider;
-    
-    @Inject
-    Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
 
     // Container for dialog's view.
     private View dialogView;
@@ -103,15 +101,12 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
 				Toast.makeText(getActivity(), createScheduleResult.getError().getException(), Toast.LENGTH_LONG).show();
 			} else {
 				Toast.makeText(getActivity(), createScheduleResult.getRestResult().getScheduleName(), Toast.LENGTH_LONG).show();
-			}
-			
-			RestResult<ScheduleListEntity> getSchedulesResult = getGetSchedulesTaskProvider.get().execute("test@email.com").get();
-			if (getSchedulesResult.isFailure()) {
-				Toast.makeText(getActivity(), getSchedulesResult.getError().getException(), Toast.LENGTH_LONG).show();
-			} else {
-				for (ScheduleEntity schedule : getSchedulesResult.getRestResult().getScheduleList()) {
-					Toast.makeText(getActivity(), schedule.getScheduleName() + " ", Toast.LENGTH_LONG).show();
-				}
+				
+				// Open connection to db and create new schedule.
+		    	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
+		    	dataSource.open();
+		    	dataSource.createSchedule(1, createScheduleResult.getRestResult().getScheduleName(), false, 1, "whatever");
+		    	dataSource.close();
 			}
 			
 		} catch (InterruptedException e) {
@@ -121,10 +116,5 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	// Open connection to db and create new schedule.
-    	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
-    	dataSource.open();
-    	dataSource.createSchedule(1, userInput.getText().toString(), false, 1, "whatever");
-    	dataSource.close();
     }
 }

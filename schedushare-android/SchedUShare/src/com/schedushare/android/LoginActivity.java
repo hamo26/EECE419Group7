@@ -15,6 +15,7 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.user.task.LoginTask;
 import com.schedushare.common.domain.dto.UserEntity;
 import com.schedushare.common.domain.rest.RestResult;
@@ -22,6 +23,7 @@ import com.schedushare.common.domain.rest.RestResult;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -80,6 +82,8 @@ public class LoginActivity extends RoboActivity {
 		try {
 			
 	        String userEmail = "test@email.com";	
+	        //GetEmailTask task = new GetEmailTask();
+	        //String userEmail = task.execute("email").get();
 	        
 	        //put user's email in shared preferences
 	        SharedPreferences.Editor editor = mPrefs.edit();
@@ -91,6 +95,12 @@ public class LoginActivity extends RoboActivity {
             	Toast.makeText(this, loginResult.getError().getException(), Toast.LENGTH_LONG).show();
             } else {
             	Toast.makeText(this, "Welcome user: " + loginResult.getRestResult().getName(), Toast.LENGTH_LONG).show();
+            	
+            	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+    	        dataSource.open();
+    	        dataSource.dropAllTables();
+    	        dataSource.createUser(loginResult.getRestResult().getUserId(), loginResult.getRestResult().getName());
+    	        dataSource.close();
 
             }
 		} catch (FacebookError e) {
@@ -108,29 +118,37 @@ public class LoginActivity extends RoboActivity {
         startActivity(intent);
     }
     
-    private String getEmail() throws JSONException{
-    	String response;
-    	String email=null;
-    	try {
-			response = facebook.request("me");
-	        JSONObject obj = Util.parseJson(response);
-	        email= obj.getString("email");
-
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return email;
-    	
-    }
-    
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         facebook.authorizeCallback(requestCode, resultCode, data);
+    }
+    
+    private class GetEmailTask extends AsyncTask<String, Void, String>{
+		@Override
+		protected String doInBackground(String... params) {
+			String email=null;
+	    	try {
+	    		String response = facebook.request("me");
+		        JSONObject obj = Util.parseJson(response);
+		        email= obj.getString(params[0]);
+
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FacebookError e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return email;
+		}
+    	
     }
 }
