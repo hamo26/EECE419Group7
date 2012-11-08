@@ -11,9 +11,19 @@
  * @author Cat
  */
 class Main extends CI_Controller {
-    //put your code here
+    //put your code here   
+    
     function index(){
-        $this->load->view("main_page");
+        
+        //load classes
+        $this->load->helper('url');
+        
+        $data['title'] = "Sched-u-Share";
+        
+        //load view
+        $this->load->view("templates/header",$data);
+        $this->load->view("main_page",$data);
+        $this->load->view("templates/footer",$data);
     }
 }
 

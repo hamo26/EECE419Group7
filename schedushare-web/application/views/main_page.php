@@ -1,9 +1,17 @@
-<?php
+<div id="main" class="container-fluid">
+    <div id="sub">
+        
+    </div>
+</div>
 
-echo "this is the main page";
+<script type="text/javascript" charset="utf-8">
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-?>
+
+
+$(document).ready(function(){
+    
+});
+
+</script>
+
+
