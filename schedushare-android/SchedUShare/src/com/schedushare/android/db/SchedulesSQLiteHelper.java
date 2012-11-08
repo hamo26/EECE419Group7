@@ -26,6 +26,8 @@ public class SchedulesSQLiteHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_DAY = "day";
 	public static final String COLUMN_BLOCK_TYPE_ID = "block_type_id";
 	public static final String COLUMN_SCHEDULE_ID = "schedule_id";
+	public static final String COLUMN_LONGITUDE = "longitude";
+	public static final String COLUMN_LATITUDE = "latitude";
 	
 	// Column names of block type table.
 	public static final String TABLE_BLOCK_TYPE = "block_type";
@@ -63,6 +65,8 @@ public class SchedulesSQLiteHelper extends SQLiteOpenHelper {
 			+ COLUMN_DAY + " INTEGER NOT NULL, "
 			+ COLUMN_BLOCK_TYPE_ID + " INTEGER NOT NULL, "
 			+ COLUMN_SCHEDULE_ID + " INTEGER NOT NULL, "
+			+ COLUMN_LONGITUDE + "DOUBLE NOT NULL, "
+			+ COLUMN_LATITUDE + "DOUBLE NOT NULL, "
 			+ " FOREIGN KEY (" + COLUMN_BLOCK_TYPE_ID + ") REFERENCES " + TABLE_BLOCK_TYPE
 			+ " ON DELETE CASCADE, "
 			+ " FOREIGN KEY (" + COLUMN_SCHEDULE_ID + ") REFERENCES " + TABLE_SCHEDULE

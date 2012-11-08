@@ -30,33 +30,35 @@ public class MainMenuActivity extends RoboActivity {
         // For testing only.
         if (savedInstanceState == null) {
         	
-        	RestResult<ScheduleListEntity> getSchedulesResult;
-			try {
-				getSchedulesResult = getGetSchedulesTaskProvider.get().execute("test@email.com").get();
-				
-				SchedulesDataSource dataSource = new SchedulesDataSource(this);
-				dataSource.open();
-				
-				if (getSchedulesResult.isFailure()) {
-					Toast.makeText(this, getSchedulesResult.getError().getException(), Toast.LENGTH_LONG).show();
-				} else {
-					for (ScheduleEntity schedule : getSchedulesResult.getRestResult().getScheduleList()) {
-						dataSource.createSchedule(schedule.getScheduleId(), schedule.getScheduleName(), false, 1, "whatever");
-					}
-				}
-				
-				dataSource.close();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//        	RestResult<ScheduleListEntity> getSchedulesResult;
+//			try {
+//				getSchedulesResult = getGetSchedulesTaskProvider.get().execute("test@email.com").get();
+//				
+//				SchedulesDataSource dataSource = new SchedulesDataSource(this);
+//				dataSource.open();
+//				
+//				if (getSchedulesResult.isFailure()) {
+//					Toast.makeText(this, getSchedulesResult.getError().getException(), Toast.LENGTH_LONG).show();
+//				} else {
+//					for (ScheduleEntity schedule : getSchedulesResult.getRestResult().getScheduleList()) {
+//						dataSource.createSchedule(schedule.getScheduleId(), schedule.getScheduleName(), false, 1, "whatever");
+//					}
+//				}
+//				
+//				dataSource.close();
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			
         	
 	        SchedulesDataSource dataSource = new SchedulesDataSource(this);
 	        dataSource.open();
+	        dataSource.dropAllTables();
+	        dataSource.createUser(1, "oscarlee");
 	        for (int i = 0; i < 100; i++) {
 	        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, "whatever");
 	        }

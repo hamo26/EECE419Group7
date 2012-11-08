@@ -66,7 +66,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Notic
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.create_schedule:
+			case R.id.create_schedule_option:
 				// Open dialog box to create new schedule.
 				RoboDialogFragment newFragment = new NewScheduleDialogFragment();
 			    newFragment.show(getSupportFragmentManager(), "new_schedule");
