@@ -1,5 +1,8 @@
 package com.schedushare.android.db;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,7 +34,27 @@ public class SchedulesDataSource {
 	// Column names of used to display schedule menu.
 	public static String[] menuScheduleColumns = {
 			SchedulesSQLiteHelper.COLUMN_NAME,
-			SchedulesSQLiteHelper.COLUMN_OWNER_ID
+			SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED
+	};
+	
+	// All column names of time blocks.
+	public static String[] allTimeBlockColumns = {
+			SchedulesSQLiteHelper.COLUMN_ID,
+			SchedulesSQLiteHelper.COLUMN_SID,
+			SchedulesSQLiteHelper.COLUMN_START_TIME,
+			SchedulesSQLiteHelper.COLUMN_END_TIME,
+			SchedulesSQLiteHelper.COLUMN_DAY,
+			SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID,
+			SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID,
+			SchedulesSQLiteHelper.COLUMN_LONGITUDE,
+			SchedulesSQLiteHelper.COLUMN_LATITUDE
+	};
+	
+	// All column names of block types.
+	public static String[] allBlockTypeColumns = {
+			SchedulesSQLiteHelper.COLUMN_ID,
+			SchedulesSQLiteHelper.COLUMN_SID,
+			SchedulesSQLiteHelper.COLUMN_NAME
 	};
 	
 	// Constructor.
@@ -80,6 +103,7 @@ public class SchedulesDataSource {
 		user.id = cursor.getLong(0);
 		user.sid = cursor.getLong(1);
 		user.name = cursor.getString(2);
+		
 		return user;
 	}
 	
@@ -102,6 +126,7 @@ public class SchedulesDataSource {
 				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
 				null, null, null, null);
 		cursor.moveToFirst();
+		
 		return scheduleFromCursor(cursor);
 	}
 	
@@ -153,6 +178,135 @@ public class SchedulesDataSource {
 		schedule.active = cursor.getInt(3) > 0;
 		schedule.ownerId = cursor.getInt(4);
 		schedule.lastModified = cursor.getString(5);
+		
 		return schedule;
+	}
+	
+	//
+	// Methods for time block table.
+	//
+	// Creates a new time block entry in table.
+	public TimeBlockData createTimeBlock(long sid, String startTime, String endTime, int day, long blockTypeId, long scheduleId, double longitude, double latitude) {
+		ContentValues values = new ContentValues();
+		values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
+		values.put(SchedulesSQLiteHelper.COLUMN_START_TIME, startTime);
+		values.put(SchedulesSQLiteHelper.COLUMN_END_TIME, endTime);
+		values.put(SchedulesSQLiteHelper.COLUMN_DAY, day);
+		values.put(SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID, blockTypeId);
+		values.put(SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID, scheduleId);
+		values.put(SchedulesSQLiteHelper.COLUMN_LONGITUDE, longitude);
+		values.put(SchedulesSQLiteHelper.COLUMN_LATITUDE, latitude);
+		
+		long insertId = database.insert(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, null, values);
+		
+		Cursor cursor = database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+				SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
+				null, null, null, null);
+		cursor.moveToFirst();
+		
+		return timeBlockFromCursor(cursor);
+	}
+	
+	// Deletes given time block from table.
+	public void deleteTimeBlock(TimeBlockData schedule) {
+		database.execSQL("DELETE FROM "
+				+ SchedulesSQLiteHelper.TABLE_TIME_BLOCK + " "
+				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = "
+				+ schedule.id);
+	}
+	
+	// Updates given time block in table.
+	public void updateTimeBlock(TimeBlockData timeBlock) {
+		String sql = "UPDATE " + SchedulesSQLiteHelper.TABLE_TIME_BLOCK + " "
+				+ "SET " + SchedulesSQLiteHelper.COLUMN_SID + " = " + timeBlock.sid + ", "
+				+ SchedulesSQLiteHelper.COLUMN_START_TIME + " = '" + timeBlock.startTime + "', "
+				+ SchedulesSQLiteHelper.COLUMN_END_TIME + " = '" + timeBlock.endTime + "', "
+				+ SchedulesSQLiteHelper.COLUMN_DAY + " = " + Integer.toString(timeBlock.day) + ", "
+				+ SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID + " = " + Long.toString(timeBlock.blockTypeId) + " "
+				+ SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID + " = " + Long.toString(timeBlock.scheduleId) + " "
+				+ SchedulesSQLiteHelper.COLUMN_LONGITUDE + " = " + Double.toString(timeBlock.longitude) + " "
+				+ SchedulesSQLiteHelper.COLUMN_LATITUDE + " = " + Double.toString(timeBlock.latitude) + " "
+				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = " + timeBlock.id;
+		
+		database.execSQL(sql);
+	}
+	
+	// Returns a cursor that points to all time blocks of a given schedule.
+	public ArrayList<TimeBlockData> getSchdeduleTimeBlocks(long scheduleSid) {
+		Cursor cursor = database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+				SchedulesDataSource.allTimeBlockColumns,
+				SchedulesSQLiteHelper.COLUMN_SID + " = " + Long.toString(scheduleSid),
+				null, null, null, null);
+		cursor.moveToFirst();
+		
+		ArrayList<TimeBlockData> timeBlocks = new ArrayList<TimeBlockData>();
+		while(!cursor.isAfterLast()) {
+			System.out.println("start: " + cursor.getString(2) + " end: " + cursor.getString(3));
+			timeBlocks.add(timeBlockFromCursor(cursor));
+			cursor.moveToNext();
+		}
+		
+		cursor.close();
+		return timeBlocks;
+	}
+	
+	// Returns time block pointed to by cursor.
+	private TimeBlockData timeBlockFromCursor(Cursor cursor) {
+		TimeBlockData timeBlock = new TimeBlockData();
+		timeBlock.id = cursor.getLong(0);
+		timeBlock.sid = cursor.getLong(1);
+		timeBlock.startTime = cursor.getString(2);
+		timeBlock.endTime = cursor.getString(3);
+		timeBlock.day = cursor.getInt(4);
+		timeBlock.blockTypeId = cursor.getLong(5);
+		timeBlock.scheduleId = cursor.getLong(6);
+		timeBlock.longitude = cursor.getDouble(7);
+		timeBlock.latitude = cursor.getDouble(8);
+		
+		return timeBlock;
+	}
+	
+	//
+	// Methods for block type table.
+	//
+	public BlockTypeData createBlockType(long sid, String name) {
+		ContentValues values = new ContentValues();
+		values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
+		values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
+		
+		long insertId = database.insert(SchedulesSQLiteHelper.TABLE_BLOCK_TYPE, null, values);
+		
+		Cursor cursor = database.query(SchedulesSQLiteHelper.TABLE_BLOCK_TYPE,
+				SchedulesDataSource.allBlockTypeColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
+				null, null, null, null);
+		cursor.moveToFirst();
+		
+		return blockTypeFromCursor(cursor);
+	}
+	
+	// Returns a cursor that points to all block types.
+	public HashMap<Long, BlockTypeData> getAllBlockTypes() {
+		Cursor cursor = database.query(SchedulesSQLiteHelper.TABLE_BLOCK_TYPE,
+				SchedulesDataSource.allBlockTypeColumns, null, null, null, null, null);
+		cursor.moveToFirst();
+		
+		HashMap<Long, BlockTypeData> hashMap = new HashMap<Long, BlockTypeData>();
+		while(!cursor.isAfterLast()) {
+			hashMap.put(cursor.getLong(2), blockTypeFromCursor(cursor));
+			cursor.moveToNext();
+		}
+		
+		cursor.close();
+		return hashMap;
+	}
+	
+	// Returns block type pointed to by cursor.
+	private BlockTypeData blockTypeFromCursor(Cursor cursor) {
+		BlockTypeData blockType = new BlockTypeData();
+		blockType.id = cursor.getLong(0);
+		blockType.sid = cursor.getLong(1);
+		blockType.name = cursor.getString(2);
+		
+		return blockType;
 	}
 }

@@ -53,7 +53,7 @@ public class ScheduleListFragment extends Fragment {
 		dataSource.close();
 		
 		// Create new adapter and attach to listView.
-		int[] toViews = new int[] {R.id.schedule_list_owner_entry, R.id.schedule_list_name_entry};
+		int[] toViews = new int[] {R.id.schedule_list_name_entry, R.id.schedule_list_last_modified_entry};
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
 				R.layout.list_item_schedule, cursor, SchedulesDataSource.menuScheduleColumns, toViews, 0);
 		
