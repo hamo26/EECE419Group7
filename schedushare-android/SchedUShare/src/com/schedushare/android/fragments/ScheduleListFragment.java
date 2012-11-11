@@ -63,7 +63,7 @@ public class ScheduleListFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// Start EditScheduleActivity with the selected schedule.
 				Intent intent = new Intent(getActivity(), EditScheduleActivity.class);
-				intent.putExtra("scheduleID", id);
+				intent.putExtra("scheduleId", id);
 		        startActivity(intent);
 				
 			}  

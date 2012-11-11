@@ -232,10 +232,11 @@ public class SchedulesDataSource {
 	}
 	
 	// Returns a cursor that points to all time blocks of a given schedule.
-	public ArrayList<TimeBlockData> getSchdeduleTimeBlocks(long scheduleSid) {
+	public ArrayList<TimeBlockData> getSchdeduleDayTimeBlocks(long scheduleId, int day) {
 		Cursor cursor = database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
 				SchedulesDataSource.allTimeBlockColumns,
-				SchedulesSQLiteHelper.COLUMN_SID + " = " + Long.toString(scheduleSid),
+				SchedulesSQLiteHelper.COLUMN_ID + " = " + Long.toString(scheduleId) +
+				" AND " + SchedulesSQLiteHelper.COLUMN_DAY + " = " + Integer.toString(day),
 				null, null, null, null);
 		cursor.moveToFirst();
 		

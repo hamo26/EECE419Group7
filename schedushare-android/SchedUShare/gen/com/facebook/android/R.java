@@ -226,8 +226,8 @@ containing a value of this type.
         public static final int com_facebook_picker_top_bar=0x7f04001b;
         public static final int com_facebook_placepickerfragment_search_box_stub=0x7f040020;
         public static final int create_schedule_option=0x7f04002f;
+        public static final int day_button_scroller=0x7f040004;
         public static final int day_schedule_container=0x7f040003;
-        public static final int day_schedule_scroller=0x7f040004;
         public static final int large=0x7f040002;
         public static final int loginButton=0x7f040009;
         public static final int new_schedule_dialog_name_input=0x7f040024;
