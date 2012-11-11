@@ -12,7 +12,7 @@ public class SchedusharePersistenceConstants {
 	public static final String SCHEDUSHARE_ROOT = "root";
 
 	/** database root password.*/
-	public static final String SCHEDUSHARE_ROOT_PASSWORD = "comehere1989";
+	public static final String SCHEDUSHARE_ROOT_PASSWORD = "testadmin";
 
 
 }

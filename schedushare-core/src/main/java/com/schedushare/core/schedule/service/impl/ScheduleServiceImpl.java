@@ -20,6 +20,9 @@ import com.schedushare.core.database.Tables;
 import com.schedushare.core.schedule.service.ScheduleService;
 import com.schedushare.core.user.service.UserService;
 
+/**
+ * Implements {@link ScheduleService}.
+ */
 public class ScheduleServiceImpl implements ScheduleService {
 
 	private final SchedushareExceptionFactory schedushareExceptionFactory;

@@ -3,6 +3,9 @@ package com.schedushare.core.user.service.impl;
 import java.sql.Connection;
 import java.util.List;
 
+import org.jooq.Field;
+import org.jooq.impl.Factory;
+
 import com.google.inject.Inject;
 import com.schedushare.common.domain.dto.UserEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
@@ -71,7 +74,13 @@ public class UserServiceImpl implements UserService {
 														Tables.USER.AUTH_TOKEN)
 													   .values(userEntity.getEmail(), userEntity.getName(), userEntity.getAuthToken())
 													   .execute();
-				return userEntity;
+				List<UserEntity> createdUserResult = createUserQuery.select()
+														  .from(Tables.USER)
+														  .orderBy(Tables.USER.ID)
+														  .limit(1)
+														  .fetchInto(UserEntity.class);
+																		  
+				return createdUserResult.get(0);
 			} catch (Exception e) {
 				throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
 			}
