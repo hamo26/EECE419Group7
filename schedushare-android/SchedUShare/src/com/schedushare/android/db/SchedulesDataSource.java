@@ -292,7 +292,7 @@ public class SchedulesDataSource {
 		
 		HashMap<Long, BlockTypeData> hashMap = new HashMap<Long, BlockTypeData>();
 		while(!cursor.isAfterLast()) {
-			hashMap.put(cursor.getLong(2), blockTypeFromCursor(cursor));
+			hashMap.put(cursor.getLong(1), blockTypeFromCursor(cursor));
 			cursor.moveToNext();
 		}
 		

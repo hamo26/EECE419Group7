@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Formatter;
+import java.util.HashMap;
 
 import com.schedushare.android.R;
+import com.schedushare.android.db.BlockTypeData;
 import com.schedushare.android.db.TimeBlockData;
 
 import android.app.Activity;
@@ -23,15 +25,17 @@ public class EditDayArrayAdapter extends ArrayAdapter<String>
     int layoutResourceId;   
     String time[] = null;
     ArrayList<TimeBlockData> data = null;
+    HashMap<Long, BlockTypeData> blockTypes = null;
     SimpleDateFormat listTimeFormat;
    
-    public EditDayArrayAdapter(Context context, int layoutResourceId, String[] time, ArrayList<TimeBlockData> data) {
+    public EditDayArrayAdapter(Context context, int layoutResourceId, String[] time, ArrayList<TimeBlockData> data, HashMap<Long, BlockTypeData> blockTypes) {
         super(context, layoutResourceId, time);
         this.layoutResourceId = layoutResourceId;
         this.time = time;
         this.data = data;
         this.context = context;
-        this.listTimeFormat = new SimpleDateFormat("kk:mm:ss");        
+        this.blockTypes = blockTypes;
+        this.listTimeFormat = new SimpleDateFormat("kk:mm");        
     }
 
     @Override
@@ -79,7 +83,7 @@ public class EditDayArrayAdapter extends ArrayAdapter<String>
 	        	
 	        	if ((currentTime.get(Calendar.HOUR_OF_DAY) >= startTime.get(Calendar.HOUR_OF_DAY)) &&
 	        		(currentTime.get(Calendar.HOUR_OF_DAY) <= endTime.get(Calendar.HOUR_OF_DAY))) {
-	        		typeView.setText(Long.toString(timeBlock.blockTypeId));
+	        		typeView.setText(this.blockTypes.get(timeBlock.blockTypeId).name);
 	        		break;
 	        	}
 	        }
