@@ -225,10 +225,9 @@ containing a value of this type.
         public static final int com_facebook_picker_title_bar_stub=0x7f04001e;
         public static final int com_facebook_picker_top_bar=0x7f04001b;
         public static final int com_facebook_placepickerfragment_search_box_stub=0x7f040020;
-        public static final int create_schedule_option=0x7f04002c;
+        public static final int create_schedule_option=0x7f04002f;
+        public static final int day_button_scroller=0x7f040004;
         public static final int day_schedule_container=0x7f040003;
-        public static final int day_schedule_scroller=0x7f040004;
-        public static final int edit_day_time_entry=0x7f04002b;
         public static final int large=0x7f040002;
         public static final int loginButton=0x7f040009;
         public static final int new_schedule_dialog_name_input=0x7f040024;
@@ -239,12 +238,16 @@ containing a value of this type.
         public static final int password_text=0x7f040007;
         public static final int picker_subtitle=0x7f040022;
         public static final int schedule_list_container=0x7f04000e;
+        public static final int schedule_list_last_modified_entry=0x7f04002b;
         public static final int schedule_list_name_entry=0x7f04002a;
-        public static final int schedule_list_owner_entry=0x7f040029;
+        public static final int schedule_list_row=0x7f040029;
         public static final int schedules_list_view=0x7f040025;
         public static final int search_box=0x7f040021;
         public static final int settings_button=0x7f04000c;
         public static final int small=0x7f040000;
+        public static final int time_block_row=0x7f04002c;
+        public static final int time_block_time_entry=0x7f04002d;
+        public static final int time_block_type_entry=0x7f04002e;
         public static final int username_input=0x7f040006;
         public static final int username_text=0x7f040005;
     }

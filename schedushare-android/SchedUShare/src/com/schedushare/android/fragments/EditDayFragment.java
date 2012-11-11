@@ -1,6 +1,13 @@
 package com.schedushare.android.fragments;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.R;
+import com.schedushare.android.db.BlockTypeData;
+import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.db.TimeBlockData;
 import com.schedushare.android.util.EditDayArrayAdapter;
 
 import android.app.Fragment;
@@ -12,12 +19,14 @@ import android.widget.ListView;
 
 public class EditDayFragment extends Fragment {
 	public ListView listView;
-	String[] timeData = {"6:00AM", "7:00AM", "8:00AM", "9:00AM",
-			"10:00AM", "11:00AM", "12:00PM", "1:00PM",
-			"2:00PM", "3:00PM", "4:00PM", "5:00PM",
-			"6:00PM", "7:00PM", "8:00PM", "9:00PM",
-			"10:00PM", "11:00PM", "12:00AM", "1:00AM",
-			"2:00AM", "3:00AM", "4:00AM", "5:00AM"};
+	private int day;
+	
+	String[] timeData = {"6:00", "7:00", "8:00", "9:00",
+			"10:00", "11:00", "12:00", "13:00",
+			"14:00", "15:00", "16:00", "17:00",
+			"18:00", "19:00", "20:00", "21:00",
+			"22:00", "23:00", "0:00", "1:00",
+			"2:00", "3:00", "4:00", "5:00"};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +43,7 @@ public class EditDayFragment extends Fragment {
 		
 		// Only create the cursor and adapter the first time fragment is created.
 		if (savedInstanceState == null) {
+			this.day = getArguments().getInt("day");
 			setListViewAdapter();
 		}
 		
@@ -46,9 +56,16 @@ public class EditDayFragment extends Fragment {
 	}
 	
 	private void setListViewAdapter() {
+		SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
+		dataSource.open();
+		ArrayList<TimeBlockData> timeBlocks = 
+				dataSource.getSchdeduleDayTimeBlocks(((EditScheduleActivity)this.getActivity()).scheduleId,
+				this.day);
+		HashMap<Long, BlockTypeData> blockTypes = dataSource.getAllBlockTypes();
+		dataSource.close();
 		
-		
-		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(), R.layout.list_item_time_block, this.timeData);
+		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),
+				R.layout.list_item_time_block, this.timeData, timeBlocks, blockTypes);
 		
 		this.listView = new ListView(getActivity());
 		this.listView.setAdapter(adapter);

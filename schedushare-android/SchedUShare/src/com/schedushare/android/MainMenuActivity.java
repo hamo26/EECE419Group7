@@ -1,5 +1,8 @@
 package com.schedushare.android;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import com.google.inject.Inject;
@@ -55,14 +58,7 @@ public class MainMenuActivity extends RoboActivity {
 //			}
 			
         	
-	        SchedulesDataSource dataSource = new SchedulesDataSource(this);
-	        dataSource.open();
-	        dataSource.dropAllTables();
-	        dataSource.createUser(1, "oscarlee");
-	        for (int i = 0; i < 100; i++) {
-	        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, "whatever");
-	        }
-	        dataSource.close();
+	        createTestData();
         }
     }
     
@@ -80,5 +76,32 @@ public class MainMenuActivity extends RoboActivity {
     // Called when user clicks settings button.
     public void startSettingsMenu(View view) {
     	
+    }
+    
+    // Creates test data.
+    private void createTestData() {
+    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+        dataSource.open();
+        dataSource.dropAllTables();
+        dataSource.createUser(1, "oscarlee");
+        for (int i = 0; i < 100; i++) {
+        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, "whatever");
+        }
+        
+        Calendar dateTime = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("kk:mm:ss");
+        dateTime.set(Calendar.HOUR, 10);
+        dateTime.set(Calendar.MINUTE, 0);
+        dateTime.set(Calendar.SECOND, 0);
+        
+        String startTime;
+        String endTime;
+		startTime = sdf.format(dateTime.getTime());
+		dateTime.set(Calendar.HOUR, 15);
+		endTime = sdf.format(dateTime.getTime());        
+        
+        dataSource.createBlockType(1, "School");
+        dataSource.createTimeBlock(1, startTime.toString(), endTime.toString(), 1, 1, 1, 5.55, 5.55);
+        dataSource.close();
     }
 }
