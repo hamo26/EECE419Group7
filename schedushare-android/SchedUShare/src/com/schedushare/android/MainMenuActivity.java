@@ -15,7 +15,11 @@ import com.schedushare.common.domain.rest.RestResult;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
@@ -30,7 +34,6 @@ public class MainMenuActivity extends RoboActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // For testing only.
         if (savedInstanceState == null) {
         	
 //        	RestResult<ScheduleListEntity> getSchedulesResult;
@@ -57,7 +60,7 @@ public class MainMenuActivity extends RoboActivity {
 //				e.printStackTrace();
 //			}
 			
-        	
+        	startLocationManager();
 	        createTestData();
         }
     }
@@ -89,19 +92,45 @@ public class MainMenuActivity extends RoboActivity {
         }
         
         Calendar dateTime = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("kk:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
         dateTime.set(Calendar.HOUR, 10);
         dateTime.set(Calendar.MINUTE, 0);
         dateTime.set(Calendar.SECOND, 0);
+        dateTime.set(Calendar.AM_PM, Calendar.AM);
         
         String startTime;
         String endTime;
 		startTime = sdf.format(dateTime.getTime());
 		dateTime.set(Calendar.HOUR, 15);
-		endTime = sdf.format(dateTime.getTime());        
+		endTime = sdf.format(dateTime.getTime());
+		
+		System.out.println("MainMenu: start: " + startTime.toString() + 
+				" end: " + endTime.toString());
         
         dataSource.createBlockType(1, "School");
-        dataSource.createTimeBlock(1, startTime.toString(), endTime.toString(), 1, 1, 1, 5.55, 5.55);
+        dataSource.createBlockType(2, "Work");
+        dataSource.createBlockType(3, "Leisure");
+        dataSource.createTimeBlock(1, "EECE 419", startTime.toString(), endTime.toString(), 1, 1, 1, 5.55, 5.55);
         dataSource.close();
+    }
+    
+    // Start location listener.
+    private void startLocationManager() {
+    	LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+    	String locationProvider = LocationManager.NETWORK_PROVIDER;
+    	LocationListener locationListener = new LocationListener() {
+    		@Override
+    		public void onLocationChanged(Location location) {}
+
+			@Override
+			public void onProviderDisabled(String arg0) {}
+
+			@Override
+			public void onProviderEnabled(String provider) {}
+
+			@Override
+			public void onStatusChanged(String provider, int status, Bundle extras) {}
+    	};
+    	locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
 }

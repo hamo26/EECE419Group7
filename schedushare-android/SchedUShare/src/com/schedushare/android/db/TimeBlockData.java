@@ -3,6 +3,7 @@ package com.schedushare.android.db;
 public class TimeBlockData {
 	public long id;
 	public long sid;
+	public String name;
 	public String startTime;
 	public String endTime;
 	public int day;

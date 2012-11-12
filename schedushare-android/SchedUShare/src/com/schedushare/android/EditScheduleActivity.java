@@ -16,6 +16,15 @@ import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_schedule)
 public class EditScheduleActivity extends RoboActivity {
+	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
+	public static final String[] timeData = {
+			"0:00:00 AM", "1:00:00 AM", "2:00:00 AM", "3:00:00 AM",
+			"4:00:00 AM", "5:00:00 AM", "6:00:00 AM", "7:00:00 AM",
+			"8:00:00 AM", "9:00:00 AM", "10:00:00 AM", "11:00:00 AM",
+			"12:00:00 PM", "1:00:00 PM", "2:00:00 PM", "3:00:00 PM",
+			"4:00:00 PM", "5:00:00 PM", "6:00:00 PM", "7:00:00 PM",
+			"8:00:00 PM", "9:00:00 PM", "10:00:00 PM", "11:00:00 PM"};
+	
 	public long scheduleId;
 	private EditDayFragment mondayFragment;
 	private EditDayFragment tuesdayFragment;
@@ -29,8 +38,8 @@ public class EditScheduleActivity extends RoboActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        
+        // Get bundle passed from last activity.
+        Bundle extras = getIntent().getExtras();        
         if (extras != null)
         	this.scheduleId = extras.getLong("scheduleId");
         
@@ -74,12 +83,13 @@ public class EditScheduleActivity extends RoboActivity {
         fragmentTransaction.add(R.id.day_schedule_container, this.mondayFragment);
         fragmentTransaction.commit();
         
+        // Create scroller to switch between days of the week.
         LinearLayout dayButtonScroller = (LinearLayout)findViewById(R.id.day_button_scroller);
         OnClickListener dayButtonClickListener = new OnClickListener() {
         	@Override
 			public void onClick(View view) {
         		Toast.makeText(EditScheduleActivity.this,
-        				"Button " + view.getId() + " is clicked!", Toast.LENGTH_SHORT).show();
+        				((Button)view).getText() + " is clicked!", Toast.LENGTH_SHORT).show();
         		
         		FragmentManager fragmentManager = getFragmentManager();
         		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -114,48 +124,50 @@ public class EditScheduleActivity extends RoboActivity {
 			}
         };
         
+        // Create all 7 buttons.
         Button monButton = new Button(this);
         monButton.setId(1);
         monButton.setOnClickListener(dayButtonClickListener);
         monButton.setText("Mon");
-        monButton.setLayoutParams(new LayoutParams(100, 75));
+        monButton.setLayoutParams(new LayoutParams(150, 75));
         
         Button tueButton = new Button(this);
         tueButton.setId(2);
         tueButton.setOnClickListener(dayButtonClickListener);
         tueButton.setText("Tue");
-        tueButton.setLayoutParams(new LayoutParams(100, 75));
+        tueButton.setLayoutParams(new LayoutParams(150, 75));
         
         Button wedButton = new Button(this);
         wedButton.setId(3);
         wedButton.setOnClickListener(dayButtonClickListener);
         wedButton.setText("Wed");
-        wedButton.setLayoutParams(new LayoutParams(100, 75));
+        wedButton.setLayoutParams(new LayoutParams(150, 75));
         
         Button thuButton = new Button(this);
         thuButton.setId(4);
         thuButton.setOnClickListener(dayButtonClickListener);
         thuButton.setText("Thu");
-        thuButton.setLayoutParams(new LayoutParams(100, 75));
+        thuButton.setLayoutParams(new LayoutParams(150, 75));
         
         Button friButton = new Button(this);
         friButton.setId(5);
         friButton.setOnClickListener(dayButtonClickListener);
         friButton.setText("Fri");
-        friButton.setLayoutParams(new LayoutParams(100, 75));
+        friButton.setLayoutParams(new LayoutParams(150, 75));
         
         Button satButton = new Button(this);
         satButton.setId(6);
         satButton.setOnClickListener(dayButtonClickListener);
         satButton.setText("Sat");
-        satButton.setLayoutParams(new LayoutParams(100, 75));
+        satButton.setLayoutParams(new LayoutParams(150, 75));
         
         Button sunButton = new Button(this);
         sunButton.setId(7);
         sunButton.setOnClickListener(dayButtonClickListener);
         sunButton.setText("Sun");
-        sunButton.setLayoutParams(new LayoutParams(100, 75));
+        sunButton.setLayoutParams(new LayoutParams(150, 75));
         
+        // Add all buttons to the scroller.
         dayButtonScroller.addView(monButton);
         dayButtonScroller.addView(tueButton);
         dayButtonScroller.addView(wedButton);
