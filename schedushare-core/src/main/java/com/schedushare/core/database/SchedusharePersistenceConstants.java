@@ -11,7 +11,12 @@ public class SchedusharePersistenceConstants {
 	/** database root user name. */
 	public static final String SCHEDUSHARE_ROOT = "root";
 
-	/** database root password.*/
+	
+	/** database root password on Jame's machine.*/
+	/**Comment the other Constant out if you uncomment this!!!.**/
+	//public static final String SCHEDUSHARE_ROOT_PASSWORD = "";
+
+	/** database root password on Hamid's machine.*/
 	public static final String SCHEDUSHARE_ROOT_PASSWORD = "testadmin";
 
 
