@@ -10,6 +10,8 @@ import com.schedushare.core.guice.SelfInjectingServerResourceModule;
 import com.schedushare.core.guice.ServiceModule;
 import com.schedushare.core.guice.TransactionModule;
 import com.schedushare.core.schedule.rest.resource.impl.UserScheduleResourceImpl;
+import com.schedushare.core.timeblock.rest.resource.impl.ScheduleTimeBlocksResourceImpl;
+import com.schedushare.core.timeblock.rest.resource.impl.TimeBlocksResourceImpl;
 import com.schedushare.core.user.rest.resource.impl.RegisterUserResourceImpl;
 import com.schedushare.core.user.rest.resource.impl.UserResourceImpl;
 
@@ -45,6 +47,8 @@ public class BaseRestHandlerImpl extends Application {
         router.attach("/schedules/user/{userEmail}/{active}", UserScheduleResourceImpl.class);
         router.attach("/register/user", RegisterUserResourceImpl.class);
         router.attach("/user/{userEmail}", UserResourceImpl.class);
+        router.attach("timeblocks/{timeBlockId}/{scheduleId}", TimeBlocksResourceImpl.class);
+        router.attach("/timeblocks/schedules/{scheduleId}", ScheduleTimeBlocksResourceImpl.class);
         return router;  
     }  
 }

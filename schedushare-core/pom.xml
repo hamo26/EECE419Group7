@@ -16,7 +16,7 @@
             	<configuration>
                 	<archive>
                     	<manifest>
-                        	<mainClass>com.insieme.core.rest.handlers.impl.RestletDriver</mainClass>
+                        	<mainClass>com.schedushare.core.rest.handler.impl.RestletDriver</mainClass>
                     	</manifest>
                 	</archive>
                 	<descriptorRefs>

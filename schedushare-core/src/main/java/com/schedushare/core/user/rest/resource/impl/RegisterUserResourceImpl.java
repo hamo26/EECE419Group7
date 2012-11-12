@@ -50,9 +50,9 @@ public class RegisterUserResourceImpl extends SelfInjectingServerResource
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
 
-			userService.createUser(connection, postedUser);
+			UserEntity createUserEntity = userService.createUser(connection, postedUser);
 			
-			return jsonUtil.serializeRepresentation(postedUser);
+			return jsonUtil.serializeRepresentation(createUserEntity);
 		} catch (SchedushareException e) {
 			return e.serializeJsonException();
 		} catch (Exception e) {
