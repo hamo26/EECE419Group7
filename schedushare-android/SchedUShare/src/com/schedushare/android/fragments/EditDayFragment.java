@@ -25,6 +25,8 @@ import android.widget.AdapterView.OnItemClickListener;
 public class EditDayFragment extends Fragment {
 	public ListView listView;
 	private int day;
+	private ArrayList<TimeBlockData> timeBlocks;
+	private HashMap<Long, BlockTypeData> blockTypes;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,17 @@ public class EditDayFragment extends Fragment {
     		if (resultCode != Activity.RESULT_CANCELED) {
     			System.out.println("Recreate edit day list view.");
     			
-    			setListViewAdapter();
+    			// Create new adapter with new time blocks, attach to listView, and refresh screen.
+    			SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
+    			dataSource.open();
+    			this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(((EditScheduleActivity)this.getActivity()).scheduleId, this.day);
+    			dataSource.close();
+    			
+    			EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),
+    					R.layout.list_item_time_block, EditScheduleActivity.timeData, this.timeBlocks, this.blockTypes);
+    			this.listView.setAdapter(adapter);
+    			
+    			((EditDayArrayAdapter)this.listView.getAdapter()).notifyDataSetChanged();
     		}
     	}
     		
@@ -74,14 +86,12 @@ public class EditDayFragment extends Fragment {
 		// As well, get hash of all block types.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
 		dataSource.open();
-		ArrayList<TimeBlockData> timeBlocks = 
-				dataSource.getSchdeduleDayTimeBlocks(((EditScheduleActivity)this.getActivity()).scheduleId,
-				this.day);
-		HashMap<Long, BlockTypeData> blockTypes = dataSource.getAllBlockTypes();
+		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(((EditScheduleActivity)this.getActivity()).scheduleId, this.day);
+		this.blockTypes = dataSource.getAllBlockTypes();
 		dataSource.close();
 		
 		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),
-				R.layout.list_item_time_block, EditScheduleActivity.timeData, timeBlocks, blockTypes);
+				R.layout.list_item_time_block, EditScheduleActivity.timeData, this.timeBlocks, this.blockTypes);
 		
 		this.listView = new ListView(getActivity());
 		this.listView.setOnItemClickListener(new OnItemClickListener() {  

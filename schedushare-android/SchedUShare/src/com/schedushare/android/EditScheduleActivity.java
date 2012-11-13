@@ -1,5 +1,7 @@
 package com.schedushare.android;
 
+import com.schedushare.android.db.ScheduleData;
+import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.EditDayFragment;
 
 import roboguice.activity.RoboActivity;
@@ -18,12 +20,18 @@ import android.widget.Toast;
 public class EditScheduleActivity extends RoboActivity {
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
 	public static final String[] timeData = {
-			"0:00:00 AM", "1:00:00 AM", "2:00:00 AM", "3:00:00 AM",
-			"4:00:00 AM", "5:00:00 AM", "6:00:00 AM", "7:00:00 AM",
-			"8:00:00 AM", "9:00:00 AM", "10:00:00 AM", "11:00:00 AM",
-			"12:00:00 PM", "1:00:00 PM", "2:00:00 PM", "3:00:00 PM",
-			"4:00:00 PM", "5:00:00 PM", "6:00:00 PM", "7:00:00 PM",
-			"8:00:00 PM", "9:00:00 PM", "10:00:00 PM", "11:00:00 PM"};
+			"0:00:00 AM", "0:30:00 AM", "1:00:00 AM", "1:30:00 AM",
+			"2:00:00 AM", "2:30:00 AM", "3:00:00 AM", "3:30:00 AM", 
+			"4:00:00 AM", "4:30:00 AM", "5:00:00 AM", "5:30:00 AM",
+			"6:00:00 AM", "6:30:00 AM", "7:00:00 AM", "7:30:00 AM",
+			"8:00:00 AM", "8:30:00 AM", "9:00:00 AM", "9:30:00 AM",
+			"10:00:00 AM", "10:30:00 AM", "11:00:00 AM", "11:30:00 AM", 
+			"12:00:00 PM", "12:30:00 PM", "1:00:00 PM", "1:30:00 PM",
+			"2:00:00 PM", "2:30:00 PM", "3:00:00 PM", "3:30:00 PM", 
+			"4:00:00 PM", "4:30:00 PM", "5:00:00 PM", "5:30:00 PM",
+			"6:00:00 PM", "6:30:00 PM", "7:00:00 PM", "7:30:00 PM", 
+			"8:00:00 PM", "8:30:00 PM", "9:00:00 PM", "9:30:00 PM",
+			"10:00:00 PM", "10:30:00 PM", "11:00:00 PM", "11:30:00 PM"};
 	
 	public long scheduleId;
 	private EditDayFragment mondayFragment;
@@ -175,5 +183,11 @@ public class EditScheduleActivity extends RoboActivity {
         dayButtonScroller.addView(friButton);
         dayButtonScroller.addView(satButton);
         dayButtonScroller.addView(sunButton);
+        
+        SchedulesDataSource dataSource = new SchedulesDataSource(this);
+        dataSource.open();
+        ScheduleData schedule = dataSource.getScheduleFromId(this.scheduleId);
+        this.setTitle(schedule.name);
+        dataSource.close();
     }
 }

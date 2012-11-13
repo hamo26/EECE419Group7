@@ -83,15 +83,16 @@ public class MainMenuActivity extends RoboActivity {
     
     // Creates test data.
     private void createTestData() {
+    	Calendar dateTime = Calendar.getInstance();
+    	
     	SchedulesDataSource dataSource = new SchedulesDataSource(this);
         dataSource.open();
         dataSource.dropAllTables();
         dataSource.createUser(1, "oscarlee");
         for (int i = 0; i < 100; i++) {
-        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, "whatever");
+        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, dateTime.getTime().toString());
         }
         
-        Calendar dateTime = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
         dateTime.set(Calendar.HOUR, 10);
         dateTime.set(Calendar.MINUTE, 0);
