@@ -132,6 +132,6 @@ public class MainMenuActivity extends RoboActivity {
 			@Override
 			public void onStatusChanged(String provider, int status, Bundle extras) {}
     	};
-    	locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    	//locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
 }

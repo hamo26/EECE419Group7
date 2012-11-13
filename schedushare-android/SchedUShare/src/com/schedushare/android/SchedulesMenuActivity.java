@@ -1,9 +1,8 @@
 package com.schedushare.android;
 
-import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.CheckableScheduleListFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment;
-import com.schedushare.android.fragments.NewScheduleDialogFragment.NoticeDialogListener;
+import com.schedushare.android.fragments.NewScheduleDialogFragment.CreateScheduleDialogListener;
 import com.schedushare.android.fragments.ScheduleListFragment;
 import com.schedushare.android.util.TabListener;
 
@@ -13,15 +12,13 @@ import roboguice.inject.ContentView;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.SimpleCursorAdapter;
 
 @ContentView(R.layout.activity_schedules_menu)
-public class SchedulesMenuActivity extends RoboFragmentActivity implements NoticeDialogListener {
+public class SchedulesMenuActivity extends RoboFragmentActivity implements CreateScheduleDialogListener {
 	// List views connected to the database for both user and friend schedules.
 	private TabListener<ScheduleListFragment> userSchedulesTabListener;
 	private TabListener<CheckableScheduleListFragment> friendSchedulesTabListener;
@@ -84,15 +81,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Notic
     
 	// Called when user clicks create in new schedule dialog box.
 	public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog) {
-		// Get new cursor from database.
-		SchedulesDataSource dataSource = new SchedulesDataSource(this);
-		dataSource.open();
-		Cursor cursor = dataSource.getAllSchedulesCursor();
-		dataSource.close();
-		
-		// Swap existing cursor with new one.
-		((SimpleCursorAdapter)((ScheduleListFragment)this.userSchedulesTabListener.fragment)
-				.listView.getAdapter()).changeCursor(cursor);
+		((ScheduleListFragment)this.userSchedulesTabListener.fragment).swapCursor();
     }
 	
 	// Called when user clicks cancel in new schedule dialog box. 

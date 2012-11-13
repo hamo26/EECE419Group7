@@ -2,13 +2,21 @@ package com.schedushare.android;
 
 import com.schedushare.android.db.ScheduleData;
 import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.fragments.DeleteScheduleDialogFragment;
+import com.schedushare.android.fragments.DeleteScheduleDialogFragment.DeleteScheduleDialogListener;
 import com.schedushare.android.fragments.EditDayFragment;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
+import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -17,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_schedule)
-public class EditScheduleActivity extends RoboActivity {
+public class EditScheduleActivity extends RoboActivity implements DeleteScheduleDialogListener {
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
 	public static final String[] timeData = {
 			"0:00:00 AM", "0:30:00 AM", "1:00:00 AM", "1:30:00 AM",
@@ -190,4 +198,48 @@ public class EditScheduleActivity extends RoboActivity {
         this.setTitle(schedule.name);
         dataSource.close();
     }
+    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Create menu with new schedule button.
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.edit_schedule, menu);
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.delete_schedule_option:
+				// Open dialog box to delete schedule.
+				DialogFragment newFragment = new DeleteScheduleDialogFragment();
+			    newFragment.show(getFragmentManager(), "delete_schedule");
+			default:
+				break;
+		}
+	
+		return true;
+	}
+
+	@Override
+	public void onDeleteScheduleDialogPositiveClick(DialogFragment dialog) {
+		// Delete current schedule and inform schedule menu to update list.
+		SchedulesDataSource dataSource = new SchedulesDataSource(this);
+		dataSource.open();
+		dataSource.deleteSchedule(this.scheduleId);
+		dataSource.close();
+		
+	    Intent i = new Intent();
+	    Bundle b = new Bundle();
+	    b.putBoolean("deleteSuccess", true);
+	    i.putExtras(b);
+	    setResult(Activity.RESULT_OK, i);
+	    finish();
+	}
+
+	@Override
+	public void onDeleteScheduleDialogNegativeClick(DialogFragment dialog) {
+		
+	}
 }
