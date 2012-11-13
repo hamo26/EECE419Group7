@@ -1,5 +1,7 @@
 package com.schedushare.android;
 
+import com.schedushare.android.db.ScheduleData;
+import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.EditDayFragment;
 
 import roboguice.activity.RoboActivity;
@@ -175,5 +177,11 @@ public class EditScheduleActivity extends RoboActivity {
         dayButtonScroller.addView(friButton);
         dayButtonScroller.addView(satButton);
         dayButtonScroller.addView(sunButton);
+        
+        SchedulesDataSource dataSource = new SchedulesDataSource(this);
+        dataSource.open();
+        ScheduleData schedule = dataSource.getScheduleFromId(this.scheduleId);
+        this.setTitle(schedule.name);
+        dataSource.close();
     }
 }

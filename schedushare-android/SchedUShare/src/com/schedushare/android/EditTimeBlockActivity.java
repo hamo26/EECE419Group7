@@ -109,20 +109,22 @@ public class EditTimeBlockActivity extends RoboActivity {
 	    			Calendar startTime = Calendar.getInstance();
 	    	        Calendar endTime = Calendar.getInstance();
 
-	    	        for (int i = 0; i < this.timeBlocks.size(); i++) {
+	    	        for (TimeBlockData b : this.timeBlocks) {
 	    	        	// Create calendar objects from the time block's start and end times.
-	    	        	startTime.setTime(this.timeFormat.parse(this.timeBlocks.get(i).startTime));
-	    	        	endTime.setTime(this.timeFormat.parse(this.timeBlocks.get(i).endTime));
+	    	        	startTime.setTime(this.timeFormat.parse(b.startTime));
+	    	        	endTime.setTime(this.timeFormat.parse(b.endTime));
 	    	        	
 	    	        	// Check for whether current time block falls into the start and end times.
 	    	        	if ((this.startTime.get(Calendar.HOUR_OF_DAY) >= startTime.get(Calendar.HOUR_OF_DAY)) &&
 	    	        		(this.startTime.get(Calendar.HOUR_OF_DAY) < endTime.get(Calendar.HOUR_OF_DAY))) {
-	    	        		this.newTimeBlock.name = this.timeBlocks.get(i).name;
-	    	        		this.newTimeBlock.blockTypeId = this.timeBlocks.get(i).blockTypeId;
-	    	        		this.newTimeBlock.startTime = this.timeBlocks.get(i).startTime;
-	    	        		this.newTimeBlock.endTime = this.timeBlocks.get(i).endTime;
-	    	        		this.newTimeBlock.longitude = this.timeBlocks.get(i).longitude;
-	    	        		this.newTimeBlock.latitude = this.timeBlocks.get(i).latitude;
+	    	        		this.newTimeBlock.id = b.id;
+	    	        		this.newTimeBlock.sid = b.sid;
+	    	        		this.newTimeBlock.name = b.name;
+	    	        		this.newTimeBlock.blockTypeId = b.blockTypeId;
+	    	        		this.newTimeBlock.startTime = b.startTime;
+	    	        		this.newTimeBlock.endTime = b.endTime;
+	    	        		this.newTimeBlock.longitude = b.longitude;
+	    	        		this.newTimeBlock.latitude = b.latitude;
 	    	        		
 	    	        		break;
 	    	        	}
@@ -143,6 +145,8 @@ public class EditTimeBlockActivity extends RoboActivity {
 	            int i = 0;
 	            for (BlockTypeData b : blockTypeList) {
 	            	blockTypeNames.add(b.name);
+	            	
+	            	// Default block type shown in spinner.
 	            	if (b.name.equals(this.blockTypes.get(this.newTimeBlock.blockTypeId)))
 	            		defaultBlockTypeSpinnerPosition = i;
 	            	i++;
@@ -160,16 +164,20 @@ public class EditTimeBlockActivity extends RoboActivity {
 	            int defaultStartTimeSpinnerPosition = 0;
 	            int defaultEndTimeSpinnerPosition = 0;
 	            Calendar theTime = Calendar.getInstance();
+	            Calendar selectedStartTime = Calendar.getInstance();
+	            Calendar selectedEndTime = Calendar.getInstance();
 	            i = 0;
 	            for (String time : startEndTimes) {
 	            	try {
 						theTime.setTime(this.timeFormat.parse(time));
+						selectedStartTime.setTime(this.timeFormat.parse(this.newTimeBlock.startTime));
+						selectedEndTime.setTime(this.timeFormat.parse(this.newTimeBlock.endTime));
 						String t = this.timeFormat.format(theTime.getTime());
 						
-						if (t.equals(this.newTimeBlock.startTime))
+						if (t.equals(this.timeFormat.format(selectedStartTime.getTime())))
 							defaultStartTimeSpinnerPosition = i;
 						
-						if (t.equals(this.newTimeBlock.endTime))
+						if (t.equals(this.timeFormat.format(selectedEndTime.getTime())))
 							defaultEndTimeSpinnerPosition = i;
 					} catch (ParseException e1) {
 						e1.printStackTrace();
@@ -185,9 +193,8 @@ public class EditTimeBlockActivity extends RoboActivity {
 	            		new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, startEndTimes);
 	            typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	            this.startTimeSpinner.setAdapter(startTimeAdapter);
-	            this.startTimeSpinner.setSelection(defaultStartTimeSpinnerPosition);
-	            typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	            this.endTimeSpinner.setAdapter(endTimeAdapter);
+	            this.startTimeSpinner.setSelection(defaultStartTimeSpinnerPosition);
 	            this.endTimeSpinner.setSelection(defaultEndTimeSpinnerPosition);
 	        }
         }
@@ -247,20 +254,18 @@ public class EditTimeBlockActivity extends RoboActivity {
 	        	
 	        	// Case where start time of the block needs to be moved to make room for new block.
 	        	} else if ((startTime.get(Calendar.HOUR_OF_DAY) >= newBlockStartTime.get(Calendar.HOUR_OF_DAY)) &&
-	        			(startTime.get(Calendar.HOUR_OF_DAY) <= newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
-	        		Calendar newTime = Calendar.getInstance();
-	        		newTime.setTime(this.timeFormat.parse(this.newTimeBlock.endTime));
-	        		newTime.set(Calendar.HOUR, newTime.get(Calendar.HOUR) + 1);
-	        		timeBlock.startTime = this.timeFormat.format(newTime.getTime());
+	        			(startTime.get(Calendar.HOUR_OF_DAY) < newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
+	        		timeBlock.startTime = this.timeFormat.format(newBlockEndTime.getTime());
+	        		
+	        		System.out.println("EditTimeBlock: new start time: " + timeBlock.startTime);
 	        		dataSource.updateTimeBlock(timeBlock);
 	        		
 	        	// Case where the end time of the block needs to be moved to make room for new block.
 	        	} else if ((endTime.get(Calendar.HOUR_OF_DAY) >= newBlockStartTime.get(Calendar.HOUR_OF_DAY)) &&
-		        		(endTime.get(Calendar.HOUR_OF_DAY) <= newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
-	        		Calendar newTime = Calendar.getInstance();
-	        		newTime.setTime(this.timeFormat.parse(this.newTimeBlock.startTime));
-	        		newTime.set(Calendar.HOUR, newTime.get(Calendar.HOUR) - 1);
-	        		timeBlock.endTime = this.timeFormat.format(newTime.getTime());
+		        		(endTime.get(Calendar.HOUR_OF_DAY) < newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
+	        		timeBlock.endTime = this.timeFormat.format(newBlockStartTime.getTime());
+	        		
+	        		System.out.println("EditTimeBlock: new end time: " + timeBlock.endTime);
 	        		dataSource.updateTimeBlock(timeBlock);
 	        	}    	
     		}
@@ -268,7 +273,8 @@ public class EditTimeBlockActivity extends RoboActivity {
 	    	this.newTimeBlock.startTime = this.timeFormat.format(newBlockStartTime.getTime());
 	    	this.newTimeBlock.endTime = this.timeFormat.format(newBlockEndTime.getTime());
 	    	
-	    	System.out.println("new block: sid: " + this.newTimeBlock.sid);
+	    	System.out.println("EditTimeBlock: new block:");
+	    	System.out.println("sid: " + this.newTimeBlock.sid);
 	    	System.out.println("name: " + this.newTimeBlock.name);
 	    	System.out.println("start time: " + this.newTimeBlock.startTime);
 	    	System.out.println("end time: " + this.newTimeBlock.endTime);
@@ -277,6 +283,10 @@ public class EditTimeBlockActivity extends RoboActivity {
 	    	System.out.println("schedule id: " + this.newTimeBlock.scheduleId);
 	    	System.out.println("latitude: " + this.newTimeBlock.latitude);
 	    	System.out.println("longitude: " + this.newTimeBlock.longitude);
+	    	
+	    	// Delete existing if exists.
+	    	if (dataSource.isTimeBlockExists(this.newTimeBlock.id))
+	    		dataSource.deleteTimeBlock(this.newTimeBlock);
 	    	
 	    	// Create time block with all information.
 	    	dataSource.createTimeBlock(this.newTimeBlock.sid, this.newTimeBlock.name,

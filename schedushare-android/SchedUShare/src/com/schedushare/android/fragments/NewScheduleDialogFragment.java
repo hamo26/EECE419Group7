@@ -1,5 +1,6 @@
 package com.schedushare.android.fragments;
 
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import roboguice.fragment.RoboDialogFragment;
@@ -102,10 +103,13 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
 			} else {
 				Toast.makeText(getActivity(), createScheduleResult.getRestResult().getScheduleName(), Toast.LENGTH_LONG).show();
 				
+				Calendar currentTime = Calendar.getInstance();
+				
 				// Open connection to db and create new schedule.
 		    	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
 		    	dataSource.open();
-		    	dataSource.createSchedule(1, createScheduleResult.getRestResult().getScheduleName(), false, 1, "whatever");
+		    	dataSource.createSchedule(createScheduleResult.getRestResult().getScheduleId(),
+		    			createScheduleResult.getRestResult().getScheduleName(), false, 1, currentTime.getTime().toString());
 		    	dataSource.close();
 			}
 			

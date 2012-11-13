@@ -136,7 +136,7 @@ public class SchedulesDataSource {
 		this.database.execSQL("DELETE FROM "
 				+ SchedulesSQLiteHelper.TABLE_SCHEDULE + " "
 				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = "
-				+ schedule.id);
+				+ schedule.sid);
 	}
 	
 	// Updates given schedule in table.
@@ -168,6 +168,16 @@ public class SchedulesDataSource {
 		cursor.moveToFirst();
 		
 		return cursor;
+	}
+	
+	// Returns one schedule as per id.
+	public ScheduleData getScheduleFromId(long id) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_ID +
+				" = " + id, null, null, null, null);
+		cursor.moveToFirst();
+		
+		return scheduleFromCursor(cursor);
 	}
 	
 	// Returns schedule pointed to by cursor.
@@ -202,7 +212,7 @@ public class SchedulesDataSource {
 		
 		long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, null, values);
 		
-		System.out.println("inserted time block with id: " + insertId);
+//		System.out.println("inserted time block with id: " + insertId);
 		
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
 				SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
@@ -217,7 +227,7 @@ public class SchedulesDataSource {
 		this.database.execSQL("DELETE FROM "
 				+ SchedulesSQLiteHelper.TABLE_TIME_BLOCK + " "
 				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = "
-				+ timeBlock.id);
+				+ timeBlock.sid);
 	}
 	
 	// Updates given time block in table.
@@ -248,7 +258,7 @@ public class SchedulesDataSource {
 		
 		ArrayList<TimeBlockData> timeBlocks = new ArrayList<TimeBlockData>();
 		while(!cursor.isAfterLast()) {
-			//System.out.println("DataSource: start: " + cursor.getString(2) + " end: " + cursor.getString(3));
+//			System.out.println("DataSource: start: " + cursor.getString(2) + " end: " + cursor.getString(3));
 			timeBlocks.add(timeBlockFromCursor(cursor));
 			cursor.moveToNext();
 		}
@@ -257,10 +267,10 @@ public class SchedulesDataSource {
 		return timeBlocks;
 	}
 	
-	public boolean isTimeBlockExists(long sid) throws SQLException {
+	public boolean isTimeBlockExists(long id) throws SQLException {
 	    Cursor mCursor = this.database.query(true, SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
-	    		SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_SID + 
-	    		" = " + sid, null, null, null, null, null);
+	    		SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + 
+	    		" = " + id, null, null, null, null, null);
 	    
 	    if (mCursor != null) {
 	        return true;

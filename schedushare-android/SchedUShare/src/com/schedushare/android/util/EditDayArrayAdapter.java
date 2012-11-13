@@ -88,7 +88,7 @@ public class EditDayArrayAdapter extends ArrayAdapter<String>
 	        Calendar endTime = Calendar.getInstance();
 	        
 	        for (TimeBlockData timeBlock : this.data) {
-	        	System.out.println("ArrayAdapter: start " + timeBlock.startTime + " end " + timeBlock.endTime);
+//	        	System.out.println("ArrayAdapter: start " + timeBlock.startTime + " end " + timeBlock.endTime);
 	        	
 	        	// Create calendar objects from the time block's start and end times.
 	        	startTime.setTime(this.listTimeFormat.parse(timeBlock.startTime));
