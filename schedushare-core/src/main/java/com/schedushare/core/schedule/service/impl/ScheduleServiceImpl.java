@@ -155,5 +155,22 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return scheduleEntity;
 	}
 
+	@Override
+	public ScheduleEntity deleteSchedule(Connection connection, int scheduleId) throws SchedushareException {
+		SchedushareFactory deleteScheduleQuery = new SchedushareFactory(connection);
+		
+		try {
+			ScheduleEntity scheduleEntity = getSchedule(connection, scheduleId);
+			deleteScheduleQuery.delete(Tables.SCHEDULE)
+							   .where(Tables.SCHEDULE.ID.equal(scheduleId))
+							   .execute();
+			return scheduleEntity;
+		} catch (SchedushareException e) {
+			throw e;
+		} catch (Exception e) {
+			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
+		}
+	}
+
 	
 }

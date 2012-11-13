@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Collection;
 
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
@@ -44,12 +45,16 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 	private String userEmail;
 
 	private String active;
+
+	private int scheduleId;
 	
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
 		this.userEmail = (String) getRequestAttributes().get("userEmail");
 		this.active = (String) getRequestAttributes().get(ACTIVE);
+		Object id = getRequestAttributes().get("scheduleId");
+		this.scheduleId = (id == null) ? 0 : (Integer.valueOf((String)id));
     }
 
 	@Override
@@ -118,4 +123,24 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 		}
 	}
 
+	@Override
+	@Delete
+	public String deleteSchedule() {
+		try{
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(
+					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+			
+			ScheduleEntity deletedScheduleEntity = scheduleService.deleteSchedule(connection, scheduleId);
+			
+			return jsonUtil.serializeRepresentation(deletedScheduleEntity);
+		} catch (SchedushareException e) {
+			return e.serializeJsonException();
+		} catch (Exception e) {
+			return schedushareExceptionFactory.createSchedushareException(e.getMessage())
+					.serializeJsonException();
+		}
+	}
 }

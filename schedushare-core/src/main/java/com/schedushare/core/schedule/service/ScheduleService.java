@@ -52,4 +52,14 @@ public interface ScheduleService {
 	 * @return the schedules for user
 	 */
 	Collection<ScheduleEntity> getSchedulesForUser(final Connection connection, final String userId) throws SchedushareException;
+	
+	/**
+	 * Delete schedule.
+	 *
+	 * @param connection the connection
+	 * @param scheduleId the schedule id
+	 * @return the schedule entity
+	 * @throws SchedushareException the schedushare exception
+	 */
+	ScheduleEntity deleteSchedule(final Connection connection, final int scheduleId) throws SchedushareException;
 }

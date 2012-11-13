@@ -1,5 +1,6 @@
 package com.schedushare.core.schedule.rest.resource;
 
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
@@ -20,7 +21,6 @@ public interface UserScheduleResource {
 	 *
 	 * @param scheduleRepresentation the schedule representation
 	 * @return the string
-	 * @throws SchedushareException the schedushare exception
 	 */
 	@Put
 	public String createSchedule(String scheduleRepresentation);
@@ -30,7 +30,6 @@ public interface UserScheduleResource {
 	 *
 	 * @param scheduleRepresentation the schedule representation
 	 * @return the string
-	 * @throws SchedushareException the schedushare exception
 	 */
 	@Post
 	public String updateSchedule(String scheduleRepresentation);
@@ -40,8 +39,15 @@ public interface UserScheduleResource {
 	 *
 	 * @param scheduleRepresentation the schedule representation
 	 * @return the schedule
-	 * @throws SchedushareException the schedushare exception
 	 */
 	@Get
 	public String getSchedule();
+	
+	/**
+	 * Delete a schedule.
+	 *
+	 * @return the string
+	 */
+	@Delete
+	public String deleteSchedule();
 }
