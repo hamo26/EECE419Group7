@@ -136,7 +136,15 @@ public class SchedulesDataSource {
 		this.database.execSQL("DELETE FROM "
 				+ SchedulesSQLiteHelper.TABLE_SCHEDULE + " "
 				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = "
-				+ schedule.sid);
+				+ schedule.id);
+	}
+	
+	// Deletes given schedule with given id from table.
+	public void deleteSchedule(long scheduleId) {
+		this.database.execSQL("DELETE FROM "
+				+ SchedulesSQLiteHelper.TABLE_SCHEDULE + " "
+				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = "
+				+ scheduleId);
 	}
 	
 	// Updates given schedule in table.
