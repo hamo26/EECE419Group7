@@ -3,9 +3,6 @@ package com.schedushare.core.user.service.impl;
 import java.sql.Connection;
 import java.util.List;
 
-import org.jooq.Field;
-import org.jooq.impl.Factory;
-
 import com.google.inject.Inject;
 import com.schedushare.common.domain.dto.UserEntity;
 import com.schedushare.common.domain.exception.SchedushareException;

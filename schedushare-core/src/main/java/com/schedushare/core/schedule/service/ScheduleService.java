@@ -62,4 +62,14 @@ public interface ScheduleService {
 	 * @throws SchedushareException the schedushare exception
 	 */
 	ScheduleEntity deleteSchedule(final Connection connection, final int scheduleId) throws SchedushareException;
+	
+	/**
+	 * Update schedule.
+	 *
+	 * @param connection the connection
+	 * @param scheduleEntity the schedule entity
+	 * @return the schedule entity
+	 * @throws SchedushareException the schedushare exception
+	 */
+	ScheduleEntity updateSchedule(final Connection connection, final ScheduleEntity scheduleEntity) throws SchedushareException;
 }

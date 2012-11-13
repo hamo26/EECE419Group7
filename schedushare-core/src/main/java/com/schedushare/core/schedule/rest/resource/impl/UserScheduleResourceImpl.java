@@ -83,8 +83,24 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource implem
 	@Override
 	@Put
 	public String updateSchedule(String scheduleRepresentation) {
-		// TODO Auto-generated method stub
-		return null;
+		try{
+			ScheduleEntity scheduleEntity = jsonUtil.deserializeRepresentation(scheduleRepresentation, ScheduleEntity.class);
+			
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(
+					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+			
+			ScheduleEntity updatedScheduleEntity = scheduleService.updateSchedule(connection, scheduleEntity);
+			
+			return jsonUtil.serializeRepresentation(updatedScheduleEntity);
+		} catch (SchedushareException e) {
+			return e.serializeJsonException();
+		} catch (Exception e) {
+			return schedushareExceptionFactory.createSchedushareException(e.getMessage())
+					.serializeJsonException();
+		}
 	}
 
 	@Override

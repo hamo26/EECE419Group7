@@ -45,6 +45,7 @@ public class BaseRestHandlerImpl extends Application {
         		new TransactionModule());
         
         router.attach("/schedules/user/{userEmail}/{active}", UserScheduleResourceImpl.class);
+        router.attach("/schedules/user/{userEmail}", UserScheduleResourceImpl.class);
         router.attach("/schedules/{scheduleId}", UserScheduleResourceImpl.class);
         router.attach("/register/user", RegisterUserResourceImpl.class);
         router.attach("/user/{userEmail}", UserResourceImpl.class);
