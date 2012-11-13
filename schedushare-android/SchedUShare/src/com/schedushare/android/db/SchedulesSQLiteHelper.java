@@ -60,6 +60,7 @@ public class SchedulesSQLiteHelper extends SQLiteOpenHelper {
 			+ TABLE_TIME_BLOCK + "("
 			+ COLUMN_ID + " INTEGER PRIMARY KEY, "
 			+ COLUMN_SID + " INTEGER NOT NULL, "
+			+ COLUMN_NAME + " VARCHAR(128) NOT NULL, "
 			+ COLUMN_START_TIME + " TIME NOT NULL, "
 			+ COLUMN_END_TIME + " TIME NOT NULL, "
 			+ COLUMN_DAY + " INTEGER NOT NULL, "

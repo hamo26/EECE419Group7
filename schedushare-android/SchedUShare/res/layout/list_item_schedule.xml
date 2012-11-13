@@ -6,7 +6,8 @@
     <TableRow
         android:id="@+id/schedule_list_row"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
 		<TextView
 			android:id="@+id/schedule_list_name_entry"
 			android:layout_width="0dp"
@@ -19,7 +20,7 @@
 			android:layout_width="0dp"
 			android:layout_weight="1"
 			android:layout_height="wrap_content"
-			android:textSize="20dp" />
+			android:textSize="10dp" />
 	</TableRow>
 	
 </TableLayout>

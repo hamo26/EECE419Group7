@@ -23,5 +23,15 @@
     <string name="create_button_text">Create</string>
     <string name="cancel_button_text">Canel</string>
     <string name="title_activity_edit_schedule">EditScheduleActivity</string>
+    <string name="title_activity_edit_time_block">EditTimeBlockActivity</string>
+    <string name="edit_time_block_name_text">Name</string>
+    <string name="edit_time_block_type_text">Type</string>
+    <string name="edit_time_block_location_text">Location</string>
+    <string name="edit_time_block_location_button_text">See Map</string>
+    <string name="edit_time_block_start_time_text">Start Time</string>
+    <string name="edit_time_block_end_time_text">End Time</string>
+    <string name="edit_time_block_confirm_button_text">Confirm</string>
+    <string name="edit_time_block_cancel_button_text">Cancel</string>
+    <string name="title_activity_select_location">SelectLocationActivity</string>
 
 </resources>
