@@ -44,9 +44,8 @@ public interface TimeBlocksResource {
 	/**
 	 * Delete time blocks.
 	 *
-	 * @param timeBlocksRepresentation the time blocks representation
-	 * @return the string
+	 * @return json representation of deleted time block.
 	 */
 	@Delete
-	public String deleteTimeBlocks(String timeBlocksRepresentation);
+	public String deleteTimeBlocks();
 }

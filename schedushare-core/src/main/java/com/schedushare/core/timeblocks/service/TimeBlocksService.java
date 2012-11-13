@@ -38,16 +38,17 @@ public interface TimeBlocksService {
 	 * @return the time blocks entity
 	 * @throws SchedushareException the schedushare exception
 	 */
-	public TimeBlocksEntity createTimeBlocks(Connection connection, int scheduleId, TimeBlocksEntity timeBlocks) throws SchedushareException;
+	public TimeBlocksEntity createTimeBlocks(Connection connection, TimeBlocksEntity timeBlocks) throws SchedushareException;
 	
 	/**
-	 * Update time block.
+	 * Update time blocks.
 	 *
 	 * @param connection the connection
-	 * @param timeBlockId the time block id
+	 * @param timeBlocksEntity the time blocks entity
 	 * @return the time block entity
+	 * @throws SchedushareException the schedushare exception
 	 */
-	public TimeBlockEntity updateTimeBlock(Connection connection, int timeBlockId) throws SchedushareException;
+	public TimeBlocksEntity updateTimeBlocks(Connection connection, TimeBlocksEntity timeBlocksEntity) throws SchedushareException;
 	
 	/**
 	 * Delete time block.

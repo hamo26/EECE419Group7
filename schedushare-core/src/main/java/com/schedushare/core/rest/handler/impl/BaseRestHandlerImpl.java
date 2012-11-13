@@ -47,7 +47,8 @@ public class BaseRestHandlerImpl extends Application {
         router.attach("/schedules/user/{userEmail}/{active}", UserScheduleResourceImpl.class);
         router.attach("/register/user", RegisterUserResourceImpl.class);
         router.attach("/user/{userEmail}", UserResourceImpl.class);
-        router.attach("timeblocks/{timeBlockId}/{scheduleId}", TimeBlocksResourceImpl.class);
+        router.attach("/timeblocks/{timeBlockId}", TimeBlocksResourceImpl.class);
+        router.attach("/timeblocks", TimeBlocksResourceImpl.class);
         router.attach("/timeblocks/schedules/{scheduleId}", ScheduleTimeBlocksResourceImpl.class);
         return router;  
     }  

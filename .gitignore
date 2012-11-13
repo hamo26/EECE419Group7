@@ -7,4 +7,5 @@ target
 *~
 \#*\#
 *.swp
-
+/*/.settings
+/*/.project

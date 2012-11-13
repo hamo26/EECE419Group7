@@ -41,13 +41,11 @@ public class TimeBlocksResourceImpl extends SelfInjectingServerResource
 	
 	private int timeBlockId;
 	
-	private int scheduleId;
-	
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
-		this.timeBlockId = (Integer) getRequestAttributes().get("timeBlockId");
-		this.scheduleId = (Integer) getRequestAttributes().get("scheduleId");
+		Object id = getRequestAttributes().get("timeBlockId");
+		this.timeBlockId = (id == null) ? 0 : (Integer.valueOf((String)id)); 
 	}
 
 	@Override
@@ -61,7 +59,7 @@ public class TimeBlocksResourceImpl extends SelfInjectingServerResource
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
 			
 			TimeBlocksEntity timeBlocksEntity = jsonUtil.deserializeRepresentation(timeBlocksRepresentation, TimeBlocksEntity.class);
-			TimeBlocksEntity createdTimeBlocks = timeBlocksService.createTimeBlocks(connection, scheduleId, timeBlocksEntity );
+			TimeBlocksEntity createdTimeBlocks = timeBlocksService.createTimeBlocks(connection, timeBlocksEntity);
 			return jsonUtil.serializeRepresentation(createdTimeBlocks);
 		} catch (SchedushareException e) {
 			return e.serializeJsonException();
@@ -75,15 +73,42 @@ public class TimeBlocksResourceImpl extends SelfInjectingServerResource
 	@Override
 	@Put
 	public String updateTimeBlocks(String timeBlocksRepresentation) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(
+					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+			
+			TimeBlocksEntity timeBlocksEntity = jsonUtil.deserializeRepresentation(timeBlocksRepresentation, TimeBlocksEntity.class);
+			TimeBlocksEntity updatedTimeBlocks = timeBlocksService.updateTimeBlocks(connection, timeBlocksEntity);
+			return jsonUtil.serializeRepresentation(updatedTimeBlocks);
+		} catch (SchedushareException e) {
+			return e.serializeJsonException();
+		} catch (Exception e) {
+			return schedushareExceptionFactory.createSchedushareException(e.getMessage())
+					.serializeJsonException();
+		}
 	}
 
 	@Override
 	@Delete
-	public String deleteTimeBlocks(String timeBlocksRepresentation) {
-		// TODO Auto-generated method stub
-		return null;
+	public String deleteTimeBlocks() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(
+					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+			
+			TimeBlockEntity deletedTimeBlockEntity = timeBlocksService.deleteTimeBlock(connection, timeBlockId);
+			return jsonUtil.serializeRepresentation(deletedTimeBlockEntity);
+		} catch (SchedushareException e) {
+			return e.serializeJsonException();
+		} catch (Exception e) {
+			return schedushareExceptionFactory.createSchedushareException(e.getMessage())
+					.serializeJsonException();
+		}
 	}
 
 	@Override
