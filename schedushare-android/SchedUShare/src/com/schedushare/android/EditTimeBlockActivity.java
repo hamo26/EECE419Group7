@@ -248,21 +248,21 @@ public class EditTimeBlockActivity extends RoboActivity {
 				
 				// Check for whether current time block falls into the start and end times.
 				// Case where time block has to be deleted to make room for new time block.
-	        	if ((startTime.get(Calendar.HOUR_OF_DAY) >= newBlockStartTime.get(Calendar.HOUR_OF_DAY)) &&
-	        		(endTime.get(Calendar.HOUR_OF_DAY) <= newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
+	        	if ((startTime.getTime().getTime() >= newBlockStartTime.getTime().getTime()) &&
+	        		(endTime.getTime().getTime() <= newBlockEndTime.getTime().getTime())) {
 	        		dataSource.deleteTimeBlock(timeBlock);
 	        	
 	        	// Case where start time of the block needs to be moved to make room for new block.
-	        	} else if ((startTime.get(Calendar.HOUR_OF_DAY) >= newBlockStartTime.get(Calendar.HOUR_OF_DAY)) &&
-	        			(startTime.get(Calendar.HOUR_OF_DAY) < newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
+	        	} else if ((startTime.getTime().getTime() >= newBlockStartTime.getTime().getTime()) &&
+	        			(startTime.getTime().getTime() < newBlockEndTime.getTime().getTime())) {
 	        		timeBlock.startTime = this.timeFormat.format(newBlockEndTime.getTime());
 	        		
 	        		System.out.println("EditTimeBlock: new start time: " + timeBlock.startTime);
 	        		dataSource.updateTimeBlock(timeBlock);
 	        		
 	        	// Case where the end time of the block needs to be moved to make room for new block.
-	        	} else if ((endTime.get(Calendar.HOUR_OF_DAY) >= newBlockStartTime.get(Calendar.HOUR_OF_DAY)) &&
-		        		(endTime.get(Calendar.HOUR_OF_DAY) < newBlockEndTime.get(Calendar.HOUR_OF_DAY))) {
+	        	} else if ((endTime.getTime().getTime() >= newBlockStartTime.getTime().getTime()) &&
+		        		(endTime.getTime().getTime() < newBlockEndTime.getTime().getTime())) {
 	        		timeBlock.endTime = this.timeFormat.format(newBlockStartTime.getTime());
 	        		
 	        		System.out.println("EditTimeBlock: new end time: " + timeBlock.endTime);

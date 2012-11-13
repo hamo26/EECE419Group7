@@ -227,7 +227,7 @@ public class SchedulesDataSource {
 		this.database.execSQL("DELETE FROM "
 				+ SchedulesSQLiteHelper.TABLE_TIME_BLOCK + " "
 				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = "
-				+ timeBlock.sid);
+				+ timeBlock.id);
 	}
 	
 	// Updates given time block in table.
