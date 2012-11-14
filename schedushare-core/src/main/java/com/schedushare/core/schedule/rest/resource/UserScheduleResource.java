@@ -6,7 +6,6 @@ import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 
 import com.google.inject.ImplementedBy;
-import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.core.schedule.rest.resource.impl.UserScheduleResourceImpl;
 
 /**
@@ -22,7 +21,7 @@ public interface UserScheduleResource {
 	 * @param scheduleRepresentation the schedule representation
 	 * @return the string
 	 */
-	@Put
+	@Post
 	public String createSchedule(String scheduleRepresentation);
 	
 	/**
@@ -31,7 +30,7 @@ public interface UserScheduleResource {
 	 * @param scheduleRepresentation the schedule representation
 	 * @return the string
 	 */
-	@Post
+	@Put
 	public String updateSchedule(String scheduleRepresentation);
 	
 	/**

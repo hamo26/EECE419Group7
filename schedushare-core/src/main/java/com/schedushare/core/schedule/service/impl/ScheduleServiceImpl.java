@@ -129,10 +129,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 			//FIX THIS. DO A JOIN INSTEAD OF CALLING INTO USER SERVICE.
 			UserEntity userEntity = userService.getUser(connection, userEmail);
 			
-			createScheduleQuery.insertInto(Tables.SCHEDULE, Tables.SCHEDULE.NAME, 
-							Tables.SCHEDULE.LAST_MODIFIED, Tables.SCHEDULE.ACTIVE, Tables.SCHEDULE.USER_ID)
-						   .values(scheduleEntity.getScheduleName(), new Time(Calendar.getInstance().getTimeInMillis()).getTime(), 
-								  scheduleEntity.isScheduleActive().booleanValue(), userEntity.getUserId()).execute();
+			createScheduleQuery.insertInto(Tables.SCHEDULE, 
+										   Tables.SCHEDULE.NAME, 
+										   Tables.SCHEDULE.LAST_MODIFIED, 
+										   Tables.SCHEDULE.ACTIVE, 
+										   Tables.SCHEDULE.USER_ID)
+							    .values(scheduleEntity.getScheduleName(), 
+							    		new Time(Calendar.getInstance().getTimeInMillis()).getTime(), 
+							    		scheduleEntity.isScheduleActive().booleanValue(), 
+							    		userEntity.getUserId())
+							    		.execute();
 			//Look for a better way to do this.
 			Field<?> identity = Factory.field("@@IDENTITY");
 			Integer createdScheduleId = createScheduleQuery.select(identity)
@@ -141,10 +147,20 @@ public class ScheduleServiceImpl implements ScheduleService {
 																	  .get(0);
 			
 			for (TimeBlockEntity timeBlock : timeBlocks) {
-				createScheduleQuery.insertInto(Tables.TIMEBLOCK, Tables.TIMEBLOCK.DAY, Tables.TIMEBLOCK.START_TIME,
-						Tables.TIMEBLOCK.END_TIME, Tables.TIMEBLOCK.LATITUDE, Tables.TIMEBLOCK.LONGITUDE, Tables.TIMEBLOCK.SCHEDULE_ID)
-						.values(timeBlock.getDay(), Time.valueOf(timeBlock.getStartTime()), Time.valueOf(timeBlock.getEndTime()), timeBlock.getLatitude(),
-								timeBlock.getLongitude(), createdScheduleId).execute();
+				createScheduleQuery.insertInto(Tables.TIMEBLOCK, 
+											   Tables.TIMEBLOCK.DAY, 
+											   Tables.TIMEBLOCK.START_TIME,
+											   Tables.TIMEBLOCK.END_TIME, 
+											   Tables.TIMEBLOCK.LATITUDE, 
+											   Tables.TIMEBLOCK.LONGITUDE, 
+											   Tables.TIMEBLOCK.SCHEDULE_ID)
+									.values(timeBlock.getDay(), 
+											Time.valueOf(timeBlock.getStartTime()), 
+											Time.valueOf(timeBlock.getEndTime()), 
+											timeBlock.getLatitude(),
+											timeBlock.getLongitude(), 
+											createdScheduleId)
+											.execute();
 			}
 		} catch (SchedushareException e) {
 			throw e;
@@ -165,6 +181,28 @@ public class ScheduleServiceImpl implements ScheduleService {
 							   .where(Tables.SCHEDULE.ID.equal(scheduleId))
 							   .execute();
 			return scheduleEntity;
+		} catch (SchedushareException e) {
+			throw e;
+		} catch (Exception e) {
+			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
+		}
+	}
+
+	@Override
+	public ScheduleEntity updateSchedule(Connection connection,
+			ScheduleEntity scheduleEntity) throws SchedushareException {
+
+		SchedushareFactory updateScheduleQuery = new SchedushareFactory(connection);
+		try {
+			int scheduleId = scheduleEntity.getScheduleId();
+			updateScheduleQuery.update(Tables.SCHEDULE)
+							   .set(Tables.SCHEDULE.ACTIVE, scheduleEntity.isScheduleActive().booleanValue())
+							   .set(Tables.SCHEDULE.LAST_MODIFIED, new Time(Calendar.getInstance().getTimeInMillis()))
+							   .set(Tables.SCHEDULE.NAME, scheduleEntity.getScheduleName())
+							   .set(Tables.SCHEDULE.USER_ID, scheduleEntity.getUserId())
+							   .where(Tables.SCHEDULE.ID.equal(scheduleId))
+							   .execute();
+			return getSchedule(connection, scheduleId);
 		} catch (SchedushareException e) {
 			throw e;
 		} catch (Exception e) {
