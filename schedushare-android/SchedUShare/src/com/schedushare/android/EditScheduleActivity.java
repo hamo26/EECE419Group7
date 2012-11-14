@@ -5,6 +5,8 @@ import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.DeleteScheduleDialogFragment;
 import com.schedushare.android.fragments.DeleteScheduleDialogFragment.DeleteScheduleDialogListener;
 import com.schedushare.android.fragments.EditDayFragment;
+import com.schedushare.android.fragments.RenameScheduleDialogFragment;
+import com.schedushare.android.fragments.RenameScheduleDialogFragment.RenameScheduleDialogListener;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -25,7 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_schedule)
-public class EditScheduleActivity extends RoboActivity implements DeleteScheduleDialogListener {
+public class EditScheduleActivity extends RoboActivity implements DeleteScheduleDialogListener, RenameScheduleDialogListener {
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
 	public static final String[] timeData = {
 			"0:00:00 AM", "0:30:00 AM", "1:00:00 AM", "1:30:00 AM",
@@ -215,6 +217,11 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 				// Open dialog box to delete schedule.
 				DialogFragment newFragment = new DeleteScheduleDialogFragment();
 			    newFragment.show(getFragmentManager(), "delete_schedule");
+			    break;
+			case R.id.rename_schedule_option:
+				// Open dialog box to delete schedule.
+				DialogFragment newFragment2 = new RenameScheduleDialogFragment();
+			    newFragment2.show(getFragmentManager(), "rename_schedule");
 			default:
 				break;
 		}
@@ -240,6 +247,16 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 
 	@Override
 	public void onDeleteScheduleDialogNegativeClick(DialogFragment dialog) {
+		
+	}
+
+	@Override
+	public void onRenameScheduleDialogPositiveClick(DialogFragment dialog) {
+		
+	}
+
+	@Override
+	public void onRenameScheduleDialogNegativeClick(DialogFragment dialog) {
 		
 	}
 }

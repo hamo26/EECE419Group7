@@ -35,4 +35,8 @@
     <string name="title_activity_select_location">Select Location</string>
 	<string name="tab_delete_schedule">Delete</string>
 	<string name="delete_schedule_dialog_title">Are You Sure?</string>
+	<string name="confirm_button_text">Confirm</string>
+	<string name="rename_schedule_dialog_title">Rename Schedule</string>
+	<string name="rename_schedule_dialog_name_input_hint">New Name</string>
+	<string name="tab_rename_schedule">Rename</string>
 </resources>
