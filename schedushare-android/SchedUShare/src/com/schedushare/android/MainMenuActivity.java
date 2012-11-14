@@ -2,13 +2,18 @@ package com.schedushare.android;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.db.TimeBlockData;
+import com.schedushare.android.fragments.EditDayFragment;
+import com.schedushare.android.fragments.ViewDayFragment;
 import com.schedushare.android.schedule.task.GetSchedulesTask;
+import com.schedushare.android.util.EditDayArrayAdapter;
 import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.rest.RestResult;
@@ -19,9 +24,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 @ContentView(R.layout.activity_main_menu)
@@ -29,6 +40,15 @@ public class MainMenuActivity extends RoboActivity {
 
     @Inject
     Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
+
+    public long activeScheduleId;
+	private ViewDayFragment mondayFragment;
+	private ViewDayFragment tuesdayFragment;
+	private ViewDayFragment wednesdayFragment;
+	private ViewDayFragment thursdayFragment;
+	private ViewDayFragment fridayFragment;
+	private ViewDayFragment saturdayFragment;
+	private ViewDayFragment sundayFragment;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +82,15 @@ public class MainMenuActivity extends RoboActivity {
 			
         	startLocationManager();
 	        createTestData();
+	        initializeCurrentScheduleLayout();
         }
+    }
+    
+    @Override
+    public void onRestart() {
+    	super.onRestart();
+    	
+    	// Refresh list view.
     }
     
     // Called when user clicks schedules button.
@@ -133,5 +161,142 @@ public class MainMenuActivity extends RoboActivity {
 			public void onStatusChanged(String provider, int status, Bundle extras) {}
     	};
     	//locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    }
+    
+    private void initializeCurrentScheduleLayout() {
+    	this.activeScheduleId = 1;
+        
+        // Create all fragments.
+        this.mondayFragment = new ViewDayFragment();
+        this.tuesdayFragment = new ViewDayFragment();
+        this.wednesdayFragment = new ViewDayFragment();
+        this.thursdayFragment = new ViewDayFragment();
+        this.fridayFragment = new ViewDayFragment();
+        this.saturdayFragment = new ViewDayFragment();
+        this.sundayFragment = new ViewDayFragment();
+        
+        // Initialize days.
+        Bundle args = new Bundle();
+        args.putInt("day", 1);
+        this.mondayFragment.setArguments(args);
+        Bundle args2 = new Bundle();
+        args2.putInt("day", 2);
+        this.tuesdayFragment.setArguments(args2);
+        Bundle args3 = new Bundle();
+        args3.putInt("day", 3);
+        this.wednesdayFragment.setArguments(args3);
+        Bundle args4 = new Bundle();
+        args4.putInt("day", 4);
+        this.thursdayFragment.setArguments(args4);
+        Bundle args5 = new Bundle();
+        args5.putInt("day", 5);
+        this.fridayFragment.setArguments(args5);
+        Bundle args6 = new Bundle();
+        args6.putInt("day", 6);
+        this.saturdayFragment.setArguments(args6);
+        Bundle args7 = new Bundle();
+        args7.putInt("day", 7);
+        this.sundayFragment.setArguments(args7);
+        
+        // Get an instance of FragmentTransaction from your Activity.
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Put Monday in view.
+        fragmentTransaction.add(R.id.active_schedule_container, this.mondayFragment);
+        fragmentTransaction.commit();
+        
+        // Create scroller to switch between days of the week.
+        LinearLayout dayButtonScroller = (LinearLayout)findViewById(R.id.active_schedule_day_button_scroller);
+        OnClickListener dayButtonClickListener = new OnClickListener() {
+        	@Override
+			public void onClick(View view) {
+        		Toast.makeText(MainMenuActivity.this,
+        				((Button)view).getText() + " is clicked!", Toast.LENGTH_SHORT).show();
+        		
+        		FragmentManager fragmentManager = getFragmentManager();
+        		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        		ViewDayFragment f;
+        		switch (view.getId()) {
+        			case 1:
+        				f = MainMenuActivity.this.mondayFragment;
+        				break;
+        			case 2:
+        				f = MainMenuActivity.this.tuesdayFragment;
+        				break;
+        			case 3:
+        				f = MainMenuActivity.this.wednesdayFragment;
+        				break;
+        			case 4:
+        				f = MainMenuActivity.this.thursdayFragment;
+        				break;
+        			case 5:
+        				f = MainMenuActivity.this.fridayFragment;
+        				break;
+        			case 6:
+        				f = MainMenuActivity.this.saturdayFragment;
+        				break;
+        			case 7:
+        				f = MainMenuActivity.this.sundayFragment;
+        				break;
+        			default:
+        				f = MainMenuActivity.this.mondayFragment;
+        		}
+        		fragmentTransaction.replace(R.id.active_schedule_container, f);
+        		fragmentTransaction.commit();
+			}
+        };
+        
+        // Create all 7 buttons.
+        Button monButton = new Button(this);
+        monButton.setId(1);
+        monButton.setOnClickListener(dayButtonClickListener);
+        monButton.setText("Mon");
+        monButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        Button tueButton = new Button(this);
+        tueButton.setId(2);
+        tueButton.setOnClickListener(dayButtonClickListener);
+        tueButton.setText("Tue");
+        tueButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        Button wedButton = new Button(this);
+        wedButton.setId(3);
+        wedButton.setOnClickListener(dayButtonClickListener);
+        wedButton.setText("Wed");
+        wedButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        Button thuButton = new Button(this);
+        thuButton.setId(4);
+        thuButton.setOnClickListener(dayButtonClickListener);
+        thuButton.setText("Thu");
+        thuButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        Button friButton = new Button(this);
+        friButton.setId(5);
+        friButton.setOnClickListener(dayButtonClickListener);
+        friButton.setText("Fri");
+        friButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        Button satButton = new Button(this);
+        satButton.setId(6);
+        satButton.setOnClickListener(dayButtonClickListener);
+        satButton.setText("Sat");
+        satButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        Button sunButton = new Button(this);
+        sunButton.setId(7);
+        sunButton.setOnClickListener(dayButtonClickListener);
+        sunButton.setText("Sun");
+        sunButton.setLayoutParams(new LayoutParams(150, 75));
+        
+        // Add all buttons to the scroller.
+        dayButtonScroller.addView(monButton);
+        dayButtonScroller.addView(tueButton);
+        dayButtonScroller.addView(wedButton);
+        dayButtonScroller.addView(thuButton);
+        dayButtonScroller.addView(friButton);
+        dayButtonScroller.addView(satButton);
+        dayButtonScroller.addView(sunButton);
     }
 }
