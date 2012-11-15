@@ -73,24 +73,31 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
         // Initialize days.
         Bundle args = new Bundle();
         args.putInt("day", 1);
+        args.putLong("scheduleId", this.scheduleId);
         this.mondayFragment.setArguments(args);
         Bundle args2 = new Bundle();
         args2.putInt("day", 2);
+        args2.putLong("scheduleId", this.scheduleId);
         this.tuesdayFragment.setArguments(args2);
         Bundle args3 = new Bundle();
         args3.putInt("day", 3);
+        args3.putLong("scheduleId", this.scheduleId);
         this.wednesdayFragment.setArguments(args3);
         Bundle args4 = new Bundle();
         args4.putInt("day", 4);
+        args4.putLong("scheduleId", this.scheduleId);
         this.thursdayFragment.setArguments(args4);
         Bundle args5 = new Bundle();
         args5.putInt("day", 5);
+        args5.putLong("scheduleId", this.scheduleId);
         this.fridayFragment.setArguments(args5);
         Bundle args6 = new Bundle();
         args6.putInt("day", 6);
+        args6.putLong("scheduleId", this.scheduleId);
         this.saturdayFragment.setArguments(args6);
         Bundle args7 = new Bundle();
         args7.putInt("day", 7);
+        args7.putLong("scheduleId", this.scheduleId);
         this.sundayFragment.setArguments(args7);
         
         // Get an instance of FragmentTransaction from your Activity.
@@ -237,11 +244,6 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 		dataSource.deleteSchedule(this.scheduleId);
 		dataSource.close();
 		
-	    Intent i = new Intent();
-	    Bundle b = new Bundle();
-	    b.putBoolean("deleteSuccess", true);
-	    i.putExtras(b);
-	    setResult(Activity.RESULT_OK, i);
 	    finish();
 	}
 
@@ -251,8 +253,15 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 	}
 
 	@Override
-	public void onRenameScheduleDialogPositiveClick(DialogFragment dialog) {
-		
+	public void onRenameScheduleDialogPositiveClick(DialogFragment dialog, String newName) {
+		SchedulesDataSource dataSource = new SchedulesDataSource(this);
+    	dataSource.open();
+    	ScheduleData schedule = dataSource.getScheduleFromId(this.scheduleId);
+    	schedule.name = newName;
+    	dataSource.updateSchedule(schedule);
+    	dataSource.close();
+    	
+    	this.setTitle(schedule.name);
 	}
 
 	@Override

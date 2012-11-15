@@ -46,21 +46,6 @@ public class ScheduleListFragment extends Fragment {
 		super.onDestroy();
 	}
 	
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	super.onActivityResult(requestCode, resultCode, data);
-    	
-    	// Called on edit schedule return.
-    	if (requestCode == 0) {
-    		if (resultCode != Activity.RESULT_CANCELED) {
-    			Bundle b = data.getExtras();
-    			if (b.getBoolean("deleteSuccess")) {
-    				swapCursor();
-    			}
-    		}
-    	}
-    }
-	
 	private void setListViewAdapter() {
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
@@ -80,7 +65,7 @@ public class ScheduleListFragment extends Fragment {
 				// Start EditScheduleActivity with the selected schedule.
 				Intent intent = new Intent(getActivity(), EditScheduleActivity.class);
 				intent.putExtra("scheduleId", id);
-		        startActivityForResult(intent, 0);
+		        startActivity(intent);
 				
 			}  
 		});

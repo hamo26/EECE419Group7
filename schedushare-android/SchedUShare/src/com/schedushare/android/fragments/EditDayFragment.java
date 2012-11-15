@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class EditDayFragment extends Fragment {
 	public ListView listView;
 	private int day;
+	private long scheduleId;
 	private ArrayList<TimeBlockData> timeBlocks;
 	private HashMap<Long, BlockTypeData> blockTypes;
 	
@@ -44,6 +45,7 @@ public class EditDayFragment extends Fragment {
 		// Only create the cursor and adapter the first time fragment is created.
 		if (savedInstanceState == null) {
 			this.day = getArguments().getInt("day");
+			this.scheduleId = getArguments().getLong("scheduleId");
 			setListViewAdapter();
 		}
 		
@@ -73,7 +75,7 @@ public class EditDayFragment extends Fragment {
 		// As well, get hash of all block types.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
 		dataSource.open();
-		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(((EditScheduleActivity)this.getActivity()).scheduleId, this.day);
+		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.scheduleId, this.day);
 		this.blockTypes = dataSource.getAllBlockTypes();
 		dataSource.close();
 		
@@ -85,7 +87,7 @@ public class EditDayFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// Start EditScheduleActivity with the selected schedule.
 				Intent intent = new Intent(getActivity(), EditTimeBlockActivity.class);
-				intent.putExtra("scheduleId", ((EditScheduleActivity)EditDayFragment.this.getActivity()).scheduleId);
+				intent.putExtra("scheduleId", EditDayFragment.this.scheduleId);
 				intent.putExtra("startTime", EditScheduleActivity.timeData[position]);
 				intent.putExtra("day", EditDayFragment.this.day);
 		        startActivityForResult(intent, 0);
@@ -100,7 +102,7 @@ public class EditDayFragment extends Fragment {
 		// Create new adapter with new time blocks, attach to listView, and refresh screen.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
 		dataSource.open();
-		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(((EditScheduleActivity)getActivity()).scheduleId, this.day);
+		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.scheduleId, this.day);
 		dataSource.close();
 		
 		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),

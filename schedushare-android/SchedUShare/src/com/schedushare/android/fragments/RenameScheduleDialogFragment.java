@@ -8,14 +8,19 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+
+import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.R;
+import com.schedushare.android.db.ScheduleData;
+import com.schedushare.android.db.SchedulesDataSource;
 
 public class RenameScheduleDialogFragment extends DialogFragment {
 	// The activity that creates an instance of this dialog fragment must
     // implement this interface in order to receive event callbacks.
     // Each method passes the DialogFragment in case the host needs to query it.
     public interface RenameScheduleDialogListener {
-        public void onRenameScheduleDialogPositiveClick(DialogFragment dialog);
+        public void onRenameScheduleDialogPositiveClick(DialogFragment dialog, String newName);
         public void onRenameScheduleDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -54,9 +59,12 @@ public class RenameScheduleDialogFragment extends DialogFragment {
         // Build the dialog with view.
         builder.setView(dialogView)
                .setPositiveButton(R.string.confirm_button_text, new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {                       
+                   public void onClick(DialogInterface dialog, int id) {
+                	   EditText userInput = (EditText)RenameScheduleDialogFragment.this.dialogView
+                			   .findViewById(R.id.rename_schedule_dialog_name_input);
+                	   
                        // Notify activity of confirm.
-                       RenameScheduleDialogFragment.this.listener.onRenameScheduleDialogPositiveClick(RenameScheduleDialogFragment.this);
+                       RenameScheduleDialogFragment.this.listener.onRenameScheduleDialogPositiveClick(RenameScheduleDialogFragment.this, userInput.getText().toString());
                    }
                })
                .setNegativeButton(R.string.cancel_button_text, new DialogInterface.OnClickListener() {

@@ -152,7 +152,7 @@ public class SchedulesDataSource {
 		String sql = "UPDATE " + SchedulesSQLiteHelper.TABLE_SCHEDULE + " "
 				+ "SET " + SchedulesSQLiteHelper.COLUMN_SID + " = " + schedule.sid + ", "
 				+ SchedulesSQLiteHelper.COLUMN_NAME + " = '" + schedule.name + "', "
-				+ SchedulesSQLiteHelper.COLUMN_ACTIVE + " = " + schedule.active + ", "
+				+ SchedulesSQLiteHelper.COLUMN_ACTIVE + " = '" + schedule.active + "', "
 				+ SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + schedule.ownerId + ", "
 				+ SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED + " = '" + schedule.lastModified + "' "
 				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = " + schedule.id;

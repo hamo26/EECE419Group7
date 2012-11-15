@@ -52,6 +52,13 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	}
 	
 	@Override
+	public void onRestart() {
+    	super.onRestart();
+    	
+    	((ScheduleListFragment)this.userSchedulesTabListener.fragment).swapCursor();
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Create menu with new schedule button.
 		MenuInflater inflater = getMenuInflater();
@@ -81,7 +88,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
     
 	// Called when user clicks create in new schedule dialog box.
 	public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog) {
-		((ScheduleListFragment)this.userSchedulesTabListener.fragment).swapCursor();
+		
     }
 	
 	// Called when user clicks cancel in new schedule dialog box. 

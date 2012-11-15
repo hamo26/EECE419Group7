@@ -9,11 +9,8 @@ import java.util.concurrent.ExecutionException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
-import com.schedushare.android.db.TimeBlockData;
 import com.schedushare.android.fragments.EditDayFragment;
-import com.schedushare.android.fragments.ViewDayFragment;
 import com.schedushare.android.schedule.task.GetSchedulesTask;
-import com.schedushare.android.util.EditDayArrayAdapter;
 import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.rest.RestResult;
@@ -42,13 +39,13 @@ public class MainMenuActivity extends RoboActivity {
     Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
 
     public long activeScheduleId;
-	private ViewDayFragment mondayFragment;
-	private ViewDayFragment tuesdayFragment;
-	private ViewDayFragment wednesdayFragment;
-	private ViewDayFragment thursdayFragment;
-	private ViewDayFragment fridayFragment;
-	private ViewDayFragment saturdayFragment;
-	private ViewDayFragment sundayFragment;
+	private EditDayFragment mondayFragment;
+	private EditDayFragment tuesdayFragment;
+	private EditDayFragment wednesdayFragment;
+	private EditDayFragment thursdayFragment;
+	private EditDayFragment fridayFragment;
+	private EditDayFragment saturdayFragment;
+	private EditDayFragment sundayFragment;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +88,15 @@ public class MainMenuActivity extends RoboActivity {
     	super.onRestart();
     	
     	// Refresh list view.
+    	FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        this.mondayFragment = new EditDayFragment();
+        Bundle args = new Bundle();
+        args.putInt("day", 1);
+        args.putLong("scheduleId", this.activeScheduleId);
+        this.mondayFragment.setArguments(args);
+    	fragmentTransaction.replace(R.id.active_schedule_container, this.mondayFragment);
+		fragmentTransaction.commit();
     }
     
     // Called when user clicks schedules button.
@@ -118,7 +124,7 @@ public class MainMenuActivity extends RoboActivity {
         dataSource.dropAllTables();
         dataSource.createUser(1, "oscarlee");
         for (int i = 0; i < 100; i++) {
-        	dataSource.createSchedule(i, " schedule" + i + " ", true, 1, dateTime.getTime().toString());
+        	dataSource.createSchedule(i, "schedule" + i, true, 1, dateTime.getTime().toString());
         }
         
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
@@ -160,42 +166,49 @@ public class MainMenuActivity extends RoboActivity {
 			@Override
 			public void onStatusChanged(String provider, int status, Bundle extras) {}
     	};
-    	locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    	//locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
     
     private void initializeCurrentScheduleLayout() {
     	this.activeScheduleId = 1;
         
         // Create all fragments.
-        this.mondayFragment = new ViewDayFragment();
-        this.tuesdayFragment = new ViewDayFragment();
-        this.wednesdayFragment = new ViewDayFragment();
-        this.thursdayFragment = new ViewDayFragment();
-        this.fridayFragment = new ViewDayFragment();
-        this.saturdayFragment = new ViewDayFragment();
-        this.sundayFragment = new ViewDayFragment();
+        this.mondayFragment = new EditDayFragment();
+        this.tuesdayFragment = new EditDayFragment();
+        this.wednesdayFragment = new EditDayFragment();
+        this.thursdayFragment = new EditDayFragment();
+        this.fridayFragment = new EditDayFragment();
+        this.saturdayFragment = new EditDayFragment();
+        this.sundayFragment = new EditDayFragment();
         
         // Initialize days.
         Bundle args = new Bundle();
         args.putInt("day", 1);
+        args.putLong("scheduleId", this.activeScheduleId);
         this.mondayFragment.setArguments(args);
         Bundle args2 = new Bundle();
         args2.putInt("day", 2);
+        args2.putLong("scheduleId", this.activeScheduleId);
         this.tuesdayFragment.setArguments(args2);
         Bundle args3 = new Bundle();
         args3.putInt("day", 3);
+        args3.putLong("scheduleId", this.activeScheduleId);
         this.wednesdayFragment.setArguments(args3);
         Bundle args4 = new Bundle();
         args4.putInt("day", 4);
+        args4.putLong("scheduleId", this.activeScheduleId);
         this.thursdayFragment.setArguments(args4);
         Bundle args5 = new Bundle();
         args5.putInt("day", 5);
+        args5.putLong("scheduleId", this.activeScheduleId);
         this.fridayFragment.setArguments(args5);
         Bundle args6 = new Bundle();
         args6.putInt("day", 6);
+        args6.putLong("scheduleId", this.activeScheduleId);
         this.saturdayFragment.setArguments(args6);
         Bundle args7 = new Bundle();
         args7.putInt("day", 7);
+        args7.putLong("scheduleId", this.activeScheduleId);
         this.sundayFragment.setArguments(args7);
         
         // Get an instance of FragmentTransaction from your Activity.
@@ -216,7 +229,7 @@ public class MainMenuActivity extends RoboActivity {
         		
         		FragmentManager fragmentManager = getFragmentManager();
         		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        		ViewDayFragment f;
+        		EditDayFragment f;
         		switch (view.getId()) {
         			case 1:
         				f = MainMenuActivity.this.mondayFragment;
