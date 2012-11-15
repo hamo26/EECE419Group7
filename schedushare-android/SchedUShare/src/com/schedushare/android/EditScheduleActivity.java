@@ -10,11 +10,10 @@ import com.schedushare.android.fragments.RenameScheduleDialogFragment.RenameSche
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
-import android.app.Activity;
+import roboguice.inject.InjectView;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +27,8 @@ import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_schedule)
 public class EditScheduleActivity extends RoboActivity implements DeleteScheduleDialogListener, RenameScheduleDialogListener {
+	@InjectView(R.id.day_button_scroller) private LinearLayout dayButtonScroller;
+	
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
 	public static final String[] timeData = {
 			"0:00:00 AM", "0:30:00 AM", "1:00:00 AM", "1:30:00 AM",
@@ -44,13 +45,7 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 			"10:00:00 PM", "10:30:00 PM", "11:00:00 PM", "11:30:00 PM"};
 	
 	public long scheduleId;
-	private EditDayFragment mondayFragment;
-	private EditDayFragment tuesdayFragment;
-	private EditDayFragment wednesdayFragment;
-	private EditDayFragment thursdayFragment;
-	private EditDayFragment fridayFragment;
-	private EditDayFragment saturdayFragment;
-	private EditDayFragment sundayFragment;
+	private EditDayFragment[] dayFragments;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,54 +57,25 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
         	this.scheduleId = extras.getLong("scheduleId");
         
         // Create all fragments.
-        this.mondayFragment = new EditDayFragment();
-        this.tuesdayFragment = new EditDayFragment();
-        this.wednesdayFragment = new EditDayFragment();
-        this.thursdayFragment = new EditDayFragment();
-        this.fridayFragment = new EditDayFragment();
-        this.saturdayFragment = new EditDayFragment();
-        this.sundayFragment = new EditDayFragment();
-        
-        // Initialize days.
-        Bundle args = new Bundle();
-        args.putInt("day", 1);
-        args.putLong("scheduleId", this.scheduleId);
-        this.mondayFragment.setArguments(args);
-        Bundle args2 = new Bundle();
-        args2.putInt("day", 2);
-        args2.putLong("scheduleId", this.scheduleId);
-        this.tuesdayFragment.setArguments(args2);
-        Bundle args3 = new Bundle();
-        args3.putInt("day", 3);
-        args3.putLong("scheduleId", this.scheduleId);
-        this.wednesdayFragment.setArguments(args3);
-        Bundle args4 = new Bundle();
-        args4.putInt("day", 4);
-        args4.putLong("scheduleId", this.scheduleId);
-        this.thursdayFragment.setArguments(args4);
-        Bundle args5 = new Bundle();
-        args5.putInt("day", 5);
-        args5.putLong("scheduleId", this.scheduleId);
-        this.fridayFragment.setArguments(args5);
-        Bundle args6 = new Bundle();
-        args6.putInt("day", 6);
-        args6.putLong("scheduleId", this.scheduleId);
-        this.saturdayFragment.setArguments(args6);
-        Bundle args7 = new Bundle();
-        args7.putInt("day", 7);
-        args7.putLong("scheduleId", this.scheduleId);
-        this.sundayFragment.setArguments(args7);
+        this.dayFragments = new EditDayFragment[7];
+        for (int i = 0; i < 7; i++) {
+        	this.dayFragments[i] = new EditDayFragment();
+        	Bundle args = new Bundle();
+        	args.putInt("day", i);
+        	args.putLong("scheduleId", this.scheduleId);
+        	this.dayFragments[i].setArguments(args);
+        }
         
         // Get an instance of FragmentTransaction from your Activity.
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put Monday in view.
-        fragmentTransaction.add(R.id.day_schedule_container, this.mondayFragment);
+        fragmentTransaction.add(R.id.day_schedule_container, this.dayFragments[0]);
         fragmentTransaction.commit();
         
         // Create scroller to switch between days of the week.
-        LinearLayout dayButtonScroller = (LinearLayout)findViewById(R.id.day_button_scroller);
+        this.dayButtonScroller = (LinearLayout)findViewById(R.id.day_button_scroller);
         OnClickListener dayButtonClickListener = new OnClickListener() {
         	@Override
 			public void onClick(View view) {
@@ -118,88 +84,19 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
         		
         		FragmentManager fragmentManager = getFragmentManager();
         		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        		EditDayFragment f;
-        		switch (view.getId()) {
-        			case 1:
-        				f = EditScheduleActivity.this.mondayFragment;
-        				break;
-        			case 2:
-        				f = EditScheduleActivity.this.tuesdayFragment;
-        				break;
-        			case 3:
-        				f = EditScheduleActivity.this.wednesdayFragment;
-        				break;
-        			case 4:
-        				f = EditScheduleActivity.this.thursdayFragment;
-        				break;
-        			case 5:
-        				f = EditScheduleActivity.this.fridayFragment;
-        				break;
-        			case 6:
-        				f = EditScheduleActivity.this.saturdayFragment;
-        				break;
-        			case 7:
-        				f = EditScheduleActivity.this.sundayFragment;
-        				break;
-        			default:
-        				f = EditScheduleActivity.this.mondayFragment;
-        		}
-        		fragmentTransaction.replace(R.id.day_schedule_container, f);
+        		fragmentTransaction.replace(R.id.day_schedule_container, EditScheduleActivity.this.dayFragments[view.getId()]);
         		fragmentTransaction.commit();
 			}
         };
         
         // Create all 7 buttons.
-        Button monButton = new Button(this);
-        monButton.setId(1);
-        monButton.setOnClickListener(dayButtonClickListener);
-        monButton.setText("Mon");
-        monButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        Button tueButton = new Button(this);
-        tueButton.setId(2);
-        tueButton.setOnClickListener(dayButtonClickListener);
-        tueButton.setText("Tue");
-        tueButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        Button wedButton = new Button(this);
-        wedButton.setId(3);
-        wedButton.setOnClickListener(dayButtonClickListener);
-        wedButton.setText("Wed");
-        wedButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        Button thuButton = new Button(this);
-        thuButton.setId(4);
-        thuButton.setOnClickListener(dayButtonClickListener);
-        thuButton.setText("Thu");
-        thuButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        Button friButton = new Button(this);
-        friButton.setId(5);
-        friButton.setOnClickListener(dayButtonClickListener);
-        friButton.setText("Fri");
-        friButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        Button satButton = new Button(this);
-        satButton.setId(6);
-        satButton.setOnClickListener(dayButtonClickListener);
-        satButton.setText("Sat");
-        satButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        Button sunButton = new Button(this);
-        sunButton.setId(7);
-        sunButton.setOnClickListener(dayButtonClickListener);
-        sunButton.setText("Sun");
-        sunButton.setLayoutParams(new LayoutParams(150, 75));
-        
-        // Add all buttons to the scroller.
-        dayButtonScroller.addView(monButton);
-        dayButtonScroller.addView(tueButton);
-        dayButtonScroller.addView(wedButton);
-        dayButtonScroller.addView(thuButton);
-        dayButtonScroller.addView(friButton);
-        dayButtonScroller.addView(satButton);
-        dayButtonScroller.addView(sunButton);
+        createDayButton(dayButtonClickListener, 0, "Mon", 150, 75);
+        createDayButton(dayButtonClickListener, 1, "Tue", 150, 75);
+        createDayButton(dayButtonClickListener, 2, "Wed", 150, 75);
+        createDayButton(dayButtonClickListener, 3, "Thu", 150, 75);
+        createDayButton(dayButtonClickListener, 4, "Fri", 150, 75);
+        createDayButton(dayButtonClickListener, 5, "Sat", 150, 75);
+        createDayButton(dayButtonClickListener, 6, "Sun", 150, 75);
         
         SchedulesDataSource dataSource = new SchedulesDataSource(this);
         dataSource.open();
@@ -268,4 +165,14 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 	public void onRenameScheduleDialogNegativeClick(DialogFragment dialog) {
 		
 	}
+	
+    private void createDayButton(OnClickListener listener, int id, String text, int width, int height) {    	
+    	Button dayButton = new Button(this);
+        dayButton.setId(id);
+        dayButton.setOnClickListener(listener);
+        dayButton.setText(text);
+        dayButton.setLayoutParams(new LayoutParams(width, height));
+        
+        this.dayButtonScroller.addView(dayButton);
+    }
 }

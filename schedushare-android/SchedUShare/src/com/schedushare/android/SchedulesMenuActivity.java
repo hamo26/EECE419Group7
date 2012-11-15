@@ -10,6 +10,8 @@ import roboguice.activity.RoboFragmentActivity;
 import roboguice.fragment.RoboDialogFragment;
 import roboguice.inject.ContentView;
 import android.app.ActionBar;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ActionBar.Tab;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -20,8 +22,7 @@ import android.view.MenuItem;
 @ContentView(R.layout.activity_schedules_menu)
 public class SchedulesMenuActivity extends RoboFragmentActivity implements CreateScheduleDialogListener {
 	// List views connected to the database for both user and friend schedules.
-	private TabListener<ScheduleListFragment> userSchedulesTabListener;
-	private TabListener<CheckableScheduleListFragment> friendSchedulesTabListener;
+	private ScheduleListFragment scheduleListFragment;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -30,24 +31,14 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	    // Only create action bar if the fragment container exists in view.
 	    if (findViewById(R.id.schedule_list_container) != null) {
 	    	// Create the tab listeners which will facilitate user clicking on the tabs.
-			this.userSchedulesTabListener = new TabListener<ScheduleListFragment>(
-					this, "user_schedules", ScheduleListFragment.class);
-			this.friendSchedulesTabListener = new TabListener<CheckableScheduleListFragment>(
-					this, "friend_schedules", CheckableScheduleListFragment.class);
+			this.scheduleListFragment = new ScheduleListFragment();
 			
-			// Set action bar to navigation mode and add the user and friend tabs.
-			ActionBar actionBar = getActionBar();
-			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-			
-			Tab tab = actionBar.newTab()
-					.setText(R.string.tab_user_schedules)
-					.setTabListener(this.userSchedulesTabListener);
-			actionBar.addTab(tab);
-			
-			tab = actionBar.newTab()
-					.setText(R.string.tab_friend_schedules)
-					.setTabListener(this.friendSchedulesTabListener);
-			actionBar.addTab(tab);
+			FragmentManager fragmentManager = getFragmentManager();
+	        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+	        // Put Monday in view.
+	        fragmentTransaction.add(R.id.schedule_list_container, this.scheduleListFragment);
+	        fragmentTransaction.commit();
 	    }
 	}
 	
@@ -55,7 +46,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	public void onRestart() {
     	super.onRestart();
     	
-    	((ScheduleListFragment)this.userSchedulesTabListener.fragment).swapCursor();
+    	this.scheduleListFragment.swapCursor();
 	}
 	
 	@Override

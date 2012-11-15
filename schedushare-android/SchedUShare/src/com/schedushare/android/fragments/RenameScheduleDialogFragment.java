@@ -10,10 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.R;
-import com.schedushare.android.db.ScheduleData;
-import com.schedushare.android.db.SchedulesDataSource;
 
 public class RenameScheduleDialogFragment extends DialogFragment {
 	// The activity that creates an instance of this dialog fragment must
