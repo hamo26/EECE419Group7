@@ -33,10 +33,18 @@
     <string name="edit_time_block_confirm_button_text">Confirm</string>
     <string name="edit_time_block_cancel_button_text">Cancel</string>
     <string name="title_activity_select_location">Select Location</string>
-	<string name="tab_delete_schedule">Delete</string>
-	<string name="delete_schedule_dialog_title">Are You Sure?</string>
-	<string name="confirm_button_text">Confirm</string>
-	<string name="rename_schedule_dialog_title">Rename Schedule</string>
-	<string name="rename_schedule_dialog_name_input_hint">New Name</string>
-	<string name="tab_rename_schedule">Rename</string>
+    <string name="tab_delete_schedule">Delete</string>
+    <string name="delete_schedule_dialog_title">Are You Sure?</string>
+    <string name="confirm_button_text">Confirm</string>
+    <string name="rename_schedule_dialog_title">Rename Schedule</string>
+    <string name="rename_schedule_dialog_name_input_hint">New Name</string>
+    <string name="tab_rename_schedule">Rename</string>
+    <string name="settings_owner_id">owner_id</string>
+    <string name="settings_owner_facebook_id">owner_facebook_id</string>
+    <string name="settings_owner_facebook_name">owner_facebook_name</string>
+    <string name="settings_owner_facebook_username">owner_facebook_username</string>
+    <string name="error_dialog_title">Error</string>
+    <string name="error_dialog_button_text">OK</string>
+    <string name="title_activity_friend_picker">Pick Friends</string>
+
 </resources>

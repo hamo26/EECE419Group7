@@ -3,13 +3,20 @@ package com.schedushare.android;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
+import com.facebook.FacebookActivity;
+import com.facebook.GraphUser;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.SessionState;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.EditDayFragment;
+import com.schedushare.android.fragments.FacebookAuthFragment;
 import com.schedushare.android.schedule.task.GetSchedulesTask;
 import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
@@ -22,31 +29,36 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-@ContentView(R.layout.activity_main_menu)
-public class MainMenuActivity extends RoboActivity {
+public class MainMenuActivity extends FacebookActivity {
 
-    @Inject Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
+    //@Inject Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
     
-    @InjectView(R.id.active_schedule_day_button_scroller) private LinearLayout dayButtonScroller;
+    private LinearLayout dayButtonScroller;
 
     public long activeScheduleId;
     private EditDayFragment[] dayFragments;
     private int lastViewedDay;
     
+    private FacebookAuthFragment facebookAuthFragment;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_menu);
         
         if (savedInstanceState == null) {
         	
@@ -67,16 +79,15 @@ public class MainMenuActivity extends RoboActivity {
 //				
 //				dataSource.close();
 //			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			} catch (ExecutionException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 			
         	startLocationManager();
 	        createTestData();
 	        initializeCurrentScheduleLayout();
+	        initializeFacebookLayout();
         }
     }
     
@@ -96,6 +107,43 @@ public class MainMenuActivity extends RoboActivity {
 		fragmentTransaction.commit();
     }
     
+    @Override
+    protected void onSessionStateChange(SessionState state, Exception exception) {
+    	// user has either logged in or not ...
+    	if (state.isOpened()) {
+    		// make request to the /me API
+    		Request request = Request.newMeRequest(
+    				this.getSession(),
+    				new Request.GraphUserCallback() {
+    					// callback after Graph API response with user object
+    					@Override
+    					public void onCompleted(GraphUser user, Response response) {
+    						if (user != null) {
+    							SharedPreferences settings = getPreferences(0);
+    							SharedPreferences.Editor editor = settings.edit();
+    							editor.putString(getString(R.string.settings_owner_facebook_id), user.getId());
+    							editor.putString(getString(R.string.settings_owner_facebook_name), user.getName());
+    							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
+    							
+    							Toast.makeText(MainMenuActivity.this, "name: " + user.getName() + 
+    									" username: " + user.getUsername() +
+    									" id: " + user.getId(), Toast.LENGTH_LONG).show();
+    						}
+    					}
+    				}
+    		);
+    		Request.executeBatchAsync(request);
+    	}
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            // Do nothing for now
+        }
+    }
+    
     // Called when user clicks schedules button.
     public void startSchedulesMenu(View view) {
     	Intent intent = new Intent(this, SchedulesMenuActivity.class);
@@ -109,7 +157,10 @@ public class MainMenuActivity extends RoboActivity {
     
     // Called when user clicks settings button.
     public void startSettingsMenu(View view) {
-    	
+    	Intent intent = new Intent();
+        intent.setData(FriendPickerActivity.FRIEND_PICKER);
+        intent.setClass(this, FriendPickerActivity.class);
+        startActivityForResult(intent, 0);
     }
     
     // Creates test data.
@@ -222,5 +273,15 @@ public class MainMenuActivity extends RoboActivity {
         dayButton.setLayoutParams(new LayoutParams(width, height));
         
         this.dayButtonScroller.addView(dayButton);
+    }
+    
+    private void initializeFacebookLayout() {
+    	FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Put facebook auth button in view.
+        this.facebookAuthFragment = new FacebookAuthFragment();
+        fragmentTransaction.add(R.id.facebook_auth_container, this.facebookAuthFragment);
+        fragmentTransaction.commit();
     }
 }
