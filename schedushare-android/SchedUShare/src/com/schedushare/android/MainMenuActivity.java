@@ -17,12 +17,14 @@ import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.FacebookAuthFragment;
+import com.schedushare.android.fragments.NewScheduleDialogFragment;
 import com.schedushare.android.schedule.task.GetSchedulesTask;
 import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.rest.RestResult;
 
 import roboguice.activity.RoboActivity;
+import roboguice.fragment.RoboDialogFragment;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 import android.location.Location;
@@ -30,17 +32,19 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainMenuActivity extends FacebookActivity {
@@ -92,22 +96,6 @@ public class MainMenuActivity extends FacebookActivity {
     }
     
     @Override
-    public void onRestart() {
-    	super.onRestart();
-    	
-    	// Refresh list view.
-    	FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        this.dayFragments[this.lastViewedDay] = new EditDayFragment();
-        Bundle args = new Bundle();
-        args.putInt("day", this.lastViewedDay);
-        args.putLong("scheduleId", this.activeScheduleId);
-        this.dayFragments[this.lastViewedDay].setArguments(args);
-    	fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[this.lastViewedDay]);
-		fragmentTransaction.commit();
-    }
-    
-    @Override
     protected void onSessionStateChange(SessionState state, Exception exception) {
     	// user has either logged in or not ...
     	if (state.isOpened()) {
@@ -121,9 +109,10 @@ public class MainMenuActivity extends FacebookActivity {
     						if (user != null) {
     							SharedPreferences settings = getPreferences(0);
     							SharedPreferences.Editor editor = settings.edit();
-    							editor.putString(getString(R.string.settings_owner_facebook_id), user.getId());
+    							editor.putLong(getString(R.string.settings_owner_facebook_id), Long.parseLong(user.getId()));
     							editor.putString(getString(R.string.settings_owner_facebook_name), user.getName());
     							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
+    							editor.commit();
     							
     							Toast.makeText(MainMenuActivity.this, "name: " + user.getName() + 
     									" username: " + user.getUsername() +
@@ -140,15 +129,32 @@ public class MainMenuActivity extends FacebookActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            // Do nothing for now
+        	
         }
     }
     
-    // Called when user clicks schedules button.
-    public void startSchedulesMenu(View view) {
-    	Intent intent = new Intent(this, SchedulesMenuActivity.class);
-        startActivity(intent);
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Create menu with new schedule button.
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.view_schedules_option:
+				// Open schedules menu.
+				Intent intent = new Intent(this, SchedulesMenuActivity.class);
+		        startActivity(intent);
+			default:
+				break;
+	  }
+	
+	  return true;
+	}
     
     // Called when user clicks bump button.
     public void startBump(View view) {
@@ -156,7 +162,7 @@ public class MainMenuActivity extends FacebookActivity {
     }
     
     // Called when user clicks settings button.
-    public void startSettingsMenu(View view) {
+    public void startDiff(View view) {
     	Intent intent = new Intent();
         intent.setData(FriendPickerActivity.FRIEND_PICKER);
         intent.setClass(this, FriendPickerActivity.class);
@@ -176,7 +182,7 @@ public class MainMenuActivity extends FacebookActivity {
         }
         
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
-        dateTime.set(Calendar.HOUR, 10);
+        dateTime.set(Calendar.HOUR, 5);
         dateTime.set(Calendar.MINUTE, 0);
         dateTime.set(Calendar.SECOND, 0);
         dateTime.set(Calendar.AM_PM, Calendar.AM);
@@ -193,8 +199,15 @@ public class MainMenuActivity extends FacebookActivity {
         dataSource.createBlockType(1, "School");
         dataSource.createBlockType(2, "Work");
         dataSource.createBlockType(3, "Leisure");
-        dataSource.createTimeBlock(1, "EECE 419", startTime.toString(), endTime.toString(), 1, 1, 1, 5.55, 5.55);
+        dataSource.createTimeBlock(1, "EECE 419", startTime.toString(), endTime.toString(), 0, 1, 1, 5.55, 5.55);
         dataSource.close();
+        
+        SharedPreferences settings = getPreferences(0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putLong(getString(R.string.settings_owner_id), 1);
+		editor.putLong(getString(R.string.settings_owner_active_schedule_id), 1);
+		editor.commit();
+		this.activeScheduleId = settings.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
     }
     
     // Start location listener.
@@ -217,9 +230,7 @@ public class MainMenuActivity extends FacebookActivity {
     	//locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
     
-    private void initializeCurrentScheduleLayout() {
-    	this.activeScheduleId = 1;
-        
+    private void initializeCurrentScheduleLayout() {        
         // Create all fragments.
     	this.dayFragments = new EditDayFragment[7];
         for (int i = 0; i < 7; i++) {
@@ -231,7 +242,7 @@ public class MainMenuActivity extends FacebookActivity {
         }
         
         // Get an instance of FragmentTransaction from your Activity.
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put Monday in view.
@@ -247,11 +258,12 @@ public class MainMenuActivity extends FacebookActivity {
         		Toast.makeText(MainMenuActivity.this,
         				((Button)view).getText() + " is clicked!", Toast.LENGTH_SHORT).show();
         		
-        		FragmentManager fragmentManager = getFragmentManager();
+        		FragmentManager fragmentManager = getSupportFragmentManager();
         		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         		fragmentTransaction.replace(R.id.active_schedule_container, MainMenuActivity.this.dayFragments[view.getId()]);
-        		MainMenuActivity.this.lastViewedDay = view.getId();
         		fragmentTransaction.commit();
+        		
+        		MainMenuActivity.this.lastViewedDay = view.getId();
 			}
         };
         
@@ -276,12 +288,25 @@ public class MainMenuActivity extends FacebookActivity {
     }
     
     private void initializeFacebookLayout() {
-    	FragmentManager fragmentManager = getFragmentManager();
+    	FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put facebook auth button in view.
         this.facebookAuthFragment = new FacebookAuthFragment();
         fragmentTransaction.add(R.id.facebook_auth_container, this.facebookAuthFragment);
         fragmentTransaction.commit();
+    }
+    
+    private void refreshListView() {
+    	// Refresh list view.
+    	FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        this.dayFragments[this.lastViewedDay] = new EditDayFragment();
+        Bundle args = new Bundle();
+        args.putInt("day", this.lastViewedDay);
+        args.putLong("scheduleId", this.activeScheduleId);
+        this.dayFragments[this.lastViewedDay].setArguments(args);
+    	fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[this.lastViewedDay]);
+		fragmentTransaction.commit();
     }
 }

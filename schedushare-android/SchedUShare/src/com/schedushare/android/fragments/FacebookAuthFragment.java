@@ -3,8 +3,8 @@ package com.schedushare.android.fragments;
 import com.facebook.LoginButton;
 import com.schedushare.android.R;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

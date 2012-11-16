@@ -1,20 +1,16 @@
 package com.schedushare.android;
 
-import com.schedushare.android.fragments.CheckableScheduleListFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment.CreateScheduleDialogListener;
 import com.schedushare.android.fragments.ScheduleListFragment;
-import com.schedushare.android.util.TabListener;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.fragment.RoboDialogFragment;
 import roboguice.inject.ContentView;
-import android.app.ActionBar;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.ActionBar.Tab;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,7 +29,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	    	// Create the tab listeners which will facilitate user clicking on the tabs.
 			this.scheduleListFragment = new ScheduleListFragment();
 			
-			FragmentManager fragmentManager = getFragmentManager();
+			FragmentManager fragmentManager = getSupportFragmentManager();
 	        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 	        // Put Monday in view.

@@ -4,10 +4,10 @@ import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.SchedulesDataSource;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

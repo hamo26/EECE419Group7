@@ -8,13 +8,13 @@ import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.RenameScheduleDialogFragment;
 import com.schedushare.android.fragments.RenameScheduleDialogFragment.RenameScheduleDialogListener;
 
-import roboguice.activity.RoboActivity;
+import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,7 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_schedule)
-public class EditScheduleActivity extends RoboActivity implements DeleteScheduleDialogListener, RenameScheduleDialogListener {
+public class EditScheduleActivity extends RoboFragmentActivity implements DeleteScheduleDialogListener, RenameScheduleDialogListener {
 	@InjectView(R.id.day_button_scroller) private LinearLayout dayButtonScroller;
 	
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
@@ -67,7 +67,7 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
         }
         
         // Get an instance of FragmentTransaction from your Activity.
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put Monday in view.
@@ -82,7 +82,7 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
         		Toast.makeText(EditScheduleActivity.this,
         				((Button)view).getText() + " is clicked!", Toast.LENGTH_SHORT).show();
         		
-        		FragmentManager fragmentManager = getFragmentManager();
+        		FragmentManager fragmentManager = getSupportFragmentManager();
         		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         		fragmentTransaction.replace(R.id.day_schedule_container, EditScheduleActivity.this.dayFragments[view.getId()]);
         		fragmentTransaction.commit();
@@ -120,12 +120,12 @@ public class EditScheduleActivity extends RoboActivity implements DeleteSchedule
 			case R.id.delete_schedule_option:
 				// Open dialog box to delete schedule.
 				DialogFragment newFragment = new DeleteScheduleDialogFragment();
-			    newFragment.show(getFragmentManager(), "delete_schedule");
+			    newFragment.show(getSupportFragmentManager(), "delete_schedule");
 			    break;
 			case R.id.rename_schedule_option:
 				// Open dialog box to delete schedule.
 				DialogFragment newFragment2 = new RenameScheduleDialogFragment();
-			    newFragment2.show(getFragmentManager(), "rename_schedule");
+			    newFragment2.show(getSupportFragmentManager(), "rename_schedule");
 			default:
 				break;
 		}

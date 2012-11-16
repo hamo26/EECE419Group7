@@ -10,9 +10,8 @@
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="login_button_text">Login</string>
-    <string name="browse_schedules_button_text">Schedules</string>
     <string name="bump_button_text">Bump</string>
-    <string name="settings_button_text">Settings</string>
+    <string name="diff_button_text">Diff</string>
     <string name="title_activity_schedules_menu">Schedules Menu</string>
     <string name="tab_user_schedules">Me</string>
     <string name="tab_friend_schedules">Friends</string>
@@ -40,11 +39,13 @@
     <string name="rename_schedule_dialog_name_input_hint">New Name</string>
     <string name="tab_rename_schedule">Rename</string>
     <string name="settings_owner_id">owner_id</string>
+    <string name="settings_owner_active_schedule_id">owner_active_schedule_id</string>
     <string name="settings_owner_facebook_id">owner_facebook_id</string>
     <string name="settings_owner_facebook_name">owner_facebook_name</string>
     <string name="settings_owner_facebook_username">owner_facebook_username</string>
     <string name="error_dialog_title">Error</string>
     <string name="error_dialog_button_text">OK</string>
-    <string name="title_activity_friend_picker">Pick Friends</string>
+    <string name="title_activity_friend_picker">Diff</string>
+    <string name="tab_view_schedules">My Schedules</string>
 
 </resources>
