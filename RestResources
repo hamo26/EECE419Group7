@@ -1,0 +1,64 @@
+REST ENTITIES
+
+The User Entity
+
+{
+  "user-id":""//GENERATED ON DB,
+  "name":"",
+  "email":"",
+  "auth-token":""//MAY NOT BE REQUIRED
+}
+
+The Schedule Entity
+
+{
+  "user-id":"",//OWNER OF SCHEDULE
+  "schedule-id":"",
+  "schedule-name":"",
+  "active":"", //DEFAULT TO FALSE
+  "last-modified":"",//AUTO POPULATED IN DB
+  "time-blocks":[{time-block-entities},...]//ALL TIMEBLOCK ENETITIES ASSOCIATED WITH SCHEDULE
+}
+
+The Schedule List Entity
+
+{
+  [{scheduleListEntity},...] //LIST OF SCHEDULES
+}
+
+The Time Block Entity 
+
+{
+  "time-block-id":"",//auto generated
+  "start-time":"",//TIME FORMAT
+  "end-time":"",//TIME FORMAT
+  "day":"",//[Monday, Tuesday, Wednesday,..] ENUMARATION, CHECK DB 
+  "longitude":"",//DOUBLE
+  "latitude":"",//DOUBLE
+  "schedule-id":"" //SCHEDULE THAT OWNS TIME BLOCK
+}
+
+The Time Blocks Entity
+
+{
+  "schedule-id":"", //SCHEDULE ID 
+  "time-blocks":[{time-block-entities}..] //TIME BLOCK ENTITIES
+}
+
+Create a user: POST userEntity to /register/user
+Get a user by email: Get /user/{userEmail}
+Update a user: PUT userEntity to /user/{userEmail}
+
+Create a schedule: POST scheduleEntity to /schedules/user/{userEmail}
+Get an active schedule for user: GET /schedules/user/{userEmail}/active
+Get all Schedules for user: I am going to work on this. It seems wrong right now.
+Delete a schedule: DELETE /schedules/{scheduleId}
+
+
+Create timeblocks: POST timeBlocksEnity to /timeblocks
+Update timeblocks: PUT timeBlocksEntity to /timeblocks
+Delete timeblock: DELETE /timeblocks/{timeBlockId}
+Get all timeblocks for schedule: GET /timeblocks/schedules/{scheduleId}
+
+ 
+
