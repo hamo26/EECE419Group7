@@ -51,6 +51,16 @@ public interface TimeBlocksService {
 	public TimeBlocksEntity updateTimeBlocks(Connection connection, TimeBlocksEntity timeBlocksEntity) throws SchedushareException;
 	
 	/**
+	 * Update time blocks by day.
+	 *
+	 * @param connection the connection
+	 * @param timeBlocksEntity the time blocks entity
+	 * @param day the day
+	 * @return all time blocks associated with schedule
+	 */
+	public TimeBlocksEntity updateTimeBlocksByDay(Connection connection, TimeBlocksEntity timeBlocksEntity, String day) throws SchedushareException;
+	
+	/**
 	 * Delete time block.
 	 *
 	 * @param connection the connection

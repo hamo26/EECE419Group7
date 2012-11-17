@@ -11,14 +11,13 @@ import org.jooq.impl.Factory;
 
 import com.google.inject.Inject;
 import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.dto.TimeBlockEntity;
-import com.schedushare.common.domain.dto.UserEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
 import com.schedushare.core.database.SchedushareFactory;
 import com.schedushare.core.database.Tables;
 import com.schedushare.core.schedule.service.ScheduleService;
-import com.schedushare.core.user.service.UserService;
 
 /**
  * Implements {@link ScheduleService}.
@@ -26,14 +25,10 @@ import com.schedushare.core.user.service.UserService;
 public class ScheduleServiceImpl implements ScheduleService {
 
 	private final SchedushareExceptionFactory schedushareExceptionFactory;
-	private final UserService userService;
 	
 	@Inject
-	public ScheduleServiceImpl(final SchedushareExceptionFactory schedushareExceptionFactory,
-							   final UserService userService) {
+	public ScheduleServiceImpl(final SchedushareExceptionFactory schedushareExceptionFactory) {
 		this.schedushareExceptionFactory = schedushareExceptionFactory;
-		this.userService = userService;
-		
 	}
 	
 	@Override
@@ -66,19 +61,18 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public ScheduleEntity getActiveScheduleForUser(Connection connection,
-			String userEmail) throws SchedushareException {
+			int userId) throws SchedushareException {
 		
 		try {
-			SchedushareFactory getScheduleQuery = new SchedushareFactory(connection);
+			SchedushareFactory getActiveScheduleQuery = new SchedushareFactory(connection);
 			
-			UserEntity user = userService.getUser(connection, userEmail);
-			ScheduleEntity scheduleEntity = getScheduleQuery.select().from(Tables.SCHEDULE)
+			ScheduleEntity scheduleEntity = getActiveScheduleQuery.select().from(Tables.SCHEDULE)
 					.where(Tables.SCHEDULE.ACTIVE.equal(Boolean.TRUE))
-					.and(Tables.SCHEDULE.USER_ID.equal(user.getUserId()))
+					.and(Tables.SCHEDULE.USER_ID.equal(userId))
 					.fetchInto(ScheduleEntity.class)
 					.get(0);
 			
-			List<TimeBlockEntity> timeBlocks = getScheduleQuery.select()
+			List<TimeBlockEntity> timeBlocks = getActiveScheduleQuery.select()
 					.from(Tables.TIMEBLOCK)
 					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleEntity.getScheduleId()))
 					.fetchInto(TimeBlockEntity.class);
@@ -89,29 +83,22 @@ public class ScheduleServiceImpl implements ScheduleService {
 					scheduleEntity.getUserId(), 
 					scheduleEntity.getT_lastModified().toString(), 
 					timeBlocks);
-		} catch(SchedushareException e) {
-			throw e;
 		} catch (Exception e) {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
 		}
 	}
 
 	@Override
-	public Collection<ScheduleEntity> getSchedulesForUser(
-			Connection connection, String userEmail) throws SchedushareException {
+	public ScheduleListEntity getSchedulesForUser(
+			Connection connection, int userId) throws SchedushareException {
 		SchedushareFactory getSchedulesQuery = new SchedushareFactory(connection);
 		
-		UserEntity user;
 		try {
-			user = userService.getUser(connection, userEmail);
 			List<ScheduleEntity> queryResult = getSchedulesQuery.select()
 					.from(Tables.SCHEDULE)
-					.where(Tables.SCHEDULE.USER_ID.equal(user.getUserId()))
+					.where(Tables.SCHEDULE.USER_ID.equal(userId))
 					.fetchInto(ScheduleEntity.class);
-			return queryResult;
-		} catch (SchedushareException e) {
-			// TODO Auto-generated catch block
-			throw e;
+			return new ScheduleListEntity(queryResult);
 		} catch (Exception e) {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
 		}
@@ -120,15 +107,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public ScheduleEntity createScheduleForUser(Connection connection,
-			String userEmail, ScheduleEntity scheduleEntity) throws SchedushareException {
+			int userId, ScheduleEntity scheduleEntity) throws SchedushareException {
 
 		SchedushareFactory createScheduleQuery = new SchedushareFactory(connection);
 		Collection<TimeBlockEntity> timeBlocks = scheduleEntity.getTimeBlocks();
 		
 		try {
-			//FIX THIS. DO A JOIN INSTEAD OF CALLING INTO USER SERVICE.
-			UserEntity userEntity = userService.getUser(connection, userEmail);
-			
+			boolean isScheduleActive = scheduleEntity.isScheduleActive() != null 
+					? scheduleEntity.isScheduleActive().booleanValue() : Boolean.FALSE;
 			createScheduleQuery.insertInto(Tables.SCHEDULE, 
 										   Tables.SCHEDULE.NAME, 
 										   Tables.SCHEDULE.LAST_MODIFIED, 
@@ -136,8 +122,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 										   Tables.SCHEDULE.USER_ID)
 							    .values(scheduleEntity.getScheduleName(), 
 							    		new Time(Calendar.getInstance().getTimeInMillis()).getTime(), 
-							    		scheduleEntity.isScheduleActive().booleanValue(), 
-							    		userEntity.getUserId())
+							    		isScheduleActive, 
+							    		userId)
 							    		.execute();
 			//Look for a better way to do this.
 			Field<?> identity = Factory.field("@@IDENTITY");
@@ -162,8 +148,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 											createdScheduleId)
 											.execute();
 			}
-		} catch (SchedushareException e) {
-			throw e;
 		} catch (Exception e) {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
 		}
@@ -195,8 +179,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 		SchedushareFactory updateScheduleQuery = new SchedushareFactory(connection);
 		try {
 			int scheduleId = scheduleEntity.getScheduleId();
+			boolean isScheduleActive = scheduleEntity.isScheduleActive().booleanValue();
 			updateScheduleQuery.update(Tables.SCHEDULE)
-							   .set(Tables.SCHEDULE.ACTIVE, scheduleEntity.isScheduleActive().booleanValue())
+							   .set(Tables.SCHEDULE.ACTIVE, isScheduleActive)
 							   .set(Tables.SCHEDULE.LAST_MODIFIED, new Time(Calendar.getInstance().getTimeInMillis()))
 							   .set(Tables.SCHEDULE.NAME, scheduleEntity.getScheduleName())
 							   .set(Tables.SCHEDULE.USER_ID, scheduleEntity.getUserId())

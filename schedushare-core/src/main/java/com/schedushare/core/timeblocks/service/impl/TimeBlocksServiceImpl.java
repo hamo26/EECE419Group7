@@ -139,6 +139,35 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 	}
 
 	@Override
+	public TimeBlocksEntity updateTimeBlocksByDay(Connection connection,
+			TimeBlocksEntity timeBlocksEntity, String day) throws SchedushareException {
+
+		SchedushareFactory updateTimeBlockQuery = new SchedushareFactory(connection);
+
+		try {
+			updateTimeBlockQuery.delete(Tables.TIMEBLOCK)
+								.where(Tables.TIMEBLOCK.DAY.equal(TimeblockDay.valueOf(day)))
+								.execute();
+			
+			Collection<TimeBlockEntity> timeBlocks = timeBlocksEntity.getTimeBlocks();
+			
+			for (TimeBlockEntity timeBlock : timeBlocks) {
+				updateTimeBlockQuery.update(Tables.TIMEBLOCK)
+									.set(Tables.TIMEBLOCK.DAY, TimeblockDay.valueOf(timeBlock.getDay()))
+									.set(Tables.TIMEBLOCK.END_TIME, timeBlock.getT_endTime())
+									.set(Tables.TIMEBLOCK.LATITUDE, timeBlock.getLatitude())
+									.set(Tables.TIMEBLOCK.LONGITUDE, timeBlock.getLongitude())
+									.set(Tables.TIMEBLOCK.START_TIME, timeBlock.getT_startTime())
+									.where(Tables.TIMEBLOCK.ID.equal(timeBlock.getTimeBlockId()))
+									.execute();
+			}
+			return getTimeBlocksForSchedule(connection, timeBlocksEntity.getScheduleId());
+		} catch (Exception e) {
+			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
+		}
+	}
+
+	@Override
 	public TimeBlockEntity deleteTimeBlock(Connection connection,
 			int timeBlockId) throws SchedushareException {
 		SchedushareFactory deleteTimeBlockQuery = new SchedushareFactory(connection);
@@ -155,5 +184,6 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
 		}
 	}
+
 
 }

@@ -1,10 +1,10 @@
 package com.schedushare.core.schedule.service;
 
 import java.sql.Connection;
-import java.util.Collection;
 
 import com.google.inject.ImplementedBy;
 import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.core.schedule.service.impl.ScheduleServiceImpl;
 
@@ -31,18 +31,18 @@ public interface ScheduleService {
 	 * @param userId the user id
 	 * @return the active schedule for user
 	 */
-	ScheduleEntity getActiveScheduleForUser(final Connection connection, final String userId) throws SchedushareException;
+	ScheduleEntity getActiveScheduleForUser(final Connection connection, final int userId) throws SchedushareException;
 	
 	/**
 	 * Creates a schedule for a user.
 	 *
 	 * @param connection the connection
-	 * @param userEmail the user email
+	 * @param userId the user id
 	 * @param scheduleEntity the schedule entity
 	 * @return the schedule entity
 	 * @throws SchedushareException the schedushare exception
 	 */
-	ScheduleEntity createScheduleForUser(final Connection connection, final String userEmail, final ScheduleEntity scheduleEntity) throws SchedushareException;
+	ScheduleEntity createScheduleForUser(final Connection connection, final int userId, final ScheduleEntity scheduleEntity) throws SchedushareException;
 	
 	/**
 	 * Gets all schedules for a user.
@@ -51,7 +51,7 @@ public interface ScheduleService {
 	 * @param userId the user id
 	 * @return the schedules for user
 	 */
-	Collection<ScheduleEntity> getSchedulesForUser(final Connection connection, final String userId) throws SchedushareException;
+	ScheduleListEntity getSchedulesForUser(final Connection connection, final int userId) throws SchedushareException;
 	
 	/**
 	 * Delete schedule.

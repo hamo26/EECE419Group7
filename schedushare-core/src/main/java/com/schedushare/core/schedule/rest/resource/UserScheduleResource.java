@@ -1,52 +1,31 @@
 package com.schedushare.core.schedule.rest.resource;
 
-import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.Put;
 
 import com.google.inject.ImplementedBy;
 import com.schedushare.core.schedule.rest.resource.impl.UserScheduleResourceImpl;
 
 /**
- * Resource used to get,put and post schedules associated with users.
- * 
+ * Resource used to get and create schedules for a user.
  */
 @ImplementedBy(UserScheduleResourceImpl.class)
 public interface UserScheduleResource {
 
 	/**
-	 * Creates the schedule.
-	 *
-	 * @param scheduleRepresentation the schedule representation
-	 * @return the string
-	 */
-	@Post
-	public String createSchedule(String scheduleRepresentation);
-	
-	/**
-	 * Update schedule.
-	 *
-	 * @param scheduleRepresentation the schedule representation
-	 * @return the string
-	 */
-	@Put
-	public String updateSchedule(String scheduleRepresentation);
-	
-	/**
-	 * Gets the schedule.
+	 * Gets the schedules for a user.
 	 *
 	 * @param scheduleRepresentation the schedule representation
 	 * @return the schedule
 	 */
 	@Get
-	public String getSchedule();
+	String getSchedulesForUser();
 	
 	/**
-	 * Delete a schedule.
+	 * Creates a schedule for a user.
 	 *
 	 * @return the string
 	 */
-	@Delete
-	public String deleteSchedule();
+	@Post
+	String createScheduleForUser(String scheduleRepresentation);
 }

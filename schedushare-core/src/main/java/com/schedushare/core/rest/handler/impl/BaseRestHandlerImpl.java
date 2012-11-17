@@ -9,6 +9,8 @@ import com.schedushare.common.guice.SchedushareCommonModule;
 import com.schedushare.core.guice.SelfInjectingServerResourceModule;
 import com.schedushare.core.guice.ServiceModule;
 import com.schedushare.core.guice.TransactionModule;
+import com.schedushare.core.schedule.rest.resource.impl.ActiveScheduleResourceImpl;
+import com.schedushare.core.schedule.rest.resource.impl.ScheduleResourceImpl;
 import com.schedushare.core.schedule.rest.resource.impl.UserScheduleResourceImpl;
 import com.schedushare.core.timeblock.rest.resource.impl.ScheduleTimeBlocksResourceImpl;
 import com.schedushare.core.timeblock.rest.resource.impl.TimeBlocksResourceImpl;
@@ -44,11 +46,11 @@ public class BaseRestHandlerImpl extends Application {
         		new SchedushareCommonModule(),
         		new TransactionModule());
         
-        router.attach("/schedules/user/{userEmail}/{active}", UserScheduleResourceImpl.class);
-        router.attach("/schedules/user/{userEmail}", UserScheduleResourceImpl.class);
-        router.attach("/schedules/{scheduleId}", UserScheduleResourceImpl.class);
+        router.attach("/schedules/{scheduleId}", ScheduleResourceImpl.class);
+        router.attach("/schedules/user/{userId}", UserScheduleResourceImpl.class);
+        router.attach("/schedules/active/{userId}", ActiveScheduleResourceImpl.class);
         router.attach("/register/user", RegisterUserResourceImpl.class);
-        router.attach("/user/{userEmail}", UserResourceImpl.class);
+        router.attach("/user/{userId}", UserResourceImpl.class);
         router.attach("/timeblocks/{timeBlockId}", TimeBlocksResourceImpl.class);
         router.attach("/timeblocks", TimeBlocksResourceImpl.class);
         router.attach("/timeblocks/schedules/{scheduleId}", ScheduleTimeBlocksResourceImpl.class);
