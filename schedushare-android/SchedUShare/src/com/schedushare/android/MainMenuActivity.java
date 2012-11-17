@@ -158,7 +158,9 @@ public class MainMenuActivity extends FacebookActivity {
     
     // Called when user clicks bump button.
     public void startBump(View view) {
-    	
+    	Intent intent = new Intent();
+    	intent.setClass(this, BeamActivity.class);
+    	startActivity(intent);
     }
     
     // Called when user clicks settings button.
