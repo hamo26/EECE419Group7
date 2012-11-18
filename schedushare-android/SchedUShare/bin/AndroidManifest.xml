@@ -7,15 +7,22 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="16" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/android:Theme.Holo.Light" >
-
+        <uses-library android:name="com.google.android.maps" />
+		<activity android:name="com.facebook.LoginActivity" >
+        </activity>
+        
         <activity
             android:name=".MainMenuActivity"
-            android:label="@string/title_activity_main_menu"
-            android:configChanges="orientation|keyboardHidden|screenSize" >
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_main_menu" >
             <intent-filter android:label="@string/app_name" >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,8 +50,39 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.schedushare.android.SchedulesMenuActivity" />
         </activity>
+        <activity
+            android:name=".EditTimeBlockActivity"
+            android:label="@string/title_activity_edit_time_block" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.schedushare.android.EditScheduleActivity" />
+        </activity>
+        <activity
+            android:name=".SelectLocationActivity"
+            android:label="@string/title_activity_select_location" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.schedushare.android.EditTimeBlockActivity" />
+        </activity>
+        <activity
+            android:name=".FriendPickerActivity"
+            android:label="@string/title_activity_friend_picker" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.schedushare.android.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name=".BeamActivity"
+            android:label="@string/title_activity_beam" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.schedushare.android.MainMenuActivity" />
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
