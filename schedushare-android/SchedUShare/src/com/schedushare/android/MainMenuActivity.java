@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.facebook.FacebookActivity;
@@ -58,6 +59,8 @@ public class MainMenuActivity extends FacebookActivity {
     private int lastViewedDay;
     
     private FacebookAuthFragment facebookAuthFragment;
+    
+    private List<GraphUser> selectedUsers;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,9 +117,11 @@ public class MainMenuActivity extends FacebookActivity {
     							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
     							editor.commit();
     							
-    							Toast.makeText(MainMenuActivity.this, "name: " + user.getName() + 
-    									" username: " + user.getUsername() +
-    									" id: " + user.getId(), Toast.LENGTH_LONG).show();
+    							// For Hamid:
+    							// Get user's Facebook ID to query back end for all their schedules.
+    							// If the user does not have any schedules stored in the backend,
+    							// create one for them and send it back.
+    							System.out.println(user.getId());
     						}
     					}
     				}
@@ -129,7 +134,14 @@ public class MainMenuActivity extends FacebookActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
+        	this.selectedUsers = ((SchedUShareApplication)getApplication())
+                    .getSelectedUsers();
         	
+        	for (GraphUser u : this.selectedUsers) {
+        		// For Hamid:
+        		// Call back end with each User ID to get their active schedules and time blocks.
+        		System.out.println(u.getId());
+        	}
         }
     }
     
@@ -293,7 +305,7 @@ public class MainMenuActivity extends FacebookActivity {
     	FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        // Put facebook auth button in view.
+        // Put Facebook auth button in view.
         this.facebookAuthFragment = new FacebookAuthFragment();
         fragmentTransaction.add(R.id.facebook_auth_container, this.facebookAuthFragment);
         fragmentTransaction.commit();

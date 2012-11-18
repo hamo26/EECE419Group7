@@ -7,6 +7,7 @@ import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.EditTimeBlockActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.BlockTypeData;
+import com.schedushare.android.db.ScheduleData;
 import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.db.TimeBlockData;
 import com.schedushare.android.util.EditDayArrayAdapter;
@@ -25,7 +26,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class EditDayFragment extends Fragment {
 	public ListView listView;
 	private int day;
-	private long scheduleId;
+	private ScheduleData schedule;
 	private ArrayList<TimeBlockData> timeBlocks;
 	private HashMap<Long, BlockTypeData> blockTypes;
 	
@@ -45,7 +46,10 @@ public class EditDayFragment extends Fragment {
 		// Only create the cursor and adapter the first time fragment is created.
 		if (savedInstanceState == null) {
 			this.day = getArguments().getInt("day");
-			this.scheduleId = getArguments().getLong("scheduleId");
+			SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
+			dataSource.open();
+			this.schedule = dataSource.getScheduleFromId(getArguments().getLong("scheduleId"));
+			dataSource.close();
 			setListViewAdapter();
 		}
 		
@@ -59,6 +63,13 @@ public class EditDayFragment extends Fragment {
     	// Called on edit time block return.
     	if (requestCode == 0) {
     		if (resultCode != Activity.RESULT_CANCELED) {
+    			// For Hamid:
+    			// Given this.timeBlocks, this.day (day of the week), and this.schedule.sid (server id), 
+    			// remove all time blocks of the schedule with the same day of the week in the back end,
+    			// and add the ones sent.
+    			
+    			
+    			// Refresh screen.
     			refreshListView();
     		}
     	}
@@ -75,7 +86,7 @@ public class EditDayFragment extends Fragment {
 		// As well, get hash of all block types.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
 		dataSource.open();
-		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.scheduleId, this.day);
+		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.schedule.id, this.day);
 		this.blockTypes = dataSource.getAllBlockTypes();
 		dataSource.close();
 		
@@ -87,7 +98,7 @@ public class EditDayFragment extends Fragment {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// Start EditScheduleActivity with the selected schedule.
 				Intent intent = new Intent(getActivity(), EditTimeBlockActivity.class);
-				intent.putExtra("scheduleId", EditDayFragment.this.scheduleId);
+				intent.putExtra("scheduleId", EditDayFragment.this.schedule.id);
 				intent.putExtra("startTime", EditScheduleActivity.timeData[position]);
 				intent.putExtra("day", EditDayFragment.this.day);
 		        startActivityForResult(intent, 0);
@@ -102,7 +113,7 @@ public class EditDayFragment extends Fragment {
 		// Create new adapter with new time blocks, attach to listView, and refresh screen.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
 		dataSource.open();
-		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.scheduleId, this.day);
+		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.schedule.id, this.day);
 		dataSource.close();
 		
 		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),

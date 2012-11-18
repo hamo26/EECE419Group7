@@ -85,6 +85,13 @@ public class FriendPickerActivity extends RoboFragmentActivity {
 	}
 
 	private void finishActivity() {
+		SchedUShareApplication app = (SchedUShareApplication)getApplication();
+		if (FriendPickerActivity.FRIEND_PICKER.equals(getIntent().getData())) {
+		    if (this.friendPickerFragment != null) {
+		        app.setSelectedUsers(this.friendPickerFragment.getSelection());
+		    }   
+		}  
+		
 	    setResult(Activity.RESULT_OK, null);
 	    finish();
 	}
