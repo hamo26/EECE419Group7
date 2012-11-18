@@ -2,6 +2,7 @@ package com.schedushare.common.domain.dto;
 
 import java.sql.Time;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -56,6 +57,7 @@ public class ScheduleEntity extends RestEntity {
 		this.scheduleName = NAME;
 		this.scheduleActive = ACTIVE;
 		this.t_lastModified = LAST_MODIFIED;
+		this.userId = USER_ID;
 		this.timeBlocks = null;
 	}
 	
@@ -68,16 +70,17 @@ public class ScheduleEntity extends RestEntity {
 	 */
 	public ScheduleEntity(final int ID, final String NAME,
 			final Boolean ACTIVE, final int USER_ID, final String LAST_MODIFIED,
-			final Collection<TimeBlockEntity> timeblocks) {
+			final Collection<TimeBlockEntity> timeBlocks) {
 		this.scheduleId = ID;
+		this.userId = USER_ID;
 		this.scheduleName = NAME;
 		this.scheduleActive = ACTIVE;
 		this.lastModified = LAST_MODIFIED;
-		this.timeBlocks = timeblocks;
+		this.timeBlocks = timeBlocks;
 	}
 	
 	public Collection<TimeBlockEntity> getTimeBlocks() {
-		return this.timeBlocks;
+		return timeBlocks != null ? timeBlocks : Collections.<TimeBlockEntity>emptyList();
 	}
 	
 	public String getScheduleName() {
@@ -85,7 +88,8 @@ public class ScheduleEntity extends RestEntity {
 	}
 	
 	public Boolean isScheduleActive() {
-		return this.scheduleActive;
+		return scheduleActive != null 
+				? scheduleActive.booleanValue() : Boolean.FALSE;
 	}
 
 	public int getScheduleId() {

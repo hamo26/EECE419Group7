@@ -1,6 +1,7 @@
 package com.schedushare.common.domain.dto;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -30,7 +31,7 @@ public class TimeBlocksEntity extends RestEntity {
 	public TimeBlocksEntity(final int scheduleId,
 			final Collection<TimeBlockEntity> timeBlocks) {
 		this.scheduleId = scheduleId;
-		this.timeBlocks = timeBlocks;
+		this.timeBlocks = timeBlocks != null ? timeBlocks : Collections.<TimeBlockEntity> emptyList();
 	}
 	
 	public Collection<TimeBlockEntity> getTimeBlocks() {

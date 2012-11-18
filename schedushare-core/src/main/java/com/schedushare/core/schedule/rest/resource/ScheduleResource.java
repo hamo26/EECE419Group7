@@ -2,6 +2,7 @@ package com.schedushare.core.schedule.rest.resource;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 
 import com.google.inject.ImplementedBy;
@@ -31,6 +32,14 @@ public interface ScheduleResource {
 	 */
 	@Get
 	public String getSchedule();
+	
+	/**
+	 * Creates a schedule.
+	 *
+	 * @return the string
+	 */
+	@Post
+	public String createSchedule(String scheduleRepresentation);
 	
 	/**
 	 * Delete a schedule.

@@ -46,11 +46,17 @@ public class BaseRestHandlerImpl extends Application {
         		new SchedushareCommonModule(),
         		new TransactionModule());
         
+        //Schedule routes
+        router.attach("/schedules", ScheduleResourceImpl.class);
         router.attach("/schedules/{scheduleId}", ScheduleResourceImpl.class);
-        router.attach("/schedules/user/{userId}", UserScheduleResourceImpl.class);
+        router.attach("/schedules/users/{userId}", UserScheduleResourceImpl.class);
         router.attach("/schedules/active/{userId}", ActiveScheduleResourceImpl.class);
-        router.attach("/register/user", RegisterUserResourceImpl.class);
-        router.attach("/user/{userId}", UserResourceImpl.class);
+
+        //User routes
+        router.attach("/users", RegisterUserResourceImpl.class);
+        router.attach("/users/{userId}", UserResourceImpl.class);
+        
+        //Time block routes
         router.attach("/timeblocks/{timeBlockId}", TimeBlocksResourceImpl.class);
         router.attach("/timeblocks", TimeBlocksResourceImpl.class);
         router.attach("/timeblocks/schedules/{scheduleId}", ScheduleTimeBlocksResourceImpl.class);

@@ -42,7 +42,7 @@ public interface ScheduleService {
 	 * @return the schedule entity
 	 * @throws SchedushareException the schedushare exception
 	 */
-	ScheduleEntity createScheduleForUser(final Connection connection, final int userId, final ScheduleEntity scheduleEntity) throws SchedushareException;
+	ScheduleEntity createScheduleForUser(final Connection connection, final ScheduleEntity scheduleEntity) throws SchedushareException;
 	
 	/**
 	 * Gets all schedules for a user.

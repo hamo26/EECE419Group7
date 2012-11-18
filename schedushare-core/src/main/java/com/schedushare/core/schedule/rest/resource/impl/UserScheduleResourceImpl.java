@@ -4,12 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import org.restlet.resource.Get;
-import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
@@ -61,28 +59,4 @@ public class UserScheduleResourceImpl extends SelfInjectingServerResource
 					e.getMessage()).serializeJsonException();
 		}
 	}
-
-	@Override
-	@Post
-	public String createScheduleForUser(String scheduleRepresentation) {
-		try{
-			ScheduleEntity postedSchedule = jsonUtil.deserializeRepresentation(scheduleRepresentation, ScheduleEntity.class);
-			
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			connection = DriverManager.getConnection(
-					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
-					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
-					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
-			
-			ScheduleEntity postedScheduleEntity = scheduleService.createScheduleForUser(connection, userId, postedSchedule);
-			
-			return jsonUtil.serializeRepresentation(postedScheduleEntity);
-		} catch (SchedushareException e) {
-			return e.serializeJsonException();
-		} catch (Exception e) {
-			return schedushareExceptionFactory.createSchedushareException(e.getMessage())
-					.serializeJsonException();
-		}
-	}
-
 }

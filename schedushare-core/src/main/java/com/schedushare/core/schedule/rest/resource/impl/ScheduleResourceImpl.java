@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 
@@ -105,6 +106,30 @@ public class ScheduleResourceImpl extends SelfInjectingServerResource implements
 			ScheduleEntity scheduleEntity = scheduleService.getSchedule(connection, scheduleId);
 			
 			return jsonUtil.serializeRepresentation(scheduleEntity);
+		} catch (SchedushareException e) {
+			return e.serializeJsonException();
+		} catch (Exception e) {
+			return schedushareExceptionFactory.createSchedushareException(e.getMessage())
+					.serializeJsonException();
+		}
+	}
+
+
+	@Override
+	@Post
+	public String createSchedule(String scheduleRepresentation) {
+		try{
+			ScheduleEntity postedSchedule = jsonUtil.deserializeRepresentation(scheduleRepresentation, ScheduleEntity.class);
+			
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			connection = DriverManager.getConnection(
+					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
+					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
+			
+			ScheduleEntity postedScheduleEntity = scheduleService.createScheduleForUser(connection, postedSchedule);
+			
+			return jsonUtil.serializeRepresentation(postedScheduleEntity);
 		} catch (SchedushareException e) {
 			return e.serializeJsonException();
 		} catch (Exception e) {

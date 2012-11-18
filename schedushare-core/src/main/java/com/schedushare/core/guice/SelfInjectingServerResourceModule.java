@@ -19,7 +19,6 @@ public class SelfInjectingServerResourceModule extends AbstractModule {
 		requestStaticInjection(SelfInjectingServerResource.class);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Provides
 	MembersInjector memberInjector(final Injector injector) {
 		return new MembersInjector() {

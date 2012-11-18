@@ -3,6 +3,7 @@ package com.schedushare.core.schedule.rest.resource.impl;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 
 import com.google.inject.Inject;
@@ -39,7 +40,9 @@ public class ActiveScheduleResourceImpl extends SelfInjectingServerResource
 		Object id = getRequestAttributes().get("userId");
 		this.userId = (id == null) ? 0 : (Integer.valueOf((String)id));
     }
+	
 	@Override
+	@Get
 	public String getActiveScheduleForUser() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();

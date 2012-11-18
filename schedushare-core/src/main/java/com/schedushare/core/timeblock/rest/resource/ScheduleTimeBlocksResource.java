@@ -1,6 +1,7 @@
 package com.schedushare.core.timeblock.rest.resource;
 
 import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 
 public interface ScheduleTimeBlocksResource {
 
@@ -10,5 +11,9 @@ public interface ScheduleTimeBlocksResource {
 	 * @return the time blocks for a schedule
 	 */
 	@Get
-	public String getTimeBlocksForSchedule();
+	String getTimeBlocksForSchedule();
+	
+	@Put
+	String updateTimeBlocksForDay(String timeBlocksRepresentation);
+	
 }
