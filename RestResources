@@ -45,13 +45,13 @@ The Time Blocks Entity
   "time-blocks":[{time-block-entities}..] //TIME BLOCK ENTITIES
 }
 
-Create a user: POST userEntity to /register/user
-Get a user by email: Get /user/{userEmail}
-Update a user: PUT userEntity to /user/{userEmail}
+Create a user: POST userEntity to /user
+Get a user: Get /user/{userId}
+Update a user: PUT userEntity to /user
 
-Create a schedule: POST scheduleEntity to /schedules/user/{userEmail}
-Get an active schedule for user: GET /schedules/user/{userEmail}/active
-Get all Schedules for user: I am going to work on this. It seems wrong right now.
+Create a schedule: POST scheduleEntity to /schedules
+Update a schedule: PUT scheduleEntity to /schedules
+Get an active schedule for user: GET /schedules/active/{userId}
 Delete a schedule: DELETE /schedules/{scheduleId}
 
 
