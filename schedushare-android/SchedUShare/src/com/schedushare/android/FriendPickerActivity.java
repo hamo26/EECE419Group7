@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 @ContentView(R.layout.activity_friend_picker)
 public class FriendPickerActivity extends RoboFragmentActivity {
 	public static final Uri FRIEND_PICKER = Uri.parse("picker://friend");
+	public static final int REQUEST_CODE = 419;
 	
 	private FriendPickerFragment friendPickerFragment;
 	

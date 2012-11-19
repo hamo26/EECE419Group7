@@ -1,5 +1,8 @@
 package com.schedushare.android;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -133,15 +137,26 @@ public class MainMenuActivity extends FacebookActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-        	this.selectedUsers = ((SchedUShareApplication)getApplication())
-                    .getSelectedUsers();
-        	
-        	for (GraphUser u : this.selectedUsers) {
-        		// For Hamid:
-        		// Call back end with each User ID to get their active schedules and time blocks.
-        		System.out.println(u.getId());
-        	}
+        if (requestCode == FriendPickerActivity.REQUEST_CODE) {
+	        if (resultCode == Activity.RESULT_OK) {
+	        	this.selectedUsers = ((SchedUShareApplication)getApplication())
+	                    .getSelectedUsers();
+	        	
+	        	for (GraphUser u : this.selectedUsers) {
+	        		// For Hamid:
+	        		// Call back end with each User ID to get their active schedules and time blocks.
+	        		System.out.println(u.getId());
+	        	}
+	        	
+	        	// Start diff activiy with selected users if any.
+	        	if (this.selectedUsers.size() > 0) {
+		        	Intent intent = new Intent(this, DiffActivity.class);
+		        	Bundle b = new Bundle();
+				    b.putByteArray("selectedUsers", getByteArray(this.selectedUsers));
+				    intent.putExtras(b);
+			        startActivity(intent);
+	        	}
+	        }
         }
     }
     
@@ -180,7 +195,7 @@ public class MainMenuActivity extends FacebookActivity {
     	Intent intent = new Intent();
         intent.setData(FriendPickerActivity.FRIEND_PICKER);
         intent.setClass(this, FriendPickerActivity.class);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, FriendPickerActivity.REQUEST_CODE);
     }
     
     // Creates test data.
@@ -323,4 +338,23 @@ public class MainMenuActivity extends FacebookActivity {
     	fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[this.lastViewedDay]);
 		fragmentTransaction.commit();
     }
+    
+    private byte[] getByteArray(List<GraphUser> users) {
+        // convert the list of GraphUsers to a list of String 
+        // where each element is the JSON representation of the 
+        // GraphUser so it can be stored in a Bundle
+        List<String> usersAsString = new ArrayList<String>(users.size());
+
+        for (GraphUser user : users) {
+            usersAsString.add(user.getInnerJSONObject().toString());
+        }   
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            new ObjectOutputStream(outputStream).writeObject(usersAsString);
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }   
+        return null;
+    }  
 }

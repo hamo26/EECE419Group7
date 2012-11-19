@@ -18,6 +18,8 @@ import android.os.Bundle;
 
 @ContentView(R.layout.activity_select_location)
 public class SelectLocationActivity extends RoboMapActivity {
+	public static final int REQUEST_CODE = 421;
+	
 	@InjectView(R.id.select_location_map_view) private MapView mapView;
 		
     @Override

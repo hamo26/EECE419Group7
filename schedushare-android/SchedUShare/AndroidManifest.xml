@@ -17,9 +17,9 @@
         android:label="@string/app_name"
         android:theme="@style/android:Theme.Holo.Light" >
         <uses-library android:name="com.google.android.maps" />
-		<activity android:name="com.facebook.LoginActivity" >
+
+        <activity android:name="com.facebook.LoginActivity" >
         </activity>
-        
         <activity
             android:name=".MainMenuActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -78,11 +78,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.schedushare.android.MainMenuActivity" />
+
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".DiffActivity"
+            android:label="@string/title_activity_diff" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.schedushare.android.MainMenuActivity" />
+        </activity>
     </application>
+
 </manifest>

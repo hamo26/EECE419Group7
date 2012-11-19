@@ -36,6 +36,8 @@ public class EditTimeBlockActivity extends RoboActivity {
     private HashMap<Long, BlockTypeData> blockTypes = null;
     private TimeBlockData newTimeBlock;
     
+    public static final int REQUEST_CODE = 420;
+    
     @InjectView(R.id.edit_time_block_name_input) private EditText nameEditView;
     @InjectView(R.id.edit_time_block_type_spinner) private Spinner typeSpinner;
     @InjectView(R.id.edit_time_block_location_button) private Button locationButton;
@@ -205,7 +207,7 @@ public class EditTimeBlockActivity extends RoboActivity {
     	super.onActivityResult(requestCode, resultCode, data);
     	
     	// Called on map return.
-    	if (requestCode == 0) {
+    	if (requestCode == SelectLocationActivity.REQUEST_CODE) {
     		if (resultCode != Activity.RESULT_CANCELED) {
     			Bundle b = data.getExtras();
     			this.newTimeBlock.latitude = (b.getInt("latitude") + 0.0f) * 1e-6;
@@ -310,6 +312,6 @@ public class EditTimeBlockActivity extends RoboActivity {
     
     public void selectLocation(View view) {
     	Intent intent = new Intent(this, SelectLocationActivity.class);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, SelectLocationActivity.REQUEST_CODE);
     }    
 }

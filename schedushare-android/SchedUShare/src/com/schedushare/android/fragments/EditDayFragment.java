@@ -61,24 +61,22 @@ public class EditDayFragment extends Fragment {
     	super.onActivityResult(requestCode, resultCode, data);
     	
     	// Called on edit time block return.
-    	if (requestCode == 0) {
+    	if (requestCode == EditTimeBlockActivity.REQUEST_CODE) {
     		if (resultCode != Activity.RESULT_CANCELED) {
     			// For Hamid:
     			// Given this.timeBlocks, this.day (day of the week), and this.schedule.sid (server id), 
     			// remove all time blocks of the schedule with the same day of the week in the back end,
     			// and add the ones sent.
     			
-    			
-    			// Refresh screen.
-    			refreshListView();
     		}
     	}
     }
 	
-	
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onResume() {
+		super.onResume();
+		
+		refreshListView();
 	}
 	
 	private void setListViewAdapter() {
@@ -101,7 +99,7 @@ public class EditDayFragment extends Fragment {
 				intent.putExtra("scheduleId", EditDayFragment.this.schedule.id);
 				intent.putExtra("startTime", EditScheduleActivity.timeData[position]);
 				intent.putExtra("day", EditDayFragment.this.day);
-		        startActivityForResult(intent, 0);
+		        startActivityForResult(intent, EditTimeBlockActivity.REQUEST_CODE);
 			}  
 		});
 		this.listView.setAdapter(adapter);
