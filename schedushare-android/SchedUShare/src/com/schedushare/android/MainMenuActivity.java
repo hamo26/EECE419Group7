@@ -54,7 +54,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainMenuActivity extends FacebookActivity {
-
+	public static final String PREFS_NAME = "MAIN_SETTINGS";
+	
     //@Inject Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
     
     private LinearLayout dayButtonScroller;
@@ -62,10 +63,10 @@ public class MainMenuActivity extends FacebookActivity {
     public long activeScheduleId;
     private EditDayFragment[] dayFragments;
     private int lastViewedDay;
+    private List<GraphUser> selectedUsers;
     
     private FacebookAuthFragment facebookAuthFragment;
     
-    private List<GraphUser> selectedUsers;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,7 +116,7 @@ public class MainMenuActivity extends FacebookActivity {
     					@Override
     					public void onCompleted(GraphUser user, Response response) {
     						if (user != null) {
-    							SharedPreferences settings = getPreferences(0);
+    							SharedPreferences settings = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
     							SharedPreferences.Editor editor = settings.edit();
     							editor.putLong(getString(R.string.settings_owner_facebook_id), Long.parseLong(user.getId()));
     							editor.putString(getString(R.string.settings_owner_facebook_name), user.getName());
@@ -126,7 +127,7 @@ public class MainMenuActivity extends FacebookActivity {
     							// Get user's Facebook ID to query back end for all their schedules.
     							// If the user does not have any schedules stored in the backend,
     							// create one for them and send it back.
-    							System.out.println("owner fb id: " + user.getId());
+    							System.out.println("MainMenu: owner fb id: " + user.getId());
     						}
     					}
     				}
@@ -215,7 +216,7 @@ public class MainMenuActivity extends FacebookActivity {
         dataSource.open();
         dataSource.dropAllTables();
         
-        SharedPreferences p = getPreferences(0);
+        SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
         SharedPreferences.Editor editor = p.edit();
 		editor.putLong(getString(R.string.settings_owner_id), 1);
 		editor.putLong(getString(R.string.settings_owner_active_schedule_id), 1);
@@ -228,6 +229,7 @@ public class MainMenuActivity extends FacebookActivity {
         			p.getLong(getString(R.string.settings_owner_id), 1),
         			dateTime.getTime().toString());
         }
+        System.out.println("MainMenu: TestData: owner fb id: " + p.getLong(getString(R.string.settings_owner_facebook_id), -1));
         
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
         dateTime.set(Calendar.HOUR, 5);
@@ -254,6 +256,8 @@ public class MainMenuActivity extends FacebookActivity {
         dataSource.close();
         
 		this.activeScheduleId = p.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
+        System.out.println("MainMenu: activeScheduleId: " + p.getLong(getString(R.string.settings_owner_active_schedule_id), -1));
+
     }
     
     // Start location listener.

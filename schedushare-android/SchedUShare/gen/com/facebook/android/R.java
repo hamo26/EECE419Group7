@@ -233,7 +233,7 @@ containing a value of this type.
         public static final int delete_schedule_option=0x7f040050;
         public static final int diff_schedule_container=0x7f040005;
         public static final int diff_schedule_day_button_scroller=0x7f040006;
-        public static final int diff_schedule_user_scroller=0x7f040004;
+        public static final int diff_schedule_user_button_scroller=0x7f040004;
         public static final int diff_table_header=0x7f040040;
         public static final int diff_table_layout=0x7f040041;
         public static final int edit_time_block_cancel_button=0x7f04001a;
