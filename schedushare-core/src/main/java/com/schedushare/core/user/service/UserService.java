@@ -19,20 +19,22 @@ public interface UserService {
 	 * Gets a user.
 	 *
 	 * @param connection the connection
-	 * @param userEmail the user email
+	 * @param userId the user id
 	 * @return the user
 	 * @throws SchedushareException the schedushare exception
 	 */
-	UserEntity getUser(Connection connection, String userEmail) throws SchedushareException;
+	UserEntity getUser(Connection connection, int userId) throws SchedushareException;
 	
 	/**
 	 * Gets a user.
 	 *
-	 * @param userEmail the user email
+	 * @param connection the connection
+	 * @param userId the user id
 	 * @param authToken the auth token
 	 * @return the user
+	 * @throws SchedushareException the schedushare exception
 	 */
-	UserEntity getUser(Connection connection, String userEmail, String authToken) throws SchedushareException;
+	UserEntity getUser(Connection connection, int userId, String authToken) throws SchedushareException;
 	
 	/**
 	 * Creates a user.
