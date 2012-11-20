@@ -7,10 +7,13 @@ import com.schedushare.android.fragments.DeleteScheduleDialogFragment.DeleteSche
 import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.RenameScheduleDialogFragment;
 import com.schedushare.android.fragments.RenameScheduleDialogFragment.RenameScheduleDialogListener;
+import com.schedushare.android.fragments.SetActiveScheduleDialogFragment;
+import com.schedushare.android.fragments.SetActiveScheduleDialogFragment.SetActiveScheduleDialogListener;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
@@ -26,7 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_schedule)
-public class EditScheduleActivity extends RoboFragmentActivity implements DeleteScheduleDialogListener, RenameScheduleDialogListener {
+public class EditScheduleActivity extends RoboFragmentActivity 
+		implements DeleteScheduleDialogListener, RenameScheduleDialogListener, SetActiveScheduleDialogListener {
 	@InjectView(R.id.day_button_scroller) private LinearLayout dayButtonScroller;
 	
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
@@ -126,6 +130,10 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 				// Open dialog box to delete schedule.
 				DialogFragment newFragment2 = new RenameScheduleDialogFragment();
 			    newFragment2.show(getSupportFragmentManager(), "rename_schedule");
+			case R.id.set_active_schedule_option:
+				// Open dialog box to set active schedule.
+				DialogFragment newFragment3 = new SetActiveScheduleDialogFragment();
+			    newFragment3.show(getSupportFragmentManager(), "set_active_schedule");
 			default:
 				break;
 		}
@@ -171,6 +179,38 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 
 	@Override
 	public void onRenameScheduleDialogNegativeClick(DialogFragment dialog) {
+		
+	}
+
+	@Override
+	public void onSetActiveScheduleDialogPositiveClick(DialogFragment dialog) {
+		Toast.makeText(this, "Set active", Toast.LENGTH_LONG).show();
+		
+		SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+		
+		// Update local database.
+		SchedulesDataSource dataSource = new SchedulesDataSource(this);
+		dataSource.open();
+		ScheduleData lastActiveSchedule = dataSource.getActiveScheduleFromOwnerId(
+				p.getLong(getString(R.string.settings_owner_id), 1));
+		this.schedule.active = true;
+		lastActiveSchedule.active = false;
+		
+		// For Hamid:
+		// Update back end with both this.schedule and lastActiveSchedule.
+		
+		dataSource.updateSchedule(lastActiveSchedule);
+		dataSource.updateSchedule(this.schedule);
+		dataSource.close();
+		
+		// Update preferences.
+		SharedPreferences.Editor editor = p.edit();
+		editor.putLong(getString(R.string.settings_owner_active_schedule_id), this.schedule.id);
+		editor.commit();
+	}
+
+	@Override
+	public void onSetActiveScheduleDialogNegativeClick(DialogFragment dialog) {
 		
 	}
 	

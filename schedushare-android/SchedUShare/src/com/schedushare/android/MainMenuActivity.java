@@ -105,6 +105,19 @@ public class MainMenuActivity extends FacebookActivity {
     }
     
     @Override
+    public void onResume() {
+    	super.onResume();
+    	
+    	// Re-initialize fragments if active schedule changes.
+    	SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+    	long activeScheduleId = p.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
+    	if (this.activeScheduleId != activeScheduleId) {
+    		this.activeScheduleId = activeScheduleId;
+    		initializeFrameLayout();
+    	}
+    }
+    
+    @Override
     protected void onSessionStateChange(SessionState state, Exception exception) {
     	// user has either logged in or not ...
     	if (state.isOpened()) {
@@ -224,8 +237,11 @@ public class MainMenuActivity extends FacebookActivity {
         
         dataSource.createUser(p.getLong(getString(R.string.settings_owner_facebook_id), 1),
         		p.getString(getString(R.string.settings_owner_facebook_name), "owner"));
-        for (int i = 0; i < 100; i++) {
-        	dataSource.createSchedule(i, "schedule" + i, true,
+        dataSource.createSchedule(0, "schedule" + 0, true,
+    			p.getLong(getString(R.string.settings_owner_id), 1),
+    			dateTime.getTime().toString());
+        for (int i = 1; i < 100; i++) {
+        	dataSource.createSchedule(i, "schedule" + i, false,
         			p.getLong(getString(R.string.settings_owner_id), 1),
         			dateTime.getTime().toString());
         }
@@ -280,8 +296,8 @@ public class MainMenuActivity extends FacebookActivity {
     	//locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
     
-    private void initializeCurrentScheduleLayout() {        
-        // Create all fragments.
+    // Creates all fragments and initializes frame layout to monday.
+    private void initializeFrameLayout() {    	
     	this.dayFragments = new EditDayFragment[7];
         for (int i = 0; i < 7; i++) {
         	this.dayFragments[i] = new EditDayFragment();
@@ -296,9 +312,14 @@ public class MainMenuActivity extends FacebookActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put Monday in view.
-        fragmentTransaction.add(R.id.active_schedule_container, this.dayFragments[0]);
+        fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[0]);
         this.lastViewedDay = 0;
         fragmentTransaction.commit();
+    }
+    
+    private void initializeCurrentScheduleLayout() {
+    	// Create all fragments.
+        initializeFrameLayout();
         
         // Create scroller to switch between days of the week.
         this.dayButtonScroller = (LinearLayout)findViewById(R.id.active_schedule_day_button_scroller);

@@ -50,5 +50,7 @@
     <string name="beam_button_text">Bump</string>
     <string name="title_activity_beam">Bump</string>
     <string name="title_activity_diff">DiffActivity</string>
+    <string name="set_active_schedule_dialog_title">Are You Sure?</string>
+    <string name="tab_set_active_schedule">Set Active</string>
 
 </resources>
