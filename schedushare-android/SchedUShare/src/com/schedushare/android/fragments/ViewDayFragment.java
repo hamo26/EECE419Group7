@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.schedushare.android.EditScheduleActivity;
-import com.schedushare.android.EditTimeBlockActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.BlockTypeData;
 import com.schedushare.android.db.ScheduleData;
@@ -12,18 +11,14 @@ import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.db.TimeBlockData;
 import com.schedushare.android.util.EditDayArrayAdapter;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 
-public class EditDayFragment extends Fragment {
+public class ViewDayFragment extends Fragment {
 	public ListView listView;
 	private int day;
 	private ScheduleData schedule;
@@ -57,22 +52,6 @@ public class EditDayFragment extends Fragment {
     }
 	
 	@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	super.onActivityResult(requestCode, resultCode, data);
-    	
-    	// Called on edit time block return.
-    	if (requestCode == EditTimeBlockActivity.REQUEST_CODE) {
-    		if (resultCode != Activity.RESULT_CANCELED) {
-    			// For Hamid:
-    			// Given this.timeBlocks, this.day (day of the week), and this.schedule.sid (server id), 
-    			// remove all time blocks of the schedule with the same day of the week in the back end,
-    			// and add the ones sent.
-    			
-    		}
-    	}
-    }
-	
-	@Override
 	public void onResume() {
 		super.onResume();
 		
@@ -92,16 +71,6 @@ public class EditDayFragment extends Fragment {
 				R.layout.list_item_time_block, EditScheduleActivity.TIME_DATA, this.timeBlocks, this.blockTypes);
 		
 		this.listView = new ListView(getActivity());
-		this.listView.setOnItemClickListener(new OnItemClickListener() {  
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// Start EditScheduleActivity with the selected schedule.
-				Intent intent = new Intent(getActivity(), EditTimeBlockActivity.class);
-				intent.putExtra("scheduleId", EditDayFragment.this.schedule.id);
-				intent.putExtra("startTime", EditScheduleActivity.TIME_DATA[position]);
-				intent.putExtra("day", EditDayFragment.this.day);
-		        startActivityForResult(intent, EditTimeBlockActivity.REQUEST_CODE);
-			}  
-		});
 		this.listView.setAdapter(adapter);
 	}
 	

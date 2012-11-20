@@ -1,10 +1,12 @@
 package com.schedushare.android.fragments;
 
 import com.schedushare.android.EditScheduleActivity;
+import com.schedushare.android.MainMenuActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.SchedulesDataSource;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,10 +48,13 @@ public class ScheduleListFragment extends Fragment {
 	}
 	
 	private void setListViewAdapter() {
+		// Get shared preferences.
+		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+		
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
 		dataSource.open();
-		Cursor cursor = dataSource.getAllSchedulesCursor();
+		Cursor cursor = dataSource.getAllOwnerSchedulesCursor(p.getLong(getString(R.string.settings_owner_id), 1));
 		dataSource.close();
 		
 		// Create new adapter and attach to listView.
@@ -72,10 +77,13 @@ public class ScheduleListFragment extends Fragment {
 	}
 	
 	public void swapCursor() {
+		// Get preferences.
+		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+		
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
 		dataSource.open();
-		Cursor cursor = dataSource.getAllSchedulesCursor();
+		Cursor cursor = dataSource.getAllOwnerSchedulesCursor(p.getLong(getString(R.string.settings_owner_id), 1));
 		dataSource.close();
 		
 		// Swap existing cursor with new one.

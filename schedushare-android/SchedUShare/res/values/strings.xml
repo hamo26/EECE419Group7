@@ -48,5 +48,7 @@
     <string name="title_activity_friend_picker">Diff</string>
     <string name="tab_view_schedules">My Schedules</string>
     <string name="beam_button_text">Bump</string>
-	<string name="title_activity_beam">Bump</string>
+    <string name="title_activity_beam">Bump</string>
+    <string name="title_activity_diff">DiffActivity</string>
+
 </resources>

@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 @ContentView(R.layout.activity_friend_picker)
 public class FriendPickerActivity extends RoboFragmentActivity {
 	public static final Uri FRIEND_PICKER = Uri.parse("picker://friend");
+	public static final int REQUEST_CODE = 419;
 	
 	private FriendPickerFragment friendPickerFragment;
 	
@@ -85,6 +86,13 @@ public class FriendPickerActivity extends RoboFragmentActivity {
 	}
 
 	private void finishActivity() {
+		SchedUShareApplication app = (SchedUShareApplication)getApplication();
+		if (FriendPickerActivity.FRIEND_PICKER.equals(getIntent().getData())) {
+		    if (this.friendPickerFragment != null) {
+		        app.setSelectedUsers(this.friendPickerFragment.getSelection());
+		    }   
+		}  
+		
 	    setResult(Activity.RESULT_OK, null);
 	    finish();
 	}

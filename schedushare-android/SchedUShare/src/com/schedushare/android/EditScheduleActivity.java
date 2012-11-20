@@ -30,7 +30,7 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 	@InjectView(R.id.day_button_scroller) private LinearLayout dayButtonScroller;
 	
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
-	public static final String[] timeData = {
+	public static final String[] TIME_DATA = {
 			"0:00:00 AM", "0:30:00 AM", "1:00:00 AM", "1:30:00 AM",
 			"2:00:00 AM", "2:30:00 AM", "3:00:00 AM", "3:30:00 AM", 
 			"4:00:00 AM", "4:30:00 AM", "5:00:00 AM", "5:30:00 AM",
@@ -44,7 +44,7 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 			"8:00:00 PM", "8:30:00 PM", "9:00:00 PM", "9:30:00 PM",
 			"10:00:00 PM", "10:30:00 PM", "11:00:00 PM", "11:30:00 PM"};
 	
-	public long scheduleId;
+	public ScheduleData schedule;
 	private EditDayFragment[] dayFragments;
 
     @Override
@@ -53,16 +53,20 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 
         // Get bundle passed from last activity.
         Bundle extras = getIntent().getExtras();        
-        if (extras != null)
-        	this.scheduleId = extras.getLong("scheduleId");
-        
+        if (extras != null) {
+        	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+        	dataSource.open();
+        	this.schedule = dataSource.getScheduleFromId(extras.getLong("scheduleId"));
+        	dataSource.close();
+        }
+        	
         // Create all fragments.
         this.dayFragments = new EditDayFragment[7];
         for (int i = 0; i < 7; i++) {
         	this.dayFragments[i] = new EditDayFragment();
         	Bundle args = new Bundle();
         	args.putInt("day", i);
-        	args.putLong("scheduleId", this.scheduleId);
+        	args.putLong("scheduleId", this.schedule.id);
         	this.dayFragments[i].setArguments(args);
         }
         
@@ -98,11 +102,7 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
         createDayButton(dayButtonClickListener, 5, "Sat", 150, 75);
         createDayButton(dayButtonClickListener, 6, "Sun", 150, 75);
         
-        SchedulesDataSource dataSource = new SchedulesDataSource(this);
-        dataSource.open();
-        ScheduleData schedule = dataSource.getScheduleFromId(this.scheduleId);
-        this.setTitle(schedule.name);
-        dataSource.close();
+        this.setTitle(this.schedule.name);
     }
     
 	@Override
@@ -135,10 +135,14 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 
 	@Override
 	public void onDeleteScheduleDialogPositiveClick(DialogFragment dialog) {
+		// For Hamid:
+		// Delete current schedule from back end using schedule.sid (server id).
+		
+		
 		// Delete current schedule and inform schedule menu to update list.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this);
 		dataSource.open();
-		dataSource.deleteSchedule(this.scheduleId);
+		dataSource.deleteSchedule(this.schedule.id);
 		dataSource.close();
 		
 	    finish();
@@ -151,14 +155,18 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 
 	@Override
 	public void onRenameScheduleDialogPositiveClick(DialogFragment dialog, String newName) {
+		// For Hamid:
+		// Rename schedule in back end using schedule.sid (server id) and newName.
+		
+		
+		// Rename current schedule in local db and change title.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this);
     	dataSource.open();
-    	ScheduleData schedule = dataSource.getScheduleFromId(this.scheduleId);
-    	schedule.name = newName;
-    	dataSource.updateSchedule(schedule);
+    	this.schedule.name = newName;
+    	dataSource.updateSchedule(this.schedule);
     	dataSource.close();
     	
-    	this.setTitle(schedule.name);
+    	this.setTitle(this.schedule.name);
 	}
 
 	@Override

@@ -4,3 +4,4 @@ gen/*
 project.properties
 .project
 .classpath
+/bin
