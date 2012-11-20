@@ -84,12 +84,12 @@ public class EditDayFragment extends Fragment {
 		// As well, get hash of all block types.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
 		dataSource.open();
-		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.schedule.id, this.day);
+		this.timeBlocks = dataSource.getScheduleDayTimeBlocks(this.schedule.id, this.day);
 		this.blockTypes = dataSource.getAllBlockTypes();
 		dataSource.close();
 		
 		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),
-				R.layout.list_item_time_block, EditScheduleActivity.timeData, this.timeBlocks, this.blockTypes);
+				R.layout.list_item_time_block, EditScheduleActivity.TIME_DATA, this.timeBlocks, this.blockTypes);
 		
 		this.listView = new ListView(getActivity());
 		this.listView.setOnItemClickListener(new OnItemClickListener() {  
@@ -97,7 +97,7 @@ public class EditDayFragment extends Fragment {
 				// Start EditScheduleActivity with the selected schedule.
 				Intent intent = new Intent(getActivity(), EditTimeBlockActivity.class);
 				intent.putExtra("scheduleId", EditDayFragment.this.schedule.id);
-				intent.putExtra("startTime", EditScheduleActivity.timeData[position]);
+				intent.putExtra("startTime", EditScheduleActivity.TIME_DATA[position]);
 				intent.putExtra("day", EditDayFragment.this.day);
 		        startActivityForResult(intent, EditTimeBlockActivity.REQUEST_CODE);
 			}  
@@ -111,11 +111,11 @@ public class EditDayFragment extends Fragment {
 		// Create new adapter with new time blocks, attach to listView, and refresh screen.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
 		dataSource.open();
-		this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.schedule.id, this.day);
+		this.timeBlocks = dataSource.getScheduleDayTimeBlocks(this.schedule.id, this.day);
 		dataSource.close();
 		
 		EditDayArrayAdapter adapter = new EditDayArrayAdapter(getActivity(),
-				R.layout.list_item_time_block, EditScheduleActivity.timeData, this.timeBlocks, this.blockTypes);
+				R.layout.list_item_time_block, EditScheduleActivity.TIME_DATA, this.timeBlocks, this.blockTypes);
 		this.listView.setAdapter(adapter);
 		
 		((EditDayArrayAdapter)this.listView.getAdapter()).notifyDataSetChanged();

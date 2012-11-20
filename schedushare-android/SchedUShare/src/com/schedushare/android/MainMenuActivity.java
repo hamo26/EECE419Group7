@@ -19,6 +19,7 @@ import com.facebook.SessionState;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.db.UserData;
 import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.FacebookAuthFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment;
@@ -125,7 +126,7 @@ public class MainMenuActivity extends FacebookActivity {
     							// Get user's Facebook ID to query back end for all their schedules.
     							// If the user does not have any schedules stored in the backend,
     							// create one for them and send it back.
-    							System.out.println(user.getId());
+    							System.out.println("owner fb id: " + user.getId());
     						}
     					}
     				}
@@ -137,16 +138,24 @@ public class MainMenuActivity extends FacebookActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FriendPickerActivity.REQUEST_CODE) {
+        if (requestCode == 0) {
 	        if (resultCode == Activity.RESULT_OK) {
 	        	this.selectedUsers = ((SchedUShareApplication)getApplication())
 	                    .getSelectedUsers();
 	        	
+	        	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+	        	dataSource.open();
+	        	int i = 101;
 	        	for (GraphUser u : this.selectedUsers) {
+	        		System.out.println("friend id: " + u.getId());
+	        		UserData user = dataSource.createUser(Long.parseLong(u.getId()), u.getName());
+	        		dataSource.createSchedule(i, "friend schedule", true, user.id, "whatever");
+	        		
 	        		// For Hamid:
 	        		// Call back end with each User ID to get their active schedules and time blocks.
-	        		System.out.println(u.getId());
+	        		
 	        	}
+	        	dataSource.close();
 	        	
 	        	// Start diff activiy with selected users if any.
 	        	if (this.selectedUsers.size() > 0) {
@@ -195,7 +204,7 @@ public class MainMenuActivity extends FacebookActivity {
     	Intent intent = new Intent();
         intent.setData(FriendPickerActivity.FRIEND_PICKER);
         intent.setClass(this, FriendPickerActivity.class);
-        startActivityForResult(intent, FriendPickerActivity.REQUEST_CODE);
+        startActivityForResult(intent, 0);
     }
     
     // Creates test data.
@@ -205,9 +214,19 @@ public class MainMenuActivity extends FacebookActivity {
     	SchedulesDataSource dataSource = new SchedulesDataSource(this);
         dataSource.open();
         dataSource.dropAllTables();
-        dataSource.createUser(1, "oscarlee");
+        
+        SharedPreferences p = getPreferences(0);
+        SharedPreferences.Editor editor = p.edit();
+		editor.putLong(getString(R.string.settings_owner_id), 1);
+		editor.putLong(getString(R.string.settings_owner_active_schedule_id), 1);
+		editor.commit();
+        
+        dataSource.createUser(p.getLong(getString(R.string.settings_owner_facebook_id), 1),
+        		p.getString(getString(R.string.settings_owner_facebook_name), "owner"));
         for (int i = 0; i < 100; i++) {
-        	dataSource.createSchedule(i, "schedule" + i, true, 1, dateTime.getTime().toString());
+        	dataSource.createSchedule(i, "schedule" + i, true,
+        			p.getLong(getString(R.string.settings_owner_id), 1),
+        			dateTime.getTime().toString());
         }
         
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
@@ -227,16 +246,14 @@ public class MainMenuActivity extends FacebookActivity {
         
         dataSource.createBlockType(1, "School");
         dataSource.createBlockType(2, "Work");
-        dataSource.createBlockType(3, "Leisure");
+        dataSource.createBlockType(3, "Social");
+        dataSource.createBlockType(4, "Extra Curricular");
+        dataSource.createBlockType(5, "On Bus");
+        dataSource.createBlockType(6, "On Vacation");
         dataSource.createTimeBlock(1, "EECE 419", startTime.toString(), endTime.toString(), 0, 1, 1, 5.55, 5.55);
         dataSource.close();
         
-        SharedPreferences settings = getPreferences(0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putLong(getString(R.string.settings_owner_id), 1);
-		editor.putLong(getString(R.string.settings_owner_active_schedule_id), 1);
-		editor.commit();
-		this.activeScheduleId = settings.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
+		this.activeScheduleId = p.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
     }
     
     // Start location listener.
@@ -324,19 +341,6 @@ public class MainMenuActivity extends FacebookActivity {
         this.facebookAuthFragment = new FacebookAuthFragment();
         fragmentTransaction.add(R.id.facebook_auth_container, this.facebookAuthFragment);
         fragmentTransaction.commit();
-    }
-    
-    private void refreshListView() {
-    	// Refresh list view.
-    	FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        this.dayFragments[this.lastViewedDay] = new EditDayFragment();
-        Bundle args = new Bundle();
-        args.putInt("day", this.lastViewedDay);
-        args.putLong("scheduleId", this.activeScheduleId);
-        this.dayFragments[this.lastViewedDay].setArguments(args);
-    	fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[this.lastViewedDay]);
-		fragmentTransaction.commit();
     }
     
     private byte[] getByteArray(List<GraphUser> users) {

@@ -30,7 +30,7 @@ public class EditScheduleActivity extends RoboFragmentActivity implements Delete
 	@InjectView(R.id.day_button_scroller) private LinearLayout dayButtonScroller;
 	
 	// Used for callbacks (e.g. passing information to EditTimeBlockActivity).
-	public static final String[] timeData = {
+	public static final String[] TIME_DATA = {
 			"0:00:00 AM", "0:30:00 AM", "1:00:00 AM", "1:30:00 AM",
 			"2:00:00 AM", "2:30:00 AM", "3:00:00 AM", "3:30:00 AM", 
 			"4:00:00 AM", "4:30:00 AM", "5:00:00 AM", "5:30:00 AM",

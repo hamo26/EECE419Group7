@@ -100,7 +100,7 @@ public class EditTimeBlockActivity extends RoboActivity {
 	            // Get all time block types.
 	            SchedulesDataSource dataSource = new SchedulesDataSource(this);
 	            dataSource.open();
-	            this.timeBlocks = dataSource.getSchdeduleDayTimeBlocks(this.newTimeBlock.scheduleId, this.newTimeBlock.day);
+	            this.timeBlocks = dataSource.getScheduleDayTimeBlocks(this.newTimeBlock.scheduleId, this.newTimeBlock.day);
 	            this.blockTypes = dataSource.getAllBlockTypes();
 	            dataSource.close();
 	            
@@ -162,7 +162,7 @@ public class EditTimeBlockActivity extends RoboActivity {
 	            this.typeSpinner.setSelection(defaultBlockTypeSpinnerPosition);
 	            
 	            // Get default positions start and end time spinners.
-	            List<String> startEndTimes = new ArrayList<String>(Arrays.asList(EditScheduleActivity.timeData));
+	            List<String> startEndTimes = new ArrayList<String>(Arrays.asList(EditScheduleActivity.TIME_DATA));
 	            int defaultStartTimeSpinnerPosition = 0;
 	            int defaultEndTimeSpinnerPosition = 0;
 	            Calendar theTime = Calendar.getInstance();

@@ -98,6 +98,16 @@ public class SchedulesDataSource {
 		return userFromCursor(cursor);
 	}
 	
+	// Get user from from server id.
+	public UserData getUserFromSid(long sid) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
+				SchedulesDataSource.allUserColumns, SchedulesSQLiteHelper.COLUMN_SID +
+				" = " + sid, null, null, null, null);
+		cursor.moveToFirst();
+		
+		return userFromCursor(cursor);
+	}
+	
 	// Returns user pointed to by cursor.
 	private UserData userFromCursor(Cursor cursor) {
 		UserData user = new UserData();
@@ -161,9 +171,11 @@ public class SchedulesDataSource {
 	}
 	
 	// Returns a cursor that points to all schedules currently in table.
-	public Cursor getAllSchedulesCursor() {
+	public Cursor getAllOwnerSchedulesCursor(long ownerId) {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
-				SchedulesDataSource.allScheduleColumns, null, null, null, null, null);
+				SchedulesDataSource.allScheduleColumns,
+				SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + ownerId,
+				null, null, null, null);
 		cursor.moveToFirst();
 		
 		return cursor;
@@ -183,6 +195,18 @@ public class SchedulesDataSource {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
 				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_ID +
 				" = " + id, null, null, null, null);
+		cursor.moveToFirst();
+		
+		return scheduleFromCursor(cursor);
+	}
+	
+	// Returns active schedule as per owner id.
+	public ScheduleData getScheduleFromOwnerId(long ownerId) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+				SchedulesDataSource.allScheduleColumns,
+				SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + ownerId + " AND " + 
+				SchedulesSQLiteHelper.COLUMN_ACTIVE + " = " + 1,
+				null, null, null, null);
 		cursor.moveToFirst();
 		
 		return scheduleFromCursor(cursor);
@@ -255,8 +279,8 @@ public class SchedulesDataSource {
 		this.database.execSQL(sql);
 	}
 	
-	// Returns a cursor that points to all time blocks of a given schedule.
-	public ArrayList<TimeBlockData> getSchdeduleDayTimeBlocks(long scheduleId, int day) {
+	// Returns a cursor that points to all time blocks of a given schedule and day.
+	public ArrayList<TimeBlockData> getScheduleDayTimeBlocks(long scheduleId, int day) {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
 				SchedulesDataSource.allTimeBlockColumns,
 				SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID + " = " + Long.toString(scheduleId) +
@@ -275,15 +299,48 @@ public class SchedulesDataSource {
 		return timeBlocks;
 	}
 	
-	public boolean isTimeBlockExists(long id) throws SQLException {
-	    Cursor mCursor = this.database.query(true, SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
-	    		SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + 
-	    		" = " + id, null, null, null, null, null);
+	// Checks whether the day is free for the given schedule.
+	public boolean isDayFree(long scheduleId, int day) throws SQLException {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+				SchedulesDataSource.allTimeBlockColumns,
+				SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID + " = " + Long.toString(scheduleId) +
+				" AND " + SchedulesSQLiteHelper.COLUMN_DAY + " = " + Integer.toString(day),
+				null, null, null, null);
 	    
-	    if (mCursor != null) {
+	    if (cursor != null) {
 	        return true;
 	    }
 	    return false;
+	}
+	
+	// Returns a cursor that points to all time blocks of a given schedule.
+	public ArrayList<TimeBlockData> getSchdeduleTimeBlocks(long scheduleId) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+				SchedulesDataSource.allTimeBlockColumns,
+				SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID + " = " + Long.toString(scheduleId),
+				null, null, null, SchedulesSQLiteHelper.COLUMN_START_TIME);
+		cursor.moveToFirst();
+		
+		ArrayList<TimeBlockData> timeBlocks = new ArrayList<TimeBlockData>();
+		while(!cursor.isAfterLast()) {
+//				System.out.println("DataSource: start: " + cursor.getString(2) + " end: " + cursor.getString(3));
+			timeBlocks.add(timeBlockFromCursor(cursor));
+			cursor.moveToNext();
+		}
+		
+		cursor.close();
+		return timeBlocks;
+	}
+	
+	public boolean isTimeBlockExists(long id) throws SQLException {
+	    Cursor cursor = this.database.query(true, SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+	    		SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + 
+	    		" = " + id, null, null, null, null, null);
+	    
+	    if (cursor != null) {
+	        return false;
+	    }
+	    return true;
 	}
 	
 	// Returns time block pointed to by cursor.

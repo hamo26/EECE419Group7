@@ -1,5 +1,6 @@
 package com.schedushare.android.fragments;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,10 +26,12 @@ public class CheckableScheduleListFragment extends ScheduleListFragment {
     }
 	
 	private void setListViewAdapter() {
+		SharedPreferences p = getActivity().getPreferences(0);
+		
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
 		dataSource.open();
-		Cursor cursor = dataSource.getAllSchedulesCursor();
+		Cursor cursor = dataSource.getAllOwnerSchedulesCursor(p.getLong(getString(R.string.settings_owner_id), 1));
 		dataSource.close();
 		
 		// Create new adapter and attach to listView.
