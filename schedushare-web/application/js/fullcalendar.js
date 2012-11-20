@@ -31,7 +31,7 @@ var defaults = {
 	weekends: true,
 	
 	// editing
-	//editable: false,
+	editable: true,
 	//disableDragging: false,
 	//disableResizing: false,
 	

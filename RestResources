@@ -29,13 +29,18 @@ The Schedule List Entity
 The Time Block Entity 
 
 {
-  "time-block-id":"",//auto generated
-  "start-time":"",//TIME FORMAT
-  "end-time":"",//TIME FORMAT
-  "day":"",//[Monday, Tuesday, Wednesday,..] ENUMARATION, CHECK DB 
-  "longitude":"",//DOUBLE
-  "latitude":"",//DOUBLE
-  "schedule-id":"" //SCHEDULE THAT OWNS TIME BLOCK
+  [
+  "schedule-id":""//The schedule id.
+  {
+   "time-block-id":"",//auto generated
+   "start-time":"",//TIME FORMAT
+   "end-time":"",//TIME FORMAT
+   "day":"",//[Monday, Tuesday, Wednesday,..] ENUMARATION, CHECK DB 
+   "longitude":"",//DOUBLE
+   "latitude":"",//DOUBLE
+  }
+  .....
+  ]
 }
 
 The Time Blocks Entity
@@ -51,6 +56,7 @@ Update a user: PUT userEntity to /user
 
 Create a schedule: POST scheduleEntity to /schedules
 Update a schedule: PUT scheduleEntity to /schedules
+Get all schedules for a user: GET /schedules/users/{userId}
 Get an active schedule for user: GET /schedules/active/{userId}
 Delete a schedule: DELETE /schedules/{scheduleId}
 

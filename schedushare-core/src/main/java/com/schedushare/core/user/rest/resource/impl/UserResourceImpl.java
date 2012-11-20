@@ -21,7 +21,7 @@ import com.schedushare.core.user.service.UserService;
 public class UserResourceImpl extends SelfInjectingServerResource implements
 		UserResource {
 
-	private String userEmail;
+	private int userId;
 	private Connection connection;
 	
 	@Inject
@@ -37,7 +37,8 @@ public class UserResourceImpl extends SelfInjectingServerResource implements
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
-		this.userEmail = (String) getRequestAttributes().get("userEmail");
+		Object id = getRequestAttributes().get("userId");
+		this.userId = (id == null) ? 0 : (Integer.valueOf((String)id));
 	}
 	
 	@Override
@@ -49,7 +50,7 @@ public class UserResourceImpl extends SelfInjectingServerResource implements
 					SchedusharePersistenceConstants.SCHEDUSHARE_URL,
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT,
 					SchedusharePersistenceConstants.SCHEDUSHARE_ROOT_PASSWORD);
-			UserEntity user = userService.getUser(connection, userEmail);
+			UserEntity user = userService.getUser(connection, userId);
 			return jsonUtil.serializeRepresentation(user);
 		} catch (SchedushareException e) {
 			return e.serializeJsonException();
