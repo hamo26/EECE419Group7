@@ -45,6 +45,15 @@ public class DiffFragment extends Fragment {
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss aa");
 	
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		// Set so that fragment does not get recreated every time configuration changes.
+		// (e.g. orientation change)
+		setRetainInstance(true);
+	}
+	
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		
