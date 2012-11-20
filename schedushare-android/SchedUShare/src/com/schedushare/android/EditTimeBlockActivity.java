@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 @ContentView(R.layout.activity_edit_time_block)
 public class EditTimeBlockActivity extends RoboActivity {
@@ -228,6 +229,10 @@ public class EditTimeBlockActivity extends RoboActivity {
     	
     	// Get name.
     	this.newTimeBlock.name = this.nameEditView.getText().toString();
+    	if (this.newTimeBlock.name.isEmpty()) {
+    		Toast.makeText(this, "Please enter name.", Toast.LENGTH_LONG).show();
+    		return;
+    	}
     	
     	// Get block type id.
     	String blockTypeName = (String)this.typeSpinner.getSelectedItem();
@@ -242,6 +247,11 @@ public class EditTimeBlockActivity extends RoboActivity {
     	try {
     		newBlockStartTime.setTime(this.timeFormat.parse((String)this.startTimeSpinner.getSelectedItem()));
 			newBlockEndTime.setTime(this.timeFormat.parse((String)this.endTimeSpinner.getSelectedItem()));
+			
+			if (newBlockStartTime.getTime().getTime() >= newBlockEndTime.getTime().getTime()) {
+				Toast.makeText(this, "Start time must be earlier than end time.", Toast.LENGTH_LONG).show();
+				return;
+			}
     		
     		for (TimeBlockData timeBlock : this.timeBlocks) {
         		// Create calendar objects from the time block's start and end times.        		

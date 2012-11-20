@@ -152,7 +152,7 @@ public class MainMenuActivity extends FacebookActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
+        if (requestCode == FriendPickerActivity.REQUEST_CODE) {
 	        if (resultCode == Activity.RESULT_OK) {
 	        	this.selectedUsers = ((SchedUShareApplication)getApplication())
 	                    .getSelectedUsers();
@@ -218,7 +218,7 @@ public class MainMenuActivity extends FacebookActivity {
     	Intent intent = new Intent();
         intent.setData(FriendPickerActivity.FRIEND_PICKER);
         intent.setClass(this, FriendPickerActivity.class);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, FriendPickerActivity.REQUEST_CODE);
     }
     
     // Creates test data.
