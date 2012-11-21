@@ -54,7 +54,7 @@ public class Schedule extends org.jooq.impl.UpdatableTableImpl<com.schedushare.c
 	 * REFERENCES schedushare.user (ID)
 	 * </pre></code>
 	 */
-	public final org.jooq.TableField<com.schedushare.core.database.tables.records.ScheduleRecord, java.lang.Integer> USER_ID = createField("USER_ID", org.jooq.impl.SQLDataType.INTEGER, this);
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.ScheduleRecord, java.lang.String> USER_ID = createField("USER_ID", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>schedushare.schedule.LAST_MODIFIED</code>

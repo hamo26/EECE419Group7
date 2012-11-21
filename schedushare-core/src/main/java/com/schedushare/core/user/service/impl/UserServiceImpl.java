@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public UserEntity getUser(Connection connection, int userId) throws SchedushareException {
+	public UserEntity getUser(Connection connection, String userId) throws SchedushareException {
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
 		List<UserEntity> userResult = getUserQuery.select().from(Tables.USER)
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserEntity getUser(Connection connection, int userId, String authToken)
+	public UserEntity getUser(Connection connection, String userId, String authToken)
 			throws SchedushareException {
 		
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
@@ -61,15 +61,15 @@ public class UserServiceImpl implements UserService {
 		
 		List<UserEntity> userResult = createUserQuery.select()
 											.from(Tables.USER)
-											.where(Tables.USER.EMAIL.equal(userEntity.getEmail()))
+											.where(Tables.USER.ID.equal(userEntity.getUserId()))
 											.fetchInto(UserEntity.class);
 		if (!userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id was not unique.");
 		} else {
 			try {
-				createUserQuery.insertInto(Tables.USER, Tables.USER.EMAIL, Tables.USER.NAME, 
+				createUserQuery.insertInto(Tables.USER, Tables.USER.ID, Tables.USER.EMAIL, Tables.USER.NAME, 
 														Tables.USER.AUTH_TOKEN)
-													   .values(userEntity.getEmail(), userEntity.getName(), userEntity.getAuthToken())
+													   .values(userEntity.getUserId(), userEntity.getEmail(), userEntity.getName(), userEntity.getAuthToken())
 													   .execute();
 				List<UserEntity> createdUserResult = createUserQuery.select()
 														  .from(Tables.USER)
@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 		SchedushareFactory updateUserQuery = new SchedushareFactory(connection);
 		List<UserEntity> result = updateUserQuery.select()
 					   .from(Tables.USER)
-					   .where(Tables.USER.EMAIL.equal(userEntity.getEmail()))
+					   .where(Tables.USER.ID.equal(userEntity.getUserId()))
 					   .fetchInto(UserEntity.class);
 		if(result.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("Attempting to update track that does not exist.");
@@ -100,7 +100,8 @@ public class UserServiceImpl implements UserService {
 				updateUserQuery.update(Tables.USER)
 							   .set(Tables.USER.NAME, userEntity.getName())
 							   .set(Tables.USER.AUTH_TOKEN, userEntity.getAuthToken())
-							   .where(Tables.USER.EMAIL.equal(userEntity.getEmail()))
+							   .set(Tables.USER.EMAIL, userEntity.getEmail())
+							   .where(Tables.USER.ID.equal(userEntity.getUserId()))
 							   .execute();
 			} catch (Exception e) {
 				throw schedushareExceptionFactory.createSchedushareException(e.getMessage());

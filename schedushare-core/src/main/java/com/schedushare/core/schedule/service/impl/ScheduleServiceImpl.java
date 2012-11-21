@@ -66,7 +66,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public ScheduleEntity getActiveScheduleForUser(Connection connection,
-			int userId) throws SchedushareException {
+			String userId) throws SchedushareException {
 		
 		try {
 			SchedushareFactory getActiveScheduleQuery = new SchedushareFactory(connection);
@@ -98,7 +98,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public ScheduleListEntity getSchedulesForUser(
-			Connection connection, int userId) throws SchedushareException {
+			Connection connection, String userId) throws SchedushareException {
 		SchedushareFactory getSchedulesQuery = new SchedushareFactory(connection);
 		
 		try {

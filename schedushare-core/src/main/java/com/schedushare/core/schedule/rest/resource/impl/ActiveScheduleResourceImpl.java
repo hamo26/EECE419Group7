@@ -32,13 +32,12 @@ public class ActiveScheduleResourceImpl extends SelfInjectingServerResource
 	@Inject
 	private SchedushareExceptionFactory schedushareExceptionFactory;
 
-	private int userId;
+	private String userId;
 	
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
-		Object id = getRequestAttributes().get("userId");
-		this.userId = (id == null) ? 0 : (Integer.valueOf((String)id));
+		this.userId = (String) getRequestAttributes().get("userId");
     }
 	
 	@Override

@@ -80,7 +80,7 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	 * REFERENCES schedushare.user (ID)
 	 * </pre></code>
 	 */
-	public void setOwnerId(java.lang.Integer value) {
+	public void setOwnerId(java.lang.String value) {
 		setValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID, value);
 	}
 
@@ -93,7 +93,7 @@ public class ScheduleRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedu
 	 * REFERENCES schedushare.user (ID)
 	 * </pre></code>
 	 */
-	public java.lang.Integer getOwnerId() {
+	public java.lang.String getOwnerId() {
 		return getValue(com.schedushare.core.database.tables.Schedule.SCHEDULE.USER_ID);
 	}
 

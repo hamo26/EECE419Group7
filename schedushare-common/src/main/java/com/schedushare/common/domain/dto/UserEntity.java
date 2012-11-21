@@ -23,7 +23,7 @@ public class UserEntity extends RestEntity implements Serializable{
 	public static final String USER_ID = "user-id";
 
 	@SerializedName(USER_ID)
-	private int userId;
+	private String userId;
 	
 	@SerializedName(EMAIL)
 	private String email;
@@ -44,9 +44,9 @@ public class UserEntity extends RestEntity implements Serializable{
 	 * @param Name the name
 	 * @param EMAIL the email
 	 */
-	public UserEntity(final int ID, final String AUTH_TOKEN, final String NAME, 
+	public UserEntity(final String ID, final String AUTH_TOKEN, final String NAME, 
 			final String EMAIL) {
-		this.setUserId(ID);
+		this.userId = ID;
 		this.email = EMAIL;
 		this.name = NAME;
 		this.authToken = AUTH_TOKEN;
@@ -64,11 +64,7 @@ public class UserEntity extends RestEntity implements Serializable{
 		return this.name;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
-	}
-
-	public void setUserId(int userId) {
-		this.userId = userId;
 	}
 }

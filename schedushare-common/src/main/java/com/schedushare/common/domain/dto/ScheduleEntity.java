@@ -35,7 +35,7 @@ public class ScheduleEntity extends RestEntity {
 	private final Boolean scheduleActive;
 
 	@SerializedName(USER_ID)
-	private int userId;
+	private String userId;
 	
 	@SerializedName(LAST_MODIFIED)
 	private String lastModified;
@@ -52,7 +52,7 @@ public class ScheduleEntity extends RestEntity {
 	 * @param timeblocks the timeblocks
 	 */
 	public ScheduleEntity(final int ID, final String NAME,
-			final Boolean ACTIVE, final int USER_ID, final Time LAST_MODIFIED) {
+			final Boolean ACTIVE, final String USER_ID, final Time LAST_MODIFIED) {
 		this.scheduleId = ID;
 		this.scheduleName = NAME;
 		this.scheduleActive = ACTIVE;
@@ -69,7 +69,7 @@ public class ScheduleEntity extends RestEntity {
 	 * @param timeblocks the timeblocks
 	 */
 	public ScheduleEntity(final int ID, final String NAME,
-			final Boolean ACTIVE, final int USER_ID, final String LAST_MODIFIED,
+			final Boolean ACTIVE, final String USER_ID, final String LAST_MODIFIED,
 			final Collection<TimeBlockEntity> timeBlocks) {
 		this.scheduleId = ID;
 		this.userId = USER_ID;
@@ -96,7 +96,7 @@ public class ScheduleEntity extends RestEntity {
 		return scheduleId;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 

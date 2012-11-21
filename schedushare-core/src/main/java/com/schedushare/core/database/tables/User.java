@@ -31,7 +31,7 @@ public class User extends org.jooq.impl.UpdatableTableImpl<com.schedushare.core.
 	 * <p>
 	 * This column is part of the table's PRIMARY KEY
 	 */
-	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER, this);
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.UserRecord, java.lang.String> ID = createField("ID", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>schedushare.user.AUTHTOKEN</code>

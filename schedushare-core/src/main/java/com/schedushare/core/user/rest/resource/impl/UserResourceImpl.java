@@ -21,7 +21,7 @@ import com.schedushare.core.user.service.UserService;
 public class UserResourceImpl extends SelfInjectingServerResource implements
 		UserResource {
 
-	private int userId;
+	private String userId;
 	private Connection connection;
 	
 	@Inject
@@ -37,8 +37,7 @@ public class UserResourceImpl extends SelfInjectingServerResource implements
 	@Override
 	protected void doInit() throws ResourceException {
 		super.doInit();
-		Object id = getRequestAttributes().get("userId");
-		this.userId = (id == null) ? 0 : (Integer.valueOf((String)id));
+		this.userId = (String) getRequestAttributes().get("userId");
 	}
 	
 	@Override

@@ -12,18 +12,18 @@ set foreign_key_checks = 0 ;
 -- Table structure for table `schedule`
 --
 
-DROP TABLE IF EXISTS `schedule`;
+DROP TABLE IF EXISTS `SCHEDULE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `schedule` (
+CREATE TABLE `SCHEDULE` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(255) DEFAULT NULL,
   `ACTIVE` bit(1) DEFAULT NULL,
-  `USER_ID` int(11) DEFAULT NULL,
+  `USER_ID` varchar(255) NOT NULL,
   `LAST_MODIFIED` time DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `SCHEDULE_OWNER` (`USER_ID`),
-  CONSTRAINT `SCHEDULE_OWNER` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `SCHEDULE_OWNER` FOREIGN KEY (`USER_ID`) REFERENCES `USER` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -31,7 +31,7 @@ CREATE TABLE `schedule` (
 -- Dumping data for table `schedule`
 --
 
-LOCK TABLES `schedule` WRITE;
+LOCK TABLES `SCHEDULE` WRITE;
 /*!40000 ALTER TABLE `schedule` DISABLE KEYS */;
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -40,10 +40,10 @@ UNLOCK TABLES;
 -- Table structure for table `time_block`
 --
 
-DROP TABLE IF EXISTS `time_block`;
+DROP TABLE IF EXISTS `TIME_BLOCK`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `time_block` (
+CREATE TABLE `TIME_BLOCK` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `START_TIME` time DEFAULT NULL,
   `END_TIME` time DEFAULT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE `time_block` (
   `SCHEDULE_ID` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `TIME_BLOCK_OWNER_idx` (`SCHEDULE_ID`),
-  CONSTRAINT `TIME_BLOCK_OWNER` FOREIGN KEY (`SCHEDULE_ID`) REFERENCES `schedule` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `TIME_BLOCK_OWNER` FOREIGN KEY (`SCHEDULE_ID`) REFERENCES `SCHEDULE` (`ID`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -61,7 +61,7 @@ CREATE TABLE `time_block` (
 -- Dumping data for table `time_block`
 --
 
-LOCK TABLES `time_block` WRITE;
+LOCK TABLES `TIME_BLOCK` WRITE;
 /*!40000 ALTER TABLE `time_block` DISABLE KEYS */;
 /*!40000 ALTER TABLE `time_block` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -70,16 +70,15 @@ UNLOCK TABLES;
 -- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `USER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user` (
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `USER` (
+  `ID` varchar(255) NOT NULL,
   `EMAIL` varchar(255) DEFAULT NULL,
   `NAME` varchar(255) DEFAULT NULL,
   `AUTH_TOKEN` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `EMAIL_UNIQUE` (`EMAIL`)
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -87,7 +86,7 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-LOCK TABLES `user` WRITE;
+LOCK TABLES `USER` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

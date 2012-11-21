@@ -23,7 +23,7 @@ public interface UserService {
 	 * @return the user
 	 * @throws SchedushareException the schedushare exception
 	 */
-	UserEntity getUser(Connection connection, int userId) throws SchedushareException;
+	UserEntity getUser(Connection connection, String userId) throws SchedushareException;
 	
 	/**
 	 * Gets a user.
@@ -34,7 +34,7 @@ public interface UserService {
 	 * @return the user
 	 * @throws SchedushareException the schedushare exception
 	 */
-	UserEntity getUser(Connection connection, int userId, String authToken) throws SchedushareException;
+	UserEntity getUser(Connection connection, String userId, String authToken) throws SchedushareException;
 	
 	/**
 	 * Creates a user.

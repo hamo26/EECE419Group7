@@ -18,7 +18,7 @@ public class UserRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedushar
 	 * <p>
 	 * This column is part of the table's PRIMARY KEY
 	 */
-	public void setId(java.lang.Integer value) {
+	public void setId(java.lang.String value) {
 		setValue(com.schedushare.core.database.tables.User.USER.ID, value);
 	}
 
@@ -27,7 +27,7 @@ public class UserRecord extends org.jooq.impl.UpdatableRecordImpl<com.schedushar
 	 * <p>
 	 * This column is part of the table's PRIMARY KEY
 	 */
-	public java.lang.Integer getId() {
+	public java.lang.String getId() {
 		return getValue(com.schedushare.core.database.tables.User.USER.ID);
 	}
 

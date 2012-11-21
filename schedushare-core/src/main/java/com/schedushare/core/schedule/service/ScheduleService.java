@@ -31,7 +31,7 @@ public interface ScheduleService {
 	 * @param userId the user id
 	 * @return the active schedule for user
 	 */
-	ScheduleEntity getActiveScheduleForUser(final Connection connection, final int userId) throws SchedushareException;
+	ScheduleEntity getActiveScheduleForUser(final Connection connection, final String userId) throws SchedushareException;
 	
 	/**
 	 * Creates a schedule for a user.
@@ -51,7 +51,7 @@ public interface ScheduleService {
 	 * @param userId the user id
 	 * @return the schedules for user
 	 */
-	ScheduleListEntity getSchedulesForUser(final Connection connection, final int userId) throws SchedushareException;
+	ScheduleListEntity getSchedulesForUser(final Connection connection, final String userId) throws SchedushareException;
 	
 	/**
 	 * Delete schedule.
