@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.schedushare.android.MainMenuActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.util.CheckboxScheduleCursorAdapter;
@@ -26,7 +27,7 @@ public class CheckableScheduleListFragment extends ScheduleListFragment {
     }
 	
 	private void setListViewAdapter() {
-		SharedPreferences p = getActivity().getPreferences(0);
+		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
 		
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());

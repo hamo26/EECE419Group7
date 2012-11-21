@@ -24,11 +24,11 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public UserEntity getUser(Connection connection, String userEmail) throws SchedushareException {
+	public UserEntity getUser(Connection connection, int userId) throws SchedushareException {
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
 		List<UserEntity> userResult = getUserQuery.select().from(Tables.USER)
-								.where(Tables.USER.EMAIL.equal(userEmail))
+								.where(Tables.USER.ID.equal(userId))
 								.fetchInto(UserEntity.class);
 		if(userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id does not exist");
@@ -38,13 +38,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserEntity getUser(Connection connection, String userEmail, String authToken)
+	public UserEntity getUser(Connection connection, int userId, String authToken)
 			throws SchedushareException {
 		
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
 		List<UserEntity> userResult = getUserQuery.select().from(Tables.SCHEDULE)
-								.where(Tables.USER.EMAIL.equal(userEmail))
+								.where(Tables.USER.ID.equal(userId))
 								.and(Tables.USER.AUTH_TOKEN.equal(authToken))
 								.fetchInto(UserEntity.class);
 		if(userResult.isEmpty()) {

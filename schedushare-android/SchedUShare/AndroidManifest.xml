@@ -54,6 +54,7 @@
         </activity>
         <activity
             android:name=".EditTimeBlockActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_edit_time_block" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -61,6 +62,7 @@
         </activity>
         <activity
             android:name=".SelectLocationActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_select_location" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -68,6 +70,7 @@
         </activity>
         <activity
             android:name=".FriendPickerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_friend_picker" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -75,6 +78,7 @@
         </activity>
         <activity
             android:name=".BeamActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_beam" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -90,6 +94,7 @@
         </activity>
         <activity
             android:name=".DiffActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_diff" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

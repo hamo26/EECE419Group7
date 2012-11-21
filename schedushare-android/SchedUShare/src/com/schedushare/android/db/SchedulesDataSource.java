@@ -159,10 +159,14 @@ public class SchedulesDataSource {
 	
 	// Updates given schedule in table.
 	public void updateSchedule(ScheduleData schedule) {
+		int active = 0;
+		if (schedule.active)
+			active = 1;
+		
 		String sql = "UPDATE " + SchedulesSQLiteHelper.TABLE_SCHEDULE + " "
 				+ "SET " + SchedulesSQLiteHelper.COLUMN_SID + " = " + schedule.sid + ", "
 				+ SchedulesSQLiteHelper.COLUMN_NAME + " = '" + schedule.name + "', "
-				+ SchedulesSQLiteHelper.COLUMN_ACTIVE + " = '" + schedule.active + "', "
+				+ SchedulesSQLiteHelper.COLUMN_ACTIVE + " = " + active + ", "
 				+ SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + schedule.ownerId + ", "
 				+ SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED + " = '" + schedule.lastModified + "' "
 				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = " + schedule.id;
@@ -201,7 +205,7 @@ public class SchedulesDataSource {
 	}
 	
 	// Returns active schedule as per owner id.
-	public ScheduleData getScheduleFromOwnerId(long ownerId) {
+	public ScheduleData getActiveScheduleFromOwnerId(long ownerId) {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
 				SchedulesDataSource.allScheduleColumns,
 				SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + ownerId + " AND " + 

@@ -1,6 +1,7 @@
 package com.schedushare.android.fragments;
 
 import com.schedushare.android.EditScheduleActivity;
+import com.schedushare.android.MainMenuActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.SchedulesDataSource;
 
@@ -48,7 +49,7 @@ public class ScheduleListFragment extends Fragment {
 	
 	private void setListViewAdapter() {
 		// Get shared preferences.
-		SharedPreferences p = getActivity().getPreferences(0);
+		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
 		
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());
@@ -77,7 +78,7 @@ public class ScheduleListFragment extends Fragment {
 	
 	public void swapCursor() {
 		// Get preferences.
-		SharedPreferences p = getActivity().getPreferences(0);
+		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
 		
 		// Get new cursor from database.
 		SchedulesDataSource dataSource = new SchedulesDataSource(getActivity());

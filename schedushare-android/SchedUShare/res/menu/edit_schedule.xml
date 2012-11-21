@@ -2,4 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/delete_schedule_option" android:visible="true" android:showAsAction="always|withText" android:title="@string/tab_delete_schedule"></item>
     <item android:id="@+id/rename_schedule_option" android:visible="true" android:showAsAction="always|withText" android:title="@string/tab_rename_schedule"></item>
+    <item android:id="@+id/set_active_schedule_option" android:visible="true" android:showAsAction="always|withText" android:title="@string/tab_set_active_schedule"></item>
 </menu>

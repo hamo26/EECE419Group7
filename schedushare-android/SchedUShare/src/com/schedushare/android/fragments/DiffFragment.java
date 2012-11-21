@@ -15,7 +15,9 @@ import org.json.JSONObject;
 
 import com.facebook.GraphObjectWrapper;
 import com.facebook.GraphUser;
+import com.schedushare.android.DiffActivity;
 import com.schedushare.android.EditScheduleActivity;
+import com.schedushare.android.MainMenuActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.ScheduleData;
 import com.schedushare.android.db.SchedulesDataSource;
@@ -43,6 +45,15 @@ public class DiffFragment extends Fragment {
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss aa");
 	
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		// Set so that fragment does not get recreated every time configuration changes.
+		// (e.g. orientation change)
+		setRetainInstance(true);
+	}
+	
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		
@@ -50,7 +61,7 @@ public class DiffFragment extends Fragment {
 		
 		Bundle bundle = getArguments();
 		if (bundle != null) {
-			this.selectedUsers = restoreByteArray(getArguments().getByteArray("selectedUsers"));
+			this.selectedUsers = DiffActivity.restoreByteArray(getArguments().getByteArray("selectedUsers"));
 			
 	    	this.userSchedules = new ArrayList<ScheduleData>();
 			
@@ -59,10 +70,10 @@ public class DiffFragment extends Fragment {
 	    	for (int i = 0; i < this.selectedUsers.size(); i++) {
 	    		System.out.println("userId: " + this.selectedUsers.get(i).getId());
 	    		UserData user = dataSource.getUserFromSid(Long.parseLong(this.selectedUsers.get(i).getId()));
-	    		this.userSchedules.add(dataSource.getScheduleFromOwnerId(user.id));
+	    		this.userSchedules.add(dataSource.getActiveScheduleFromOwnerId(user.id));
 	    	}
 	    	
-	    	SharedPreferences p = getActivity().getPreferences(0);
+	    	SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
 	    	this.userSchedules.add(dataSource.getScheduleFromId(p.getLong(getString(R.string.settings_owner_active_schedule_id), 1)));
 	    	
 	    	// Initialize all rows in the diffTable.
@@ -82,9 +93,7 @@ public class DiffFragment extends Fragment {
 	    	for (int j = 0; j < 7; j++) {
 	    		// Get all the time blocks of each schedule for the given day.
 	    		ArrayList<ArrayList<TimeBlockData>> scheduleTimeBlocks = new ArrayList<ArrayList<TimeBlockData>>();
-	    		for (ScheduleData s : this.userSchedules) {
-	    			System.out.println("schedule name: " + s.name);
-	    			
+	    		for (ScheduleData s : this.userSchedules) {	    			
 	    			ArrayList<TimeBlockData> t = dataSource.getScheduleDayTimeBlocks(s.id, j);
 	    			
 	    			if (t != null) {
@@ -112,9 +121,7 @@ public class DiffFragment extends Fragment {
 		    				for (TimeBlockData timeBlock : timeBlocks) {
 		    					startTime.setTime(this.timeFormat.parse(timeBlock.startTime));
 		    		        	endTime.setTime(this.timeFormat.parse(timeBlock.endTime));
-		    		        	
-		    		        	System.out.println("test");
-		    		        	
+		    		        			    		        	
 		    		        	// Found time block that is not free.
 		    		        	if ((currentTime.getTime().getTime() >= startTime.getTime().getTime()) &&
 	    			        		(currentTime.getTime().getTime() < endTime.getTime().getTime())) {
@@ -145,29 +152,6 @@ public class DiffFragment extends Fragment {
 		}
 		
 		return view;
-    }
-	
-	private List<GraphUser> restoreByteArray(byte[] bytes) {
-        try {
-            List<String> usersAsString =
-                    (List<String>)(new ObjectInputStream(new ByteArrayInputStream(bytes))).readObject();
-            if (usersAsString != null) {
-                List<GraphUser> users = new ArrayList<GraphUser>(usersAsString.size());
-                for (String user : usersAsString) {
-                    GraphUser graphUser = GraphObjectWrapper.createGraphObject(new JSONObject(user), GraphUser.class);
-                    users.add(graphUser);
-                }   
-                return users;
-            }   
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace(); 
-        } catch (IOException e) {
-        	e.printStackTrace(); 
-        } catch (JSONException e) {
-        	e.printStackTrace();  
-        }   
-        
-        return null;
     }
 	
 	private void addAllRows() {
