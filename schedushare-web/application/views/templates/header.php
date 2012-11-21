@@ -20,6 +20,8 @@
     <script type="text/javascript" src="<?php echo $path;?>application/js/jquery-1.8.2.js"></script>
     <script type="text/javascript" src="<?php echo $path;?>application/js/bootstrap.js"></script>
     <script type="text/javascript" src="<?php echo $path;?>application/js/fullcalendar.js"></script>
+    <script type="text/javascript" src="<?php echo $path;?>application/js/jquery-ui-1.8.23.custom.min.js"></script>
+    <script type="text/javascript" src="<?php echo $path;?>application/js/timetable.js"></script>
     
     <title><?php echo $title ?> - Sched-u-Share</title>
 </head>

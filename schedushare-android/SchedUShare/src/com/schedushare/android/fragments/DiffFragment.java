@@ -70,7 +70,7 @@ public class DiffFragment extends Fragment {
 	    	for (int i = 0; i < this.selectedUsers.size(); i++) {
 	    		System.out.println("userId: " + this.selectedUsers.get(i).getId());
 	    		UserData user = dataSource.getUserFromSid(Long.parseLong(this.selectedUsers.get(i).getId()));
-	    		this.userSchedules.add(dataSource.getScheduleFromOwnerId(user.id));
+	    		this.userSchedules.add(dataSource.getActiveScheduleFromOwnerId(user.id));
 	    	}
 	    	
 	    	SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
