@@ -2,7 +2,7 @@ package com.schedushare.android;
 
 import java.util.List;
 
-import com.facebook.GraphUser;
+import com.facebook.model.GraphUser;
 
 import android.app.Application;
 

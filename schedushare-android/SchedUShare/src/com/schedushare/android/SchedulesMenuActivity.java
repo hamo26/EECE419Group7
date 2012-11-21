@@ -61,6 +61,7 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 				// Open dialog box to create new schedule.
 				RoboDialogFragment newFragment = new NewScheduleDialogFragment();
 			    newFragment.show(getSupportFragmentManager(), "new_schedule");
+			    break;
 			default:
 				break;
 	  }

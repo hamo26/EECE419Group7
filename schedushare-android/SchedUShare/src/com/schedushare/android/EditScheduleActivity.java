@@ -130,10 +130,12 @@ public class EditScheduleActivity extends RoboFragmentActivity
 				// Open dialog box to delete schedule.
 				DialogFragment newFragment2 = new RenameScheduleDialogFragment();
 			    newFragment2.show(getSupportFragmentManager(), "rename_schedule");
+			    break;
 			case R.id.set_active_schedule_option:
 				// Open dialog box to set active schedule.
 				DialogFragment newFragment3 = new SetActiveScheduleDialogFragment();
 			    newFragment3.show(getSupportFragmentManager(), "set_active_schedule");
+			    break;
 			default:
 				break;
 		}

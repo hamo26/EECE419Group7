@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.facebook.FacebookActivity;
-import com.facebook.GraphUser;
+import com.facebook.model.GraphUser;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.SessionState;
@@ -96,7 +96,8 @@ public class MainMenuActivity extends FacebookActivity {
 //			} catch (ExecutionException e) {
 //				e.printStackTrace();
 //			}
-			
+        	this.lastViewedDay = 0;
+        	
         	startLocationManager();
 	        createTestData();
 	        initializeCurrentScheduleLayout();
@@ -199,6 +200,7 @@ public class MainMenuActivity extends FacebookActivity {
 				// Open schedules menu.
 				Intent intent = new Intent(this, SchedulesMenuActivity.class);
 		        startActivity(intent);
+		        break;
 			default:
 				break;
 	  }
@@ -312,8 +314,7 @@ public class MainMenuActivity extends FacebookActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put Monday in view.
-        fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[0]);
-        this.lastViewedDay = 0;
+        fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[this.lastViewedDay]);
         fragmentTransaction.commit();
     }
     

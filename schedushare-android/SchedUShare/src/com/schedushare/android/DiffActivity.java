@@ -9,22 +9,25 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facebook.GraphObjectWrapper;
-import com.facebook.GraphUser;
+import com.facebook.model.GraphObject;
+import com.facebook.model.GraphUser;
 import com.schedushare.android.db.ScheduleData;
 import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.db.UserData;
 import com.schedushare.android.fragments.DiffFragment;
-import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.ViewDayFragment;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -163,6 +166,31 @@ public class DiffActivity extends RoboFragmentActivity {
         }
     }
     
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Create menu with new schedule button.
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.diff_schedule, menu);
+		
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.create_fb_event_option:
+				// Launches Facebook.
+				Intent intent = new Intent("android.intent.category.LAUNCHER");
+				intent.setClassName("com.facebook.katana", "com.facebook.katana.LoginActivity");
+				startActivity(intent);
+				break;
+			default:
+				break;
+	  }
+	
+	  return true;
+	}
+    
     private void createDayButton(OnClickListener listener, int id, String text, int width, int height) {    	
     	Button dayButton = new Button(this);
         dayButton.setId(id);
@@ -186,11 +214,16 @@ public class DiffActivity extends RoboFragmentActivity {
     public static List<GraphUser> restoreByteArray(byte[] bytes) {
         try {
             List<String> usersAsString =
-                    (List<String>)(new ObjectInputStream(new ByteArrayInputStream(bytes))).readObject();
+                    (List<String>) (new ObjectInputStream
+                                    (new ByteArrayInputStream(bytes)))
+                                    .readObject();
             if (usersAsString != null) {
-                List<GraphUser> users = new ArrayList<GraphUser>(usersAsString.size());
+                List<GraphUser> users = new ArrayList<GraphUser>
+                (usersAsString.size());
                 for (String user : usersAsString) {
-                    GraphUser graphUser = GraphObjectWrapper.createGraphObject(new JSONObject(user), GraphUser.class);
+                    GraphUser graphUser = GraphObject.Factory
+                    .create(new JSONObject(user), 
+                                    GraphUser.class);
                     users.add(graphUser);
                 }   
                 return users;
@@ -198,11 +231,10 @@ public class DiffActivity extends RoboFragmentActivity {
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); 
         } catch (IOException e) {
-        	e.printStackTrace(); 
+            e.printStackTrace();
         } catch (JSONException e) {
-        	e.printStackTrace();  
+            e.printStackTrace(); 
         }   
-        
         return null;
     }
 }
