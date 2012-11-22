@@ -1,8 +1,5 @@
 package com.schedushare.android.fragments;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,11 +7,7 @@ import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.facebook.GraphObjectWrapper;
-import com.facebook.GraphUser;
+import com.facebook.model.GraphUser;
 import com.schedushare.android.DiffActivity;
 import com.schedushare.android.EditScheduleActivity;
 import com.schedushare.android.MainMenuActivity;
@@ -91,6 +84,8 @@ public class DiffFragment extends Fragment {
 	    	
 	    	// Iterate through all days. Colour all free blocks.
 	    	for (int j = 0; j < 7; j++) {
+	    		final int dayIndex = j;
+	    		
 	    		// Get all the time blocks of each schedule for the given day.
 	    		ArrayList<ArrayList<TimeBlockData>> scheduleTimeBlocks = new ArrayList<ArrayList<TimeBlockData>>();
 	    		for (ScheduleData s : this.userSchedules) {	    			
@@ -103,6 +98,8 @@ public class DiffFragment extends Fragment {
 	    		
 	    		// Go through each time block for the day and perform a diff between all schedules.
 	    		for (int k = 0; k < EditScheduleActivity.TIME_DATA.length; k++) {
+	    			final int timeIndex = k;
+	    			
 	    			TableRow row = (TableRow)view.findViewWithTag(EditScheduleActivity.TIME_DATA[k]);
 	    			TextView tv = new TextView(getActivity());
 	    			tv.setLayoutParams(blockParams);
@@ -138,6 +135,19 @@ public class DiffFragment extends Fragment {
 		    			if (numSchedulesFree == scheduleTimeBlocks.size()) {
 		    				tv.setBackgroundColor(Color.GREEN);
 		    			}
+		    			
+//		    			tv.setOnClickListener(new OnClickListener() {
+//		    				@Override
+//		    			    public void onClick(View v) {
+//		    					Intent intent = new Intent(DiffFragment.this.getActivity(),
+//		    							CreateFacebookEventActivity.class);
+//		    		        	Bundle b = new Bundle();
+//		    				    b.putInt("day", dayIndex);
+//		    				    b.putString("startTime", EditScheduleActivity.TIME_DATA[timeIndex]);
+//		    				    intent.putExtras(b);
+//		    			        startActivity(intent);
+//		    			    }
+//		    			});
 		    			
 		    			row.addView(tv);
 					} catch (ParseException e) {

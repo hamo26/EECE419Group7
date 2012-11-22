@@ -3,46 +3,25 @@ package com.schedushare.android;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import com.facebook.FacebookActivity;
-import com.facebook.GraphUser;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.SessionState;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.schedushare.android.db.SchedulesDataSource;
-import com.schedushare.android.db.UserData;
-import com.schedushare.android.fragments.EditDayFragment;
-import com.schedushare.android.fragments.FacebookAuthFragment;
-import com.schedushare.android.fragments.NewScheduleDialogFragment;
-import com.schedushare.android.schedule.task.GetSchedulesTask;
-import com.schedushare.common.domain.dto.ScheduleEntity;
-import com.schedushare.common.domain.dto.ScheduleListEntity;
-import com.schedushare.common.domain.rest.RestResult;
+import org.springframework.web.client.RestTemplate;
 
-import roboguice.activity.RoboActivity;
-import roboguice.fragment.RoboDialogFragment;
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectView;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -52,6 +31,26 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.facebook.FacebookActivity;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
+import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.db.UserData;
+import com.schedushare.android.fragments.EditDayFragment;
+import com.schedushare.android.fragments.FacebookAuthFragment;
+import com.schedushare.android.guice.GuiceConstants;
+import com.schedushare.android.schedule.task.GetActiveScheduleTask;
+import com.schedushare.android.schedule.task.GetSchedulesTask;
+import com.schedushare.android.util.ResourceUriBuilder;
+import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.dto.ScheduleListEntity;
+import com.schedushare.common.domain.dto.SchedushareExceptionEntity;
+import com.schedushare.common.domain.rest.RestResult;
+import com.schedushare.common.domain.rest.RestResultHandler;
+import com.schedushare.common.util.JSONUtil;
 
 public class MainMenuActivity extends FacebookActivity {
 	public static final String PREFS_NAME = "MAIN_SETTINGS";
@@ -96,7 +95,8 @@ public class MainMenuActivity extends FacebookActivity {
 //			} catch (ExecutionException e) {
 //				e.printStackTrace();
 //			}
-			
+        	this.lastViewedDay = 0;
+        	
         	startLocationManager();
 	        createTestData();
 	        initializeCurrentScheduleLayout();
@@ -136,10 +136,30 @@ public class MainMenuActivity extends FacebookActivity {
     							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
     							editor.commit();
     							
-    							// For Hamid:
     							// Get user's Facebook ID to query back end for all their schedules.
     							// If the user does not have any schedules stored in the backend,
     							// create one for them and send it back.
+    							GetSchedulesTask getSchedulesTask = new GetSchedulesTask(new RestTemplate(),
+    									             new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT),
+    									             GuiceConstants.USER_SCHEDULE_RESOURCE, 
+    									             new RestResultHandler(new JSONUtil()));
+    							try {
+									RestResult<ScheduleListEntity> restResult = getSchedulesTask.execute(user.getId())
+													.get();
+									if (restResult.isFailure()) {
+										//Handle error
+										SchedushareExceptionEntity error = restResult.getError();
+									} else {
+										ScheduleListEntity scheduleListEntity = restResult.getRestResult();
+										//Render schedules from schedule list provided.
+									}
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (ExecutionException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
     							System.out.println("MainMenu: owner fb id: " + user.getId());
     						}
     					}
@@ -160,14 +180,33 @@ public class MainMenuActivity extends FacebookActivity {
 	        	SchedulesDataSource dataSource = new SchedulesDataSource(this);
 	        	dataSource.open();
 	        	int i = 101;
+	        	Collection<ScheduleEntity> userSchedules = new ArrayList<ScheduleEntity>();
 	        	for (GraphUser u : this.selectedUsers) {
 	        		System.out.println("friend id: " + u.getId());
 	        		UserData user = dataSource.createUser(Long.parseLong(u.getId()), u.getName());
 	        		dataSource.createSchedule(i, "friend schedule", true, user.id, "whatever");
 	        		
-	        		// For Hamid:
 	        		// Call back end with each User ID to get their active schedules and time blocks.
-	        		
+	        		GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(),
+	        								  new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
+	        								  GuiceConstants.ACTIVE_SCHEDULE_RESOURCE, 
+	        								  new RestResultHandler(new JSONUtil()));
+	        		try {
+						RestResult<ScheduleEntity> restResult = getActiveScheduleTask.execute(u.getId())
+																					 .get();
+						if (restResult.isFailure()) {
+							//Silently discard error.
+						} else {
+							//Add to collection of active schedules.
+							userSchedules.add(restResult.getRestResult());
+						}
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	        	}
 	        	dataSource.close();
 	        	
@@ -199,6 +238,7 @@ public class MainMenuActivity extends FacebookActivity {
 				// Open schedules menu.
 				Intent intent = new Intent(this, SchedulesMenuActivity.class);
 		        startActivity(intent);
+		        break;
 			default:
 				break;
 	  }
@@ -312,8 +352,7 @@ public class MainMenuActivity extends FacebookActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Put Monday in view.
-        fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[0]);
-        this.lastViewedDay = 0;
+        fragmentTransaction.replace(R.id.active_schedule_container, this.dayFragments[this.lastViewedDay]);
         fragmentTransaction.commit();
     }
     

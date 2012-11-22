@@ -49,8 +49,13 @@
     <string name="tab_view_schedules">My Schedules</string>
     <string name="beam_button_text">Bump</string>
     <string name="title_activity_beam">Bump</string>
-    <string name="title_activity_diff">DiffActivity</string>
+    <string name="title_activity_diff">Diff</string>
     <string name="set_active_schedule_dialog_title">Are You Sure?</string>
     <string name="tab_set_active_schedule">Set Active</string>
+    <string name="title_activity_create_facebook_event">Create Facebook Event</string>
+    <string name="fb_event_name_text">Name</string>
+    <string name="fb_event_start_time_text">Start Time</string>
+    <string name="fb_event_end_time_text">End Time</string>
+    <string name="tab_create_fb_event">Create Facebook Event</string>
 
 </resources>

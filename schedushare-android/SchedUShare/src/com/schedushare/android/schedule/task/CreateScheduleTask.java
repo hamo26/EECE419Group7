@@ -22,7 +22,7 @@ import com.schedushare.common.domain.rest.RestResultHandler;
 /**
  * task to login a user.
  */
-public class CreateScheduleTask extends AsyncTask<String, Integer, RestResult<ScheduleEntity>>{
+public class CreateScheduleTask extends AsyncTask<ScheduleEntity, Integer, RestResult<ScheduleEntity>>{
 	
 	
 	private final RestTemplate restTemplate;
@@ -52,11 +52,10 @@ public class CreateScheduleTask extends AsyncTask<String, Integer, RestResult<Sc
 	}
 
 	@Override
-	protected RestResult<ScheduleEntity> doInBackground(String... params) {
-		String url = resourceUriBuilder.setResourceUri(this.scheduleResourceUri).setId(params[0]+"/notactive").build();
+	protected RestResult<ScheduleEntity> doInBackground(ScheduleEntity... params) {
+		String url = resourceUriBuilder.setResourceUri(this.scheduleResourceUri).build();
 		
-		ScheduleEntity createdSchedule = new ScheduleEntity(0, params[1], false, null, null, Collections.<TimeBlockEntity> emptyList());
-		String jsonResult = this.restTemplate.postForObject(url, createdSchedule, String.class);
+		String jsonResult = this.restTemplate.postForObject(url, params[0], String.class);
 		return restResultHandler.createRestResult(jsonResult, ScheduleEntity.class);
 	}
 	

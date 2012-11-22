@@ -1,6 +1,6 @@
 package com.schedushare.android.fragments;
 
-import com.facebook.LoginButton;
+import com.facebook.widget.LoginButton;
 import com.schedushare.android.R;
 
 import android.os.Bundle;

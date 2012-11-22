@@ -16,7 +16,7 @@ public class ResourceUriBuilder {
 
 	private final int hostPort;
 	
-	private String id;
+	private Object id;
 	
 	/**
 	 * Instantiates a new resource uri builder.
@@ -54,6 +54,11 @@ public class ResourceUriBuilder {
 		this.id = id;
 		return this;
 	}
+	
+	public ResourceUriBuilder setId(Integer id) {
+		this.id = id;
+		return this;
+	}
 
 	/**
 	 * Builds the qualified URI.
@@ -64,7 +69,9 @@ public class ResourceUriBuilder {
 		assert resourceUri != null : "resource uri must not be null.";
 		String resourceResult = "http://"+this.hostUri+":"+String.valueOf(this.hostPort)+"/schedushare/"+this.resourceUri;
 		return this.id != null 
-				? resourceResult+"/"+this.id : resourceResult;
+				? resourceResult+"/"+
+				((this.id instanceof String) ? (String) this.id : String.valueOf(this.id)) 
+						: resourceResult;
 	}
 	
 }

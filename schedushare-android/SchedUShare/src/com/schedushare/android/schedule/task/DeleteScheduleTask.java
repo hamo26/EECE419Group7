@@ -13,30 +13,29 @@ import android.os.AsyncTask;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.schedushare.android.util.ResourceUriBuilder;
-import com.schedushare.common.domain.dto.ScheduleListEntity;
-import com.schedushare.common.domain.dto.UserEntity;
+import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.rest.RestResult;
 import com.schedushare.common.domain.rest.RestResultHandler;
 
 /**
  * task to login a user.
  */
-public class GetSchedulesTask extends AsyncTask<String, Integer, RestResult<ScheduleListEntity>>{
+public class DeleteScheduleTask extends AsyncTask<Integer, Integer, RestResult<ScheduleEntity>>{
 	
 	
 	private final RestTemplate restTemplate;
 	private final ResourceUriBuilder resourceUriBuilder;
-	private final String userScheduleResourceUri;
+	private final String scheduleResourceUri;
 	private final RestResultHandler restResultHandler;
 	
 	@SuppressWarnings("unchecked")
 	@Inject
-	public GetSchedulesTask(@Named("restTemplate") 
+	public DeleteScheduleTask(@Named("restTemplate") 
 							final RestTemplate restTemplate,
 							@Named("resourceUriBuilder") 
 							final ResourceUriBuilder resourceUriBuilder,
-							@Named("userScheduleResource")
-							final String userSchedulesResourceUri,
+							@Named("scheduleResource")
+							final String scheduleResourceUri,
 							@Named("restResultHandler")
 							final RestResultHandler restResultHandler) {
 		super();
@@ -46,19 +45,16 @@ public class GetSchedulesTask extends AsyncTask<String, Integer, RestResult<Sche
 
 		this.restTemplate.setMessageConverters(messageConverters);
 		this.resourceUriBuilder = resourceUriBuilder;
-		this.userScheduleResourceUri = userSchedulesResourceUri;
+		this.scheduleResourceUri = scheduleResourceUri;
 		this.restResultHandler = restResultHandler;
 	}
 
 	@Override
-	protected RestResult<ScheduleListEntity> doInBackground(String... params) {
-		String userId = params[0];
-		String url = resourceUriBuilder.setResourceUri(this.userScheduleResourceUri)
-										.setId(userId)
-										.build();
+	protected RestResult<ScheduleEntity> doInBackground(Integer... params) {
+		String url = resourceUriBuilder.setResourceUri(this.scheduleResourceUri).setId(params[0]).build();
 		
-		String jsonResult = this.restTemplate.getForObject(url, String.class);
-		return restResultHandler.createRestResult(jsonResult, ScheduleListEntity.class);
+		this.restTemplate.delete(url);
+		return restResultHandler.createPutResult(ScheduleEntity.class);
 	}
 	
 	

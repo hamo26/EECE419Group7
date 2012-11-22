@@ -17,12 +17,11 @@ import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.schedushare.android.MainMenuActivity;
 import com.schedushare.android.R;
 import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.schedule.task.CreateScheduleTask;
-import com.schedushare.android.schedule.task.GetSchedulesTask;
 import com.schedushare.common.domain.dto.ScheduleEntity;
-import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.rest.RestResult;
 
 public class NewScheduleDialogFragment extends RoboDialogFragment {
@@ -96,7 +95,12 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
     	EditText userInput = (EditText)this.dialogView.findViewById(R.id.new_schedule_dialog_name_input);
     	String scheduleName = userInput.getText().toString();
     	try {
-			RestResult<ScheduleEntity> createScheduleResult = getCreateScheduleTaskProvider.get().execute("test@email.com", scheduleName).get();
+    		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+    		long facebookId = p.getLong(getString(R.string.settings_owner_facebook_id), 1);
+    		ScheduleEntity scheduleEntity = new ScheduleEntity(0, scheduleName, true, String.valueOf(facebookId), null);
+			RestResult<ScheduleEntity> createScheduleResult = getCreateScheduleTaskProvider.get()
+																						   .execute(scheduleEntity)
+																						   .get();
 			
 			if (createScheduleResult.isFailure()) {
 				Toast.makeText(getActivity(), createScheduleResult.getError().getException(), Toast.LENGTH_LONG).show();

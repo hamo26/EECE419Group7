@@ -1,7 +1,8 @@
 package com.schedushare.android;
 
 import com.facebook.FacebookException;
-import com.facebook.FriendPickerFragment;
+import com.facebook.widget.FriendPickerFragment;
+import com.facebook.widget.PickerFragment;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
@@ -38,18 +39,19 @@ public class FriendPickerActivity extends RoboFragmentActivity {
 	        }
 	        // Set the listener to handle errors
 	        this.friendPickerFragment.setOnErrorListener(new FriendPickerFragment.OnErrorListener() {
-	            @Override
-	            public void onError(FacebookException error) {
-	                FriendPickerActivity.this.onError(error);
-	            }
+				@Override
+				public void onError(PickerFragment<?> fragment,
+						FacebookException error) {
+					FriendPickerActivity.this.onError(error);
+				}
 	        });
 	        // Set the listener to handle button clicks
 	        this.friendPickerFragment.setOnDoneButtonClickedListener(
 	                new FriendPickerFragment.OnDoneButtonClickedListener() {
-	            @Override
-	            public void onDoneButtonClicked() {
-	                finishActivity();
-	            }
+				@Override
+				public void onDoneButtonClicked(PickerFragment<?> fragment) {
+					finishActivity();
+				}
 	        });
 	        fragmentToShow = this.friendPickerFragment;
 

@@ -20,16 +20,19 @@ public class ResourceUriModule extends AbstractModule {
 	protected void configure() {
 		//System specific bindings. 
 		//TODO: should put these in properties files.
-		bind(String.class).annotatedWith(Names.named("host")).toInstance("10.0.2.2");
-		bind(Integer.class).annotatedWith(Names.named("hostPort")).toInstance(8189);
+		bind(String.class).annotatedWith(Names.named("host")).toInstance(GuiceConstants.HOST);
+		bind(Integer.class).annotatedWith(Names.named("hostPort")).toInstance(GuiceConstants.HOST_PORT);
 		
 		//Resource bindings.
-		bind(String.class).annotatedWith(Names.named("loginResource")).toInstance("user");
-		bind(String.class).annotatedWith(Names.named("registrationResource")).toInstance("register/user");
-		bind(String.class).annotatedWith(Names.named("scheduleResource")).toInstance("schedules/user");
+		bind(String.class).annotatedWith(Names.named("UserResource")).toInstance(GuiceConstants.USER_RESOURCE);
+		bind(String.class).annotatedWith(Names.named("scheduleResource")).toInstance(GuiceConstants.SCHEDULE_RESOURCE);
+		bind(String.class).annotatedWith(Names.named("userScheduleResource")).toInstance(GuiceConstants.USER_SCHEDULE_RESOURCE);
+		bind(String.class).annotatedWith(Names.named("timeBlocksResource")).toInstance(GuiceConstants.TIME_BLOCKS_RESOURCE);
+		bind(String.class).annotatedWith(Names.named("scheduleTimeBlocksResource")).toInstance(GuiceConstants.SCHEDULE_TIME_BLOCKS_RESOURCE);
+		bind(String.class).annotatedWith(Names.named("activeScheduleResource")).toInstance(GuiceConstants.ACTIVE_SCHEDULE_RESOURCE);
+		
 		//Util Bindings
 		bind(ResourceUriBuilder.class).annotatedWith(Names.named("resourceUriBuilder")).to(ResourceUriBuilder.class);
-		
 		
 	}
 
