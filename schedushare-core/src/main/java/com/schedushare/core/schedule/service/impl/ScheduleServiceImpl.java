@@ -172,7 +172,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 							   .set(Tables.SCHEDULE.ACTIVE, scheduleEntity.isScheduleActive())
 							   .set(Tables.SCHEDULE.LAST_MODIFIED, new Time(Calendar.getInstance().getTimeInMillis()))
 							   .set(Tables.SCHEDULE.NAME, scheduleEntity.getScheduleName())
-							   .set(Tables.SCHEDULE.USER_ID, scheduleEntity.getUserId())
 							   .where(Tables.SCHEDULE.ID.equal(scheduleId))
 							   .execute();
 			return getSchedule(connection, scheduleId);
