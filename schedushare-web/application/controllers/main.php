@@ -21,6 +21,7 @@ class Main extends CI_Controller {
     function index(){
         
         //echo "in index<br>";
+        //echo BASEPATH;
         
         //load classes
         $this->load->helper('url');
@@ -36,7 +37,7 @@ class Main extends CI_Controller {
         if(!$user){
             //Test Code
             $user = 0;
-            $friends = Array("data"=>Array(Array("name"=>"Ash","id"=>"1")));
+            $friends = Array("data"=>Array(Array("name"=>"Some Guy","id"=>"999")));
         }else{
             //$user_profile = $this->getfacebookrequest($facebook, $user, '/me');
             $friends = $this->getfacebookrequest($facebook, $user, '/me/friends');
@@ -49,8 +50,8 @@ class Main extends CI_Controller {
         
         if(!$user){
             $this->load->view("templates/header",$data);
-            //$this->load->view("login",$data);
-            $this->load->view("main_page",$data); //for DEBUG, REMEMBER TO PUT BACK LOGIN!
+            if(BASEPATH == '/app/www/system/')$this->load->view("login",$data);
+            else $this->load->view("main_page",$data); //for DEBUG, REMEMBER TO PUT BACK LOGIN!
             $this->load->view("templates/footer",$data);  
         }else{        
             //load view
@@ -73,12 +74,17 @@ class Main extends CI_Controller {
         
         $user = $facebook->getUser(); //get user token
         
-        $friends = $facebook->api('/me/friends');
-        
+        if(!$user){
+            //for testing!
+            $friends = Array("data"=>Array(Array("name"=>"Some Guy","id"=>"999")));
+        }else{
+            $friends = $facebook->api('/me/friends');
+        }
+
         //var_dump($friends);
         
         foreach ($friends["data"] as $value){
-            if(strtoupper($name)==strtoupper($value["name"])){
+            if(strtoupper($value["name"])==strtoupper($name)){
                 echo json_encode($value);
             }
         }
@@ -114,25 +120,33 @@ class Main extends CI_Controller {
         
         if(!$user){
             //for offline testing
-            $id = 2;
-            $email = "a@b.com";
-            $name = "John Doe";
+//            $id = 2;
+//            $email = "a@b.com";
+//            $name = "John Doe";
+            
+            $id = "1234";
+            $email = "x@y.com";
+            $name = "Bobby";
             
             $response = $this->get_request(RESTPATH.'/schedushare/users/'.$id,2);
-
+            
+            //var_dump($response);
+            
             if(strpos($response,"schedushare-error")){
-                if(strpos($response,"User id does not exist")){
-                    //user not found, make new user
-                    echo ''; //return empty array
-                }
+                show_error($response,500);
             }else{
                 echo $response;
             }
         }else{        
             //load view
             //var_dump($user_profile);
-            $response = $this->get_request(RESTPATH.'/schedushare/user/'.$user_profile["email"],2);
-            echo $response;
+            $response = $this->get_request(RESTPATH.'/schedushare/users/'.$user_profile["id"],2);
+            
+            if(strpos($response,"schedushare-error")){
+                show_error($response,500);
+            }else{
+                echo $response;
+            }
         } 
 
     }
@@ -147,12 +161,17 @@ class Main extends CI_Controller {
         
     }
     
+    function getschedule(){
+        
+    }
+    
     function gettimeblocks(){
         
         $schedule_id = $this->input->get("scheduleid");
         
         $response = $this->get_request(RESTPATH.'/schedushare/timeblocks/schedules/'.$schedule_id,2);
         
+        echo $response;
     }
     
     function getactiveschedule(){
@@ -172,21 +191,41 @@ class Main extends CI_Controller {
         $facebook = $this->getfacebooktoken($app_id, $app_secret); //get FB token
         
         $user = $facebook->getUser(); //get user token   
+        $user_profile = $this->getfacebookrequest($facebook, $user, '/me');
         
         if(!$user){
             //for offline testing
-            $email = "a@b.com";
-            $name = "John Doe";
+            $id = "1234";
+            $email = "x@y.com";
+            $name = "Bobby";
             
-            $arg = json_encode(Array("email"=>$email,"name"=>$name));
+            $arg = json_encode(Array("email"=>$email,"name"=>$name,"user-id"=>$id));
             
-            $response = $this->post_request(RESTPATH.'/schedushare/register/user', $arg,2);
-            echo $response;
+            $response = $this->post_request(RESTPATH.'/schedushare/users', $arg,2);
+            
+            //var_dump($response);
+            
+            if(strpos($response,"schedushare-error")){
+                show_error($response, 500);
+            }else{
+                echo $response;
+            }
 
         }else{        
             //load view
             //var_dump($user_profile);
+            
+            $arg = json_encode(Array("email"=>$user_profile["email"],"name"=>$user_profile["name"],"user-id"=>$user_profile["id"]));
 
+            //var_dump($arg);
+            
+            $response = $this->post_request(RESTPATH.'/schedushare/users', $arg,2);
+            
+            if(strpos($response,"schedushare-error")){
+                show_error($response, 500);
+            }else{
+                echo $response;
+            }
         } 
     }
     
@@ -198,57 +237,103 @@ class Main extends CI_Controller {
         
         $user = $facebook->getUser(); //get user token   
         
+        $name = $this->input->post("name",true);
+        $start = $this->input->post("start");
+        $end = $this->input->post("end");
+        $location = $this->input->post("location");
+        $people = $this->input->post("people");
+        
         if(!$user){
             //for offline testing
+            
+            echo json_encode(Array(
+                 "name" => $name,
+                 "start" => $start,
+                 "end" => $end,
+                 "location" => $location,
+                 "people" => $people
+            ));
 
         }else{        
             //load view
-            //$event_name = $this->input->get("name");
-            $event_name = "My Event";
-            $start_time = date("today");
-            $location = "home";
+
+            $access_token = $facebook->getAccessToken();
             
             $event_param = array(
-                "access_token" => $facebook->getAccessToken(),
-                "name" => $event_name,
-                "start_time" => $start_time,
+                "access_token" => $access_token,
+                "name" => $name,
+                "start_time" => $start,
+                "end_time" => $end,
                 "location" => $location
-            );
-            
-            $fb_event_array = array('name' => "Test event in Group nnn",
-            'start_time' => mktime("14","30","00","11","20","2012"),
-                'category' => "1",
-                'subcategory' => "1",
-                'location' => "Location",
-                'end_time' => mktime("15","30","00","11","21","2012"),
-                'street' => "123 Street Address",
-                'city' => "Sheffield",
-                'phone' => "0123 456 7890",
-                'email' => "info@email.com",
-                'description' => "Description of the test event",
-                'privacy_type' => "OPEN",
-                'tagline' => "Event tagline",
-                'host' => "Event host",
-                'page_id' => "nnn"
-            );
-            
-            $fb_event_utf8 = array_map("utf8_encode", $fb_event_array);
-            
-            $param = array(
-            "method" => "events.create",
-            "uids" => $user,
-            "event_info" => json_encode($fb_event_utf8),
-            "callback" => ""
-            );
-            
-            //var_dump($facebook->api($param));
-            //var_dump($facebook);
-            
-            //var_dump($this->getfacebookrequest($facebook, $user, '/me'));
-            //echo json_encode(Array($event_name,$start_time));
-            //echo $facebook->api("/me/events", "POST", $event_param);
-            //echo $this->postfacebookrequest($facebook,$user,"/me/events",$event_param);
+            );        
 
+            try{
+                $response = $facebook->api("/me/events", "POST", $event_param);
+                echo json_encode($response);
+            }catch(FacebookApiException $e){
+                
+                show_error($e,500);
+                //var_dump($e);
+
+            }
+        }
+    }
+    
+    function event_invite(){
+        $app_id = '244995238959505';
+        $app_secret = 'd47346c1d60a1b60df939ef5464b28a2';
+        
+        $facebook = $this->getfacebooktoken($app_id, $app_secret); //get FB token
+        
+        $user = $facebook->getUser(); //get user token   
+        
+        $event_id = $this->input->post("event_id");
+        $people = $this->input->post("people");
+        
+        if(!$user){
+            //for offline testing
+            $list = '?users=';
+            
+            var_dump($people);
+            
+            foreach($people as $friend){
+                $list = $list . $friend[0] . ',';
+            }
+            
+            if(substr($list, -1, 1) == ',') $list = substr($list, 0, -1);
+
+            echo $list;
+            
+            echo json_encode(Array(
+                 "people" => $people
+            ));
+
+        }else{        
+            //load view
+
+            $access_token = $facebook->getAccessToken();
+            
+            $list = '?users=';
+            
+            //var_dump($people);
+            
+            foreach($people as $friend){
+                $list = $list . $friend[0] . ',';
+            }
+            
+            if(substr($list, -1, 1) == ',') $list = substr($list, 0, -1);
+            
+            //echo $list;
+
+            try{
+                $response = $facebook->api("/".$event_id."/invited/".$list, "POST", Array());
+                echo json_encode($response);
+            }catch(FacebookApiException $e){
+                
+                show_error($e,500);
+                //var_dump($e);
+
+            }
         }
     }
     /***********************************************************/
@@ -267,6 +352,7 @@ class Main extends CI_Controller {
             // set URL and other appropriate options
             curl_setopt($ch, CURLOPT_URL, $uri);
             curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HTTPGET, true); //reset curl to do GET requests
             
             // grab URL and pass it to the browser
@@ -366,7 +452,7 @@ class Main extends CI_Controller {
         if ($user) {
             try {
                 // Proceed knowing you have a logged in user who's authenticated.
-                echo "in post<br>";
+                //echo "in post<br>";
                 return $facebook->api($arg,"POST",$content);
 
             } catch (FacebookApiException $e) {
@@ -408,13 +494,28 @@ class Main extends CI_Controller {
         echo $content;
         
     }
-    
-    
-    
-    
-    
+     
     function showphpinfo(){
         echo phpinfo();
+    }
+    
+    function facebookcheckpermission(){
+        $app_id = '244995238959505';
+        $app_secret = 'd47346c1d60a1b60df939ef5464b28a2';
+        
+        $facebook = $this->getfacebooktoken($app_id, $app_secret); //get FB token
+        
+        $user = $facebook->getUser(); //get user token   
+        
+        if(!$user){
+            //for offline testing
+            echo "invalid user when checking for permission";
+
+        }else{        
+            $permissions = $facebook->api('/me/permissions');
+            
+            var_dump($permissions);
+        }
     }
     
     

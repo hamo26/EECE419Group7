@@ -22,7 +22,7 @@ var defaults = {
 
 	// display
 	defaultView: 'agendaWeek',
-	aspectRatio: 1.35,
+	aspectRatio: 0.5,
 	header: {
 		left: 'title',
 		center: '',
@@ -2799,7 +2799,7 @@ function AgendaDayView(element, calendar) {
 setDefaults({
 	allDaySlot: true,
 	allDayText: 'all-day',
-	firstHour: 6,
+	firstHour: 12,
 	slotMinutes: 30,
 	defaultEventMinutes: 120,
 	axisFormat: 'h(:mm)tt',
