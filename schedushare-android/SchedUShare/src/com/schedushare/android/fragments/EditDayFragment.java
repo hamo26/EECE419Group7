@@ -1,17 +1,13 @@
 package com.schedushare.android.fragments;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
-import com.schedushare.android.EditScheduleActivity;
-import com.schedushare.android.EditTimeBlockActivity;
-import com.schedushare.android.R;
-import com.schedushare.android.db.BlockTypeData;
-import com.schedushare.android.db.ScheduleData;
-import com.schedushare.android.db.SchedulesDataSource;
-import com.schedushare.android.db.TimeBlockData;
-import com.schedushare.android.util.EditDayArrayAdapter;
+import org.springframework.web.client.RestTemplate;
 
+import roboguice.RoboGuice;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,8 +16,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.schedushare.android.EditScheduleActivity;
+import com.schedushare.android.EditTimeBlockActivity;
+import com.schedushare.android.R;
+import com.schedushare.android.db.BlockTypeData;
+import com.schedushare.android.db.ScheduleData;
+import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.db.TimeBlockData;
+import com.schedushare.android.guice.GuiceConstants;
+import com.schedushare.android.timeblock.task.UpdateScheduleDayTask;
+import com.schedushare.android.util.EditDayArrayAdapter;
+import com.schedushare.android.util.ResourceUriBuilder;
+import com.schedushare.common.domain.dto.SchedushareExceptionEntity;
+import com.schedushare.common.domain.dto.TimeBlockEntity;
+import com.schedushare.common.domain.dto.TimeBlocksEntity;
+import com.schedushare.common.domain.rest.RestResult;
+import com.schedushare.common.domain.rest.RestResultHandler;
+import com.schedushare.common.util.JSONUtil;
 
 public class EditDayFragment extends Fragment {
 	public ListView listView;
@@ -29,6 +45,9 @@ public class EditDayFragment extends Fragment {
 	private ScheduleData schedule;
 	private ArrayList<TimeBlockData> timeBlocks;
 	private HashMap<Long, BlockTypeData> blockTypes;
+	
+	@Inject
+	private Provider<UpdateScheduleDayTask> updateScheduleDayTaskProvider;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,10 +82,38 @@ public class EditDayFragment extends Fragment {
     	// Called on edit time block return.
     	if (requestCode == EditTimeBlockActivity.REQUEST_CODE) {
     		if (resultCode != Activity.RESULT_CANCELED) {
-    			// For Hamid:
-    			// Given this.timeBlocks, this.day (day of the week), and this.schedule.sid (server id), 
-    			// remove all time blocks of the schedule with the same day of the week in the back end,
-    			// and add the ones sent.
+    			Collection<TimeBlockEntity> timeBlocksEntitites = new ArrayList<TimeBlockEntity>();
+    			
+    			for (TimeBlockData timeBlockData : this.timeBlocks) {
+    				timeBlocksEntitites.add(new TimeBlockEntity ((int) timeBlockData.sid,
+    						timeBlockData.startTime, 
+    						timeBlockData.endTime,
+    						"Monday", 
+    						timeBlockData.latitude, 
+    						timeBlockData.longitude,
+    						(int) schedule.sid));
+    			}
+    			
+    			TimeBlocksEntity timeBlocksEntity = new TimeBlocksEntity((int) this.schedule.sid, timeBlocksEntitites);
+    			
+    			try {
+					UpdateScheduleDayTask updateScheduleDayTask = new UpdateScheduleDayTask(new RestTemplate(), new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT),
+							GuiceConstants.SCHEDULE_TIME_BLOCKS_RESOURCE, 
+							new RestResultHandler(new JSONUtil()));
+					RestResult<TimeBlocksEntity> restResult = updateScheduleDayTask.execute(timeBlocksEntity)
+																				   .get();
+					if (restResult.isFailure()) {
+						SchedushareExceptionEntity error = restResult.getError();
+					} else {
+						TimeBlocksEntity timeBlocksEntities = restResult.getRestResult();
+					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     			
     		}
     	}

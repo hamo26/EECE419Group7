@@ -1,14 +1,6 @@
 package com.schedushare.android;
 
-import com.schedushare.android.db.ScheduleData;
-import com.schedushare.android.db.SchedulesDataSource;
-import com.schedushare.android.fragments.DeleteScheduleDialogFragment;
-import com.schedushare.android.fragments.DeleteScheduleDialogFragment.DeleteScheduleDialogListener;
-import com.schedushare.android.fragments.EditDayFragment;
-import com.schedushare.android.fragments.RenameScheduleDialogFragment;
-import com.schedushare.android.fragments.RenameScheduleDialogFragment.RenameScheduleDialogListener;
-import com.schedushare.android.fragments.SetActiveScheduleDialogFragment;
-import com.schedushare.android.fragments.SetActiveScheduleDialogFragment.SetActiveScheduleDialogListener;
+import java.util.concurrent.ExecutionException;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.ContentView;
@@ -27,6 +19,23 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.schedushare.android.db.ScheduleData;
+import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.fragments.DeleteScheduleDialogFragment;
+import com.schedushare.android.fragments.DeleteScheduleDialogFragment.DeleteScheduleDialogListener;
+import com.schedushare.android.fragments.EditDayFragment;
+import com.schedushare.android.fragments.RenameScheduleDialogFragment;
+import com.schedushare.android.fragments.RenameScheduleDialogFragment.RenameScheduleDialogListener;
+import com.schedushare.android.fragments.SetActiveScheduleDialogFragment;
+import com.schedushare.android.fragments.SetActiveScheduleDialogFragment.SetActiveScheduleDialogListener;
+import com.schedushare.android.schedule.task.DeleteScheduleTask;
+import com.schedushare.android.schedule.task.UpdateScheduleTask;
+import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.dto.SchedushareExceptionEntity;
+import com.schedushare.common.domain.rest.RestResult;
 
 @ContentView(R.layout.activity_edit_schedule)
 public class EditScheduleActivity extends RoboFragmentActivity 
@@ -51,6 +60,12 @@ public class EditScheduleActivity extends RoboFragmentActivity
 	public ScheduleData schedule;
 	private EditDayFragment[] dayFragments;
 
+	@Inject
+	Provider<DeleteScheduleTask> deleteScheduleTaskProvider;
+	
+	@Inject
+	Provider<UpdateScheduleTask> updateScheduleTaskProvider;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,9 +160,24 @@ public class EditScheduleActivity extends RoboFragmentActivity
 
 	@Override
 	public void onDeleteScheduleDialogPositiveClick(DialogFragment dialog) {
-		// For Hamid:
 		// Delete current schedule from back end using schedule.sid (server id).
-		
+		try {
+			RestResult<ScheduleEntity> restResult = deleteScheduleTaskProvider.get()
+																			  .execute((int) this.schedule.sid)
+																			  .get();
+			if (restResult.isFailure()) {
+				//Do something with the failure.
+			} else {
+				ScheduleEntity deletedScheduleEntity = restResult.getRestResult();
+				//Use the deleted schedule or simply toss.
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// Delete current schedule and inform schedule menu to update list.
 		SchedulesDataSource dataSource = new SchedulesDataSource(this);
@@ -165,8 +195,30 @@ public class EditScheduleActivity extends RoboFragmentActivity
 
 	@Override
 	public void onRenameScheduleDialogPositiveClick(DialogFragment dialog, String newName) {
-		// For Hamid:
 		// Rename schedule in back end using schedule.sid (server id) and newName.
+		ScheduleEntity scheduleEntity = new ScheduleEntity((int) this.schedule.sid, 
+				newName, 
+				this.schedule.active,
+				"",
+				null); 
+		try {
+			RestResult<ScheduleEntity> restResult = updateScheduleTaskProvider.get()
+			                          .execute(scheduleEntity)
+			                          .get();
+			if (restResult.isFailure()) {
+				SchedushareExceptionEntity error = restResult.getError();
+				//do something with error.
+			} else {
+				ScheduleEntity updatedScheduleEntity = restResult.getRestResult();
+				//do something with the updated schedule entity.
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		// Rename current schedule in local db and change title.
@@ -198,9 +250,44 @@ public class EditScheduleActivity extends RoboFragmentActivity
 		this.schedule.active = true;
 		lastActiveSchedule.active = false;
 		
-		// For Hamid:
 		// Update back end with both this.schedule and lastActiveSchedule.
+		ScheduleEntity lastActiveScheduleEntity = new ScheduleEntity((int)lastActiveSchedule.sid,
+						   lastActiveSchedule.name,
+						   lastActiveSchedule.active,
+						   "",
+						   null);
 		
+		ScheduleEntity scheduleEntity = new ScheduleEntity((int) this.schedule.sid,
+				this.schedule.name,
+				this.schedule.active,
+				"",
+				null);
+		
+		try {
+			RestResult<ScheduleEntity> restResult = updateScheduleTaskProvider.get()
+									  .execute(lastActiveScheduleEntity)
+									  .get();
+			if (restResult.isFailure()) {
+				//Handle failure
+				SchedushareExceptionEntity error = restResult.getError();
+			} else {
+				restResult = updateScheduleTaskProvider.get()
+				                          .execute(scheduleEntity)
+				                          .get();
+				if (restResult.isFailure()) {
+					//Handle failure
+					SchedushareExceptionEntity error = restResult.getError();
+				} else {
+					//Do anything necessary here.
+				}
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		dataSource.updateSchedule(lastActiveSchedule);
 		dataSource.updateSchedule(this.schedule);
 		dataSource.close();
