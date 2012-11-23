@@ -42,7 +42,7 @@
         <div id="time_tables" class="span6">
         </div>
         <div class="span3">
-            <button href="#create_schedule_modal" class="btn-primary" id="new_schedule_btn" data-toggle="modal">+ New Schedule</button>
+            <button href="#create_schedule_modal" class="btn-primary hidden" id="new_schedule_btn" data-toggle="modal">+ New Schedule</button>
             <button href="#create_event_modal" class="btn-primary" id="new_event_btn" data-toggle="modal" >+ New Event</button>
             <h3><img src="https://graph.facebook.com/<?php echo $user; ?>/picture">&nbsp;My Schedules</h3>
             <div id="my_schedules">
@@ -76,9 +76,11 @@
                 <div class="modal-body">
                     <input id="event_name" type="text" name="event_name" placeholder="Event name..." >
                     <input id="event_location" type="text" name="event_location" placeholder="Event location..." >
-                    <input id="event_start" type="text" name="event_start" placeholder="Event start...">
-                    <input id="event_end" type="text" name="event_end" placeholder="Event end...">
-                    <div id="event_people" style="overflow:auto; height:300px; width:230px">
+                    <br>(Drag time table time slots to set start/end time)<br>
+                    <input id="event_start" type="text" name="event_start" placeholder="Event start..." disabled="disabled">
+                    <input id="event_end" type="text" name="event_end" placeholder="Event end..." disabled="disabled">
+                    <div id="event_people" style="overflow:auto; height:150px; width:230px">
+                        <h5>Invite List...</h5>
                         <ul class="nav nav-list">                            
                         </ul>
                     </div>
@@ -112,7 +114,7 @@ $(document).ready(function(){
     //verify user exist in DB
     check_login();
     
-    $('#my_schedules').click(function(){
+    $('#my_schedules').click(function(event){
        var name = $(event.target).parent().attr("data-name"); 
        var schedule_id = $(event.target).parent().attr("data-schedule-id");
        //console.log($(event.target));
@@ -136,16 +138,16 @@ $(document).ready(function(){
        loaded_schedules.push(new Array(schedule_id,name));
     });
     
-    $('#new_schedule_btn').click(function(){
+    $('#new_schedule_btn').click(function(event){
        console.log("create new schedule");
        
     });
     
-    $('#create_schedule_submit').click(function(){
+    $('#create_schedule_submit').click(function(event){
 
     });
     
-    $('.friend_check').click(function(){
+    $('.friend_check').click(function(event){
         
         var user_id = $(event.target).attr("data-id");
         var user_name = $(event.target).attr("data-name");
@@ -167,7 +169,7 @@ $(document).ready(function(){
         }
     });
     
-    $('#short_list').click(function(){
+    $('#short_list').click(function(event){
         
         var user_id = $(event.target).parent().attr("data-id");
         var schedule_id = $(event.target).parent().attr("data-schedule-id");
@@ -188,7 +190,7 @@ $(document).ready(function(){
         $(event.target).parent().remove();
     });
     
-    $('#search_result').click(function(){
+    $('#search_result').click(function(event){
         
         var id = $(event.target).parent().attr("data-id");
         var name = $(event.target).parent().attr("data-name");
@@ -197,7 +199,7 @@ $(document).ready(function(){
             
     });
     
-    $('#search_btn').click(function(){
+    $('#search_btn').click(function(event){
         console.log("ready for search");
         console.log($('#search_box').val());
         
@@ -227,7 +229,7 @@ $(document).ready(function(){
         }
     });       
     
-    $('#create_event_submit').click(function(){
+    $('#create_event_submit').click(function(event){
         console.log("submit new event!");
         var event_name = $('#event_name').val();
         var event_location = $('#event_location').val();
@@ -239,17 +241,21 @@ $(document).ready(function(){
         //make_new_event();
     });
     
-    $('#create_event_modal').on("show",function(){
+    $('#create_event_modal').on("show",function(event){
         
         $('#event_people').find('ul').empty();
         
-        $.each(short_list,function(index,value){
-            $('#event_people').find("ul").append(
-                $(document.createElement("li")).attr("id","ev-"+value[0]).append(
-                '<img src="https://graph.facebook.com/' + value[0] + '/picture"/>&nbsp;&nbsp;&nbsp;' + value[1]
-                )
-            );
-        });
+        if(short_list.length==0){
+           $('#event_people').find("ul").append('<i>Empty...add friends to Select List to invite them</i>');
+        }else{
+           $.each(short_list,function(index,value){
+                $('#event_people').find("ul").append(
+                    $(document.createElement("li")).attr("id","ev-"+value[0]).append(
+                    '<img src="https://graph.facebook.com/' + value[0] + '/picture"/>&nbsp;&nbsp;&nbsp;' + value[1]
+                    )
+                );
+            }); 
+        }
     });
     
     //fetchEvents();    
@@ -343,6 +349,9 @@ function make_new_event(name,start,end,location,people){
             if(people){
                 invite_to_event(data["id"],people);
             }
+            
+            //add new event block (temp)
+            addEvent(name,start,end);
             
             window.open("http://www.facebook.com/events/list", '_blank');
         },

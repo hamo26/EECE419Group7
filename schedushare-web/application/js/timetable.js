@@ -157,6 +157,30 @@ function addEvents(event_list, owner, schedule_id){
     );
 }
 
+function addEvent(name,start,end){
+    $('#time_tables').fullCalendar( 'addEventSource',        
+        function(s, e, callback) {
+            // When requested, dynamically generate virtual
+            // events for every monday and wednesday.
+            var events = [];
+
+            events.push({
+                title: name,
+                start: start,
+                end: end,
+                color: colors[color_index%num_of_colors]
+            });
+
+            color_index++;
+            
+            //loaded_events[schedule_id] = events;
+            
+            // return events generated
+            callback( events );
+        }
+    );
+}
+
 function convertToDate(day,time){
         
     var full_date;
@@ -175,13 +199,13 @@ function convertToDate(day,time){
 function getDayOfWeek(day){
     
     switch(day){
-        case "Monday": return 1;
-        case "Tuesday": return 2;
-        case "Wednesday": return 3;   
-        case "Thursday": return 4;    
-        case "Friday": return 5;
-        case "Saturday": return 6;
-        case "Sunday": return 0;     
+        case "Monday":return 1;
+        case "Tuesday":return 2;
+        case "Wednesday":return 3;   
+        case "Thursday":return 4;    
+        case "Friday":return 5;
+        case "Saturday":return 6;
+        case "Sunday":return 0;     
     }
 }
 
