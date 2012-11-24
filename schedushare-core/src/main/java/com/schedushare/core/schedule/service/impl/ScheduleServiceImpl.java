@@ -47,10 +47,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 						.where(Tables.SCHEDULE.ID.equal(scheduleId))
 						.fetchInto(ScheduleEntity.class);
 		
-		ScheduleEntity retrievedSchedule = queryResult.get(0);
 		if (queryResult.isEmpty()) {
-			throw schedushareExceptionFactory.createSchedushareException("Schedule with id: " + scheduleId + " does not exist");
+			throw schedushareExceptionFactory.createSchedushareException("Schedule does not exist");
 		} else {
+			ScheduleEntity retrievedSchedule = queryResult.get(0);
 			SchedushareFactory getTimeblocksQuery = new SchedushareFactory(connection);
 			List<TimeBlockEntity> getTimeblocksQueryResult = getTimeblocksQuery.select()
 								.from(Tables.TIMEBLOCK)

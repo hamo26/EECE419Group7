@@ -27,9 +27,10 @@ public class UserServiceImpl implements UserService {
 	public UserEntity getUser(Connection connection, String userId) throws SchedushareException {
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
-		List<UserEntity> userResult = getUserQuery.select().from(Tables.USER)
-								.where(Tables.USER.ID.equal(userId))
-								.fetchInto(UserEntity.class);
+		List<UserEntity> userResult = getUserQuery.select()
+												  .from(Tables.USER)
+												  .where(Tables.USER.ID.equal(userId))
+												  .fetchInto(UserEntity.class);
 		if(userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id does not exist");
 		}
@@ -43,10 +44,11 @@ public class UserServiceImpl implements UserService {
 		
 		SchedushareFactory getUserQuery = new SchedushareFactory(connection);
 		
-		List<UserEntity> userResult = getUserQuery.select().from(Tables.SCHEDULE)
-								.where(Tables.USER.ID.equal(userId))
-								.and(Tables.USER.AUTH_TOKEN.equal(authToken))
-								.fetchInto(UserEntity.class);
+		List<UserEntity> userResult = getUserQuery.select()
+												  .from(Tables.SCHEDULE)
+												  .where(Tables.USER.ID.equal(userId))
+												  .and(Tables.USER.AUTH_TOKEN.equal(authToken))
+												  .fetchInto(UserEntity.class);
 		if(userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id and password does not exist");
 		}
@@ -60,9 +62,9 @@ public class UserServiceImpl implements UserService {
 		SchedushareFactory createUserQuery = new SchedushareFactory(connection);
 		
 		List<UserEntity> userResult = createUserQuery.select()
-											.from(Tables.USER)
-											.where(Tables.USER.ID.equal(userEntity.getUserId()))
-											.fetchInto(UserEntity.class);
+													 .from(Tables.USER)
+													 .where(Tables.USER.ID.equal(userEntity.getUserId()))
+													 .fetchInto(UserEntity.class);
 		if (!userResult.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("User id was not unique.");
 		} else {
