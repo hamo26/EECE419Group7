@@ -40,6 +40,7 @@
     <string name="tab_rename_schedule">Rename</string>
     <string name="settings_owner_id">owner_id</string>
     <string name="settings_owner_active_schedule_id">owner_active_schedule_id</string>
+    <string name="settings_owner_active_schedule_sid">owner_active_schedule_sid</string>
     <string name="settings_owner_facebook_id">owner_facebook_id</string>
     <string name="settings_owner_facebook_name">owner_facebook_name</string>
     <string name="settings_owner_facebook_username">owner_facebook_username</string>

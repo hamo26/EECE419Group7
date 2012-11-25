@@ -95,7 +95,7 @@ public class EditDayFragment extends Fragment {
     						(int)schedule.sid));
     			}
     			
-    			TimeBlocksEntity timeBlocksEntity = new TimeBlocksEntity((int) this.schedule.sid, timeBlocksEntitites);
+    			TimeBlocksEntity timeBlocksEntity = new TimeBlocksEntity((int)this.schedule.sid, timeBlocksEntitites);
     			
     			try {
 					UpdateScheduleDayTask updateScheduleDayTask = new UpdateScheduleDayTask(new RestTemplate(), new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT),

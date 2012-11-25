@@ -121,19 +121,6 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 			e.printStackTrace();
 		}
 		
-//    	SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
-//    	
-//    	// Get current time.
-//		Calendar currentTime = Calendar.getInstance();
-//    	
-//		// Open connection to db and create new schedule.
-//    	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
-//    	dataSource.open();
-//    	dataSource.createSchedule(p.getLong(getString(R.string.settings_owner_active_schedule_id), -1),
-//    			scheduleName, false, p.getLong(getString(R.string.settings_owner_id), -1),
-//    			currentTime.getTime().toString());
-//    	dataSource.close();
-		
 		this.scheduleListFragment.swapCursor();
     }
 	

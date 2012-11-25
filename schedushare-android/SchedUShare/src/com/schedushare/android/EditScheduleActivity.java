@@ -160,27 +160,31 @@ public class EditScheduleActivity extends RoboFragmentActivity
 
 	@Override
 	public void onDeleteScheduleDialogPositiveClick(DialogFragment dialog) {
-		// Delete current schedule from back end using schedule.sid (server id).
-		try {
-			RestResult<ScheduleEntity> restResult = deleteScheduleTaskProvider.get()
-					.execute((int) this.schedule.sid).get();
-			if (restResult.isFailure()) {
-				// Delete from server failed.
-				Toast.makeText(this, "Delete Failed!", Toast.LENGTH_LONG).show();
-			} else {
-				// Delete from server success.
-				ScheduleEntity deletedScheduleEntity = restResult.getRestResult();
-				
-				// Delete current schedule from local db on server delete success.
-				SchedulesDataSource dataSource = new SchedulesDataSource(this);
-				dataSource.open();
-				dataSource.deleteSchedule(this.schedule.id);
-				dataSource.close();
+		if (this.schedule.active) {
+			Toast.makeText(this, "You must set another active schedule first!", Toast.LENGTH_LONG).show();
+		} else {
+			// Delete current schedule from back end using schedule.sid (server id).
+			try {
+				RestResult<ScheduleEntity> restResult = deleteScheduleTaskProvider.get()
+						.execute((int) this.schedule.sid).get();
+				if (restResult.isFailure()) {
+					// Delete from server failed.
+					Toast.makeText(this, "Delete Failed!", Toast.LENGTH_LONG).show();
+				} else {
+					// Delete from server success.
+					ScheduleEntity deletedScheduleEntity = restResult.getRestResult();
+					
+					// Delete current schedule from local db on server delete success.
+					SchedulesDataSource dataSource = new SchedulesDataSource(this);
+					dataSource.open();
+					dataSource.deleteSchedule(this.schedule.id);
+					dataSource.close();
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
 		}
 		
 	    finish();
@@ -194,7 +198,7 @@ public class EditScheduleActivity extends RoboFragmentActivity
 	@Override
 	public void onRenameScheduleDialogPositiveClick(DialogFragment dialog, String newName) {
 		// Rename schedule in back end using schedule.sid (server id) and newName.
-		ScheduleEntity scheduleEntity = new ScheduleEntity((int) this.schedule.sid, 
+		ScheduleEntity scheduleEntity = new ScheduleEntity((int)this.schedule.sid, 
 				newName, this.schedule.active, Long.toString(this.schedule.ownerId), null); 
 		try {
 			// TODO: Rename back end does not work.
@@ -232,57 +236,59 @@ public class EditScheduleActivity extends RoboFragmentActivity
 
 	@Override
 	public void onSetActiveScheduleDialogPositiveClick(DialogFragment dialog) {
-		SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
-		
-		// Update local database.
-		SchedulesDataSource dataSource = new SchedulesDataSource(this);
-		dataSource.open();
-		ScheduleData lastActiveSchedule = dataSource.getActiveScheduleFromOwnerId(
-				p.getLong(getString(R.string.settings_owner_id), -1));
-		this.schedule.active = true;
-		lastActiveSchedule.active = false;
-		
-		// Update back end with both this.schedule and lastActiveSchedule.
-		ScheduleEntity lastActiveScheduleEntity = new ScheduleEntity((int)lastActiveSchedule.sid,
-				lastActiveSchedule.name, lastActiveSchedule.active, "", null);
-		
-		ScheduleEntity scheduleEntity = new ScheduleEntity((int) this.schedule.sid,
-				this.schedule.name, this.schedule.active, "", null);
-		
-		try {
-			RestResult<ScheduleEntity> restResult = updateScheduleTaskProvider.get()
-					.execute(lastActiveScheduleEntity).get();
-			if (restResult.isFailure()) {
-				// Update in server failed.
-				SchedushareExceptionEntity error = restResult.getError();
-				
-				Toast.makeText(this, "Update failed.", Toast.LENGTH_LONG).show();
-			} else {
-				restResult = updateScheduleTaskProvider.get().execute(scheduleEntity).get();
+		if (!this.schedule.active) {
+			SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+			
+			// Update local database.
+			SchedulesDataSource dataSource = new SchedulesDataSource(this);
+			dataSource.open();
+			ScheduleData lastActiveSchedule = dataSource.getActiveScheduleFromOwnerId(
+					p.getLong(getString(R.string.settings_owner_id), -1));
+			lastActiveSchedule.active = false;
+			this.schedule.active = true;
+			
+			// Update back end with both this.schedule and lastActiveSchedule.
+			ScheduleEntity lastActiveScheduleEntity = new ScheduleEntity((int)lastActiveSchedule.sid,
+					lastActiveSchedule.name, lastActiveSchedule.active, Long.toString(lastActiveSchedule.ownerId), null);
+			
+			ScheduleEntity scheduleEntity = new ScheduleEntity((int) this.schedule.sid,
+					this.schedule.name, this.schedule.active, Long.toString(this.schedule.ownerId), null);
+			
+			try {
+				RestResult<ScheduleEntity> restResult = updateScheduleTaskProvider.get()
+						.execute(lastActiveScheduleEntity).get();
 				if (restResult.isFailure()) {
 					// Update in server failed.
 					SchedushareExceptionEntity error = restResult.getError();
 					
 					Toast.makeText(this, "Update failed.", Toast.LENGTH_LONG).show();
 				} else {
-					// Update in server success. Update local db and preferences as well.
-					dataSource.updateSchedule(lastActiveSchedule);
-					dataSource.updateSchedule(this.schedule);
-					
-					SharedPreferences.Editor editor = p.edit();
-					editor.putLong(getString(R.string.settings_owner_active_schedule_id), this.schedule.id);
-					editor.commit();
-					
-					// Success message.
-					Toast.makeText(this, "Set active", Toast.LENGTH_LONG).show();
+					restResult = updateScheduleTaskProvider.get().execute(scheduleEntity).get();
+					if (restResult.isFailure()) {
+						// Update in server failed.
+						SchedushareExceptionEntity error = restResult.getError();
+						
+						Toast.makeText(this, "Update failed.", Toast.LENGTH_LONG).show();
+					} else {
+						// Update in server success. Update local db and preferences as well.
+						dataSource.updateSchedule(lastActiveSchedule);
+						dataSource.updateSchedule(this.schedule);
+						
+						SharedPreferences.Editor editor = p.edit();
+						editor.putLong(getString(R.string.settings_owner_active_schedule_id), this.schedule.id);
+						editor.commit();
+						
+						// Success message.
+						Toast.makeText(this, "Set active", Toast.LENGTH_LONG).show();
+					}
 				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
+			dataSource.close();
 		}
-		dataSource.close();
 	}
 
 	@Override
