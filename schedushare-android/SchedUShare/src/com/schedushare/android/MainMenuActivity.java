@@ -44,18 +44,20 @@ import com.schedushare.android.db.UserData;
 import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.FacebookAuthFragment;
 import com.schedushare.android.guice.GuiceConstants;
+import com.schedushare.android.schedule.task.CreateScheduleTask;
 import com.schedushare.android.schedule.task.GetActiveScheduleTask;
-import com.schedushare.android.schedule.task.GetSchedulesTask;
+import com.schedushare.android.user.task.CreateUserTask;
 import com.schedushare.android.util.ResourceUriBuilder;
 import com.schedushare.common.domain.dto.ScheduleEntity;
-import com.schedushare.common.domain.dto.ScheduleListEntity;
-import com.schedushare.common.domain.dto.SchedushareExceptionEntity;
 import com.schedushare.common.domain.dto.TimeBlockEntity;
+import com.schedushare.common.domain.dto.UserEntity;
 import com.schedushare.common.domain.rest.RestResult;
 import com.schedushare.common.domain.rest.RestResultHandler;
 import com.schedushare.common.util.JSONUtil;
 
 public class MainMenuActivity extends FacebookActivity {
+	private static final String FIRST_SCHEDULE = "First Schedule";
+
 	public static final String PREFS_NAME = "MAIN_SETTINGS";
 	
     //@Inject Provider<GetSchedulesTask> getGetSchedulesTaskProvider;
@@ -152,6 +154,56 @@ public class MainMenuActivity extends FacebookActivity {
     							// TODO: Create user entry if he/she does not exist on the back end.
     							// Also create the user's first schedule. Call it "First Schedule",
     							// and send it back to update local copy.
+    							CreateUserTask createUserTask = new CreateUserTask(new RestTemplate(), 
+    																			   new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
+    																			   GuiceConstants.USER_RESOURCE, 
+    																			   new RestResultHandler(new JSONUtil()));
+    							try {
+    								String userFBID = Long.toString(settings.getLong(getString(R.string.settings_owner_facebook_id), -1));
+									RestResult<UserEntity> restResult = createUserTask.execute(new UserEntity(
+																		  userFBID,
+																		  "", 
+																		  settings.getString(getString(R.string.settings_owner_facebook_name), "User"), 
+																		  "")).get();
+									if (restResult.isFailure()) {
+										GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(), 
+    																			   new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
+    																			   GuiceConstants.ACTIVE_SCHEDULE_RESOURCE, 
+    																			   new RestResultHandler(new JSONUtil()));
+										RestResult<ScheduleEntity> getActiveScheduleResult = getActiveScheduleTask.execute(userFBID).get();
+										if (getActiveScheduleResult.isFailure()) {
+											//Do something due to some back end error.
+										} else {
+											ScheduleEntity activeScheduleEntity = getActiveScheduleResult.getRestResult();
+											if (activeScheduleEntity == null) {
+											} else {
+												//Do something with the active schedule returned.
+											}
+										}
+									} else {
+										UserEntity createdUser = restResult.getRestResult();
+										//No active schedule for user. Create a schedule.
+										CreateScheduleTask createScheduleTask = new CreateScheduleTask(new RestTemplate(), 
+												new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
+												GuiceConstants.SCHEDULE_RESOURCE, 
+												new RestResultHandler(new JSONUtil()));
+										RestResult<ScheduleEntity> createScheduleEntityResult = 
+												createScheduleTask.execute(new ScheduleEntity(0, FIRST_SCHEDULE, Boolean.TRUE, userFBID, null)).get();
+										if (createScheduleEntityResult.isFailure()) {
+											//Do something with error on the backend.
+										} else {
+											ScheduleEntity createdScheduleEntity = createScheduleEntityResult.getRestResult();
+											//Do something with newly created active schedule.
+										}
+										
+									}
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (ExecutionException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
     							SharedPreferences p = MainMenuActivity.this.getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
     							
     							SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
