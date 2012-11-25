@@ -66,31 +66,31 @@ public class TimeBlockEntity extends RestEntity {
 	@Column(name = "END_TIME")
 	private Time t_endTime;
 	
-//	/**
-//	 * SQL Constructor.
-//	 *
-//	 * @param ID the id
-//	 * @param START_TIME the start time
-//	 * @param END_TIME the end time
-//	 * @param DAY the day
-//	 * @param LATITUDE the latitude
-//	 * @param LONGITUDE the longitude
-//	 * @param SCHEDULE_ID the schedule id
-//	 * @param NAME the name
-//	 * @param TYPE the type
-//	 */
-//	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, final String NAME, final String TYPE, 
-//			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
-//		this.timeBlockId = ID;
-//		this.t_startTime = START_TIME;
-//		this.t_endTime = END_TIME;
-//		this.day = DAY;
-//		this.latitude = LATITUDE;
-//		this.longitude = LONGITUDE;
-//		this.scheduleId = SCHEDULE_ID;
-//		this.timeBlockName = NAME;
-//		this.timeBlockType = TYPE;
-//	}
+	/**
+	 * SQL Constructor.
+	 *
+	 * @param ID the id
+	 * @param START_TIME the start time
+	 * @param END_TIME the end time
+	 * @param DAY the day
+	 * @param LATITUDE the latitude
+	 * @param LONGITUDE the longitude
+	 * @param SCHEDULE_ID the schedule id
+	 * @param NAME the name
+	 * @param TYPE the type
+	 */
+	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, final String NAME, final String TYPE, 
+			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
+		this.timeBlockId = ID;
+		this.t_startTime = START_TIME;
+		this.t_endTime = END_TIME;
+		this.day = DAY;
+		this.latitude = LATITUDE;
+		this.longitude = LONGITUDE;
+		this.scheduleId = SCHEDULE_ID;
+		this.timeBlockName = NAME;
+		this.timeBlockType = TYPE;
+	}
 	
 	/**
 	 * JSON Constructor.

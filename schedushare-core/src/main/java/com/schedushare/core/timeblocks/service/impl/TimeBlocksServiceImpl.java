@@ -1,12 +1,15 @@
 package com.schedushare.core.timeblocks.service.impl;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.jooq.InsertValuesStep;
+import org.jooq.Record;
+import org.jooq.Result;
 
 import com.schedushare.common.domain.dto.TimeBlockEntity;
 import com.schedushare.common.domain.dto.TimeBlocksEntity;
@@ -66,11 +69,22 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 		try {
 			scheduleService.getSchedule(connection, scheduleId);
 			
-			List<TimeBlockEntity> timeBlockEntitiesResult = getTimeBlocksQuery.select()
+			Result<Record> timeBlocksRecords = getTimeBlocksQuery.select()
 					.from(Tables.TIMEBLOCK)
-					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId))
-					.fetchInto(TimeBlockEntity.class);
-			return new TimeBlocksEntity(scheduleId, timeBlockEntitiesResult);
+					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId)).fetch();
+			Collection<TimeBlockEntity> timeBlockEntities = new ArrayList<TimeBlockEntity>();
+			for (Record timeBlockRecord : timeBlocksRecords) {
+				timeBlockEntities.add(new TimeBlockEntity(timeBlockRecord.getValue(Tables.TIMEBLOCK.ID),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString(),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.NAME),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.TYPE),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.LATITUDE),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.LONGITUDE),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.SCHEDULE_ID)));
+			}
+			return new TimeBlocksEntity(scheduleId, timeBlockEntities);
 		} catch (SchedushareException e) {
 			throw e;
 		} catch (Exception e) {
@@ -106,12 +120,8 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 												   timeBlock.getTimeBlockType());
 			}
 			insertIntoTimeBlock.execute();
-			
-			List<TimeBlockEntity> timeBlockEntitiesResult = createTimeBlocksQuery.select()
-					.from(Tables.TIMEBLOCK)
-					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId))
-					.fetchInto(TimeBlockEntity.class);
-			return new TimeBlocksEntity(scheduleId, timeBlockEntitiesResult);
+
+			return getTimeBlocksForSchedule(connection, scheduleId);
 		} catch (SchedushareException e) {
 			throw e;
 		} catch(Exception e) {

@@ -2,11 +2,14 @@ package com.schedushare.core.schedule.service.impl;
 
 import java.sql.Connection;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
 import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.impl.Factory;
 
 import com.google.inject.Inject;
@@ -51,15 +54,26 @@ public class ScheduleServiceImpl implements ScheduleService {
 			throw schedushareExceptionFactory.createSchedushareException("Schedule does not exist");
 		} else {
 			ScheduleEntity retrievedSchedule = queryResult.get(0);
-			SchedushareFactory getTimeblocksQuery = new SchedushareFactory(connection);
-			List<TimeBlockEntity> getTimeblocksQueryResult = getTimeblocksQuery.select()
-								.from(Tables.TIMEBLOCK)
-								.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId))
-								.fetchInto(TimeBlockEntity.class);
-			 
+			Collection<TimeBlockEntity> timeBlockEntities = new ArrayList<TimeBlockEntity>();
+			
+			Result<Record> timeBlocksRecords = getScheduleQuery.select()
+					.from(Tables.TIMEBLOCK)
+					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId)).fetch();
+			
+			for (Record timeBlockRecord : timeBlocksRecords) {
+				timeBlockEntities.add(new TimeBlockEntity(timeBlockRecord.getValue(Tables.TIMEBLOCK.ID),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString(),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.NAME),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.TYPE),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.LATITUDE),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.LONGITUDE),
+														  timeBlockRecord.getValue(Tables.TIMEBLOCK.SCHEDULE_ID)));
+			}
 			ScheduleEntity getScheduleResult = new ScheduleEntity(retrievedSchedule.getScheduleId(), retrievedSchedule.getScheduleName(), 
 					retrievedSchedule.isScheduleActive(), retrievedSchedule.getUserId(), retrievedSchedule.getT_lastModified().toString(),
-					getTimeblocksQueryResult);
+					timeBlockEntities);
 			return getScheduleResult;
 		}
 	}
