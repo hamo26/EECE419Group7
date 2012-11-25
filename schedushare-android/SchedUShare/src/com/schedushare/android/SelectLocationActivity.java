@@ -112,7 +112,6 @@ public class SelectLocationActivity extends RoboMapActivity {
 
 		    AlertDialog.Builder dialog = new AlertDialog.Builder(this.context);
 		    dialog.setTitle("Select Location");
-		    dialog.setMessage("Are you sure?");
 		    dialog.setPositiveButton("Confirm", new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
