@@ -33,7 +33,7 @@ public class BaseRestHandlerImpl extends Application {
      * Creates a root Restlet that will receive all incoming calls.
      * It is here that we define all routes from uri to resource. 
      * 
-     * TODO: Create a commone module for injections in the schedushare commons package.
+     * TODO: Create a common module for injections in the schedushare commons package.
      * TODO: Add transaction module to ensure atomic transacions.
      */  
     @Override  
@@ -57,9 +57,9 @@ public class BaseRestHandlerImpl extends Application {
         router.attach("/users/{userId}", UserResourceImpl.class);
         
         //Time block routes
-        router.attach("/timeblocks/{timeBlockId}", TimeBlocksResourceImpl.class);
         router.attach("/timeblocks", TimeBlocksResourceImpl.class);
-        router.attach("/timeblocks/schedules/{scheduleId}", ScheduleTimeBlocksResourceImpl.class);
+        router.attach("/timeblocks/{timeBlockId}", TimeBlocksResourceImpl.class);
+        router.attach("/timeblocks/schedule/{scheduleId}", ScheduleTimeBlocksResourceImpl.class);
         return router;  
     }  
 }

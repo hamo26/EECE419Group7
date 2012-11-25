@@ -120,6 +120,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 		Collection<TimeBlockEntity> timeBlocks = scheduleEntity.getTimeBlocks();
 		
 		try {
+			Boolean isScheduleActive = scheduleEntity.isScheduleActive();
+			if (isScheduleActive) {
+				createScheduleQuery.update(Tables.SCHEDULE)
+								   .set(Tables.SCHEDULE.ACTIVE, Boolean.FALSE)
+								   .where(Tables.SCHEDULE.ACTIVE.equal(Boolean.TRUE)
+										   .and(Tables.SCHEDULE.USER_ID.equal(scheduleEntity.getUserId())))
+								   .execute();
+			}
 			createScheduleQuery.insertInto(Tables.SCHEDULE, 
 										   Tables.SCHEDULE.NAME, 
 										   Tables.SCHEDULE.LAST_MODIFIED, 
@@ -127,7 +135,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 										   Tables.SCHEDULE.USER_ID)
 							    .values(scheduleEntity.getScheduleName(), 
 							    		new Time(Calendar.getInstance().getTimeInMillis()).getTime(), 
-							    		scheduleEntity.isScheduleActive(), 
+							    		isScheduleActive, 
 							    		scheduleEntity.getUserId())
 							    		.execute();
 			//Look for a better way to do this.
@@ -167,9 +175,18 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		SchedushareFactory updateScheduleQuery = new SchedushareFactory(connection);
 		try {
+			//harden this to check that a user has active schedules before updating.
 			int scheduleId = scheduleEntity.getScheduleId();
+			Boolean isScheduleActive = scheduleEntity.isScheduleActive();
+			if (isScheduleActive) {
+				updateScheduleQuery.update(Tables.SCHEDULE)
+								   .set(Tables.SCHEDULE.ACTIVE, Boolean.FALSE)
+								   .where(Tables.SCHEDULE.ACTIVE.equal(Boolean.TRUE)
+										   .and(Tables.SCHEDULE.USER_ID.equal(scheduleEntity.getUserId())))
+								   .execute();
+			}
 			updateScheduleQuery.update(Tables.SCHEDULE)
-							   .set(Tables.SCHEDULE.ACTIVE, scheduleEntity.isScheduleActive())
+							   .set(Tables.SCHEDULE.ACTIVE, isScheduleActive)
 							   .set(Tables.SCHEDULE.LAST_MODIFIED, new Time(Calendar.getInstance().getTimeInMillis()))
 							   .set(Tables.SCHEDULE.NAME, scheduleEntity.getScheduleName())
 							   .where(Tables.SCHEDULE.ID.equal(scheduleId))

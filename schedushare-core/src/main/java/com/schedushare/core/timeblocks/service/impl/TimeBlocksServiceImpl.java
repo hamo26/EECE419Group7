@@ -148,19 +148,7 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 			updateTimeBlockQuery.delete(Tables.TIMEBLOCK)
 								.where(Tables.TIMEBLOCK.DAY.equal(TimeblockDay.valueOf(day)))
 								.execute();
-			
-			Collection<TimeBlockEntity> timeBlocks = timeBlocksEntity.getTimeBlocks();
-			
-			for (TimeBlockEntity timeBlock : timeBlocks) {
-				updateTimeBlockQuery.update(Tables.TIMEBLOCK)
-									.set(Tables.TIMEBLOCK.DAY, TimeblockDay.valueOf(timeBlock.getDay()))
-									.set(Tables.TIMEBLOCK.END_TIME, timeBlock.getT_endTime())
-									.set(Tables.TIMEBLOCK.LATITUDE, timeBlock.getLatitude())
-									.set(Tables.TIMEBLOCK.LONGITUDE, timeBlock.getLongitude())
-									.set(Tables.TIMEBLOCK.START_TIME, timeBlock.getT_startTime())
-									.where(Tables.TIMEBLOCK.ID.equal(timeBlock.getTimeBlockId()))
-									.execute();
-			}
+			createTimeBlocks(connection, timeBlocksEntity);
 			return getTimeBlocksForSchedule(connection, timeBlocksEntity.getScheduleId());
 		} catch (Exception e) {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
