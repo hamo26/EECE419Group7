@@ -80,19 +80,26 @@ public class EditDayFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	super.onActivityResult(requestCode, resultCode, data);
     	
+    	SchedulesDataSource dataSource = new SchedulesDataSource(this.getActivity());
+		dataSource.open();
+		this.timeBlocks = dataSource.getScheduleDayTimeBlocks(this.schedule.id, this.day);
+		dataSource.close();
+    	
     	// Called on edit time block return.
     	if (requestCode == EditTimeBlockActivity.REQUEST_CODE) {
     		if (resultCode != Activity.RESULT_CANCELED) {
     			Collection<TimeBlockEntity> timeBlocksEntitites = new ArrayList<TimeBlockEntity>();
     			
-    			for (TimeBlockData timeBlockData : this.timeBlocks) {
-    				timeBlocksEntitites.add(new TimeBlockEntity ((int)timeBlockData.sid,
-    						timeBlockData.startTime, 
-    						timeBlockData.endTime,
-    						timeBlockData.getDayString(), 
-    						timeBlockData.latitude, 
-    						timeBlockData.longitude,
-    						(int)schedule.sid));
+    			for (TimeBlockData timeBlock : this.timeBlocks) {
+    				timeBlocksEntitites.add(new TimeBlockEntity ((int)timeBlock.sid,
+    						timeBlock.startTime, 
+    						timeBlock.endTime,
+    						timeBlock.getDayString(), 
+    						timeBlock.latitude, 
+    						timeBlock.longitude,
+    						(int)schedule.sid,
+    						timeBlock.name,
+    						timeBlock.getBlockTypeString()));
     			}
     			
     			TimeBlocksEntity timeBlocksEntity = new TimeBlocksEntity((int)this.schedule.sid, timeBlocksEntitites);

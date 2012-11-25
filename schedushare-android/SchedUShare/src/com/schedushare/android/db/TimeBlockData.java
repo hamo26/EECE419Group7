@@ -52,4 +52,23 @@ public class TimeBlockData {
 			return 1;
 		}
 	}
+	
+	public String getBlockTypeString() {
+			switch ((int)this.blockTypeId) {
+			case 1:
+				return "School";
+			case 2:
+				return "Work";
+			case 3:
+				return "Social";
+			case 4:
+				return "Extra Curricular";
+			case 5:
+				return "On Bus";
+			case 6:
+				return "On Vacation";
+			default:
+				return "Work";
+		}
+	}
 }
