@@ -89,7 +89,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/com.schedushare.android" />
             </intent-filter>
         </activity>
         <activity
@@ -99,6 +99,10 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.schedushare.android.MainMenuActivity" />
+        </activity>
+        <activity
+            android:name="com.schedushare.android.BeamDiffActivity"
+            android:label="@string/title_activity_beam_diff" >
         </activity>
     </application>
 

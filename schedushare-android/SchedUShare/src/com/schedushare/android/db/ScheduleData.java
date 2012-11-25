@@ -1,6 +1,12 @@
 package com.schedushare.android.db;
 
-public class ScheduleData {
+import java.io.Serializable;
+
+public class ScheduleData implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public long id;
 	public long sid;
 	public String name;
