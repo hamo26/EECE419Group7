@@ -253,8 +253,7 @@ public class MainMenuActivity extends FacebookActivity {
 	        		System.out.println("MainMenu: friend id: " + u.getId());
 	        		
 	        		// Create user in local db if not already created.
-	        		if (dataSource.isUserCreated(Long.parseLong(u.getId())))
-	        			dataSource.createUser(Long.parseLong(u.getId()), u.getName());
+	        		dataSource.createUser(Long.parseLong(u.getId()), u.getName());
 	        		
 	        		// Call back end with each User ID to get their active schedules and time blocks.
 	        		GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(),
@@ -285,14 +284,22 @@ public class MainMenuActivity extends FacebookActivity {
 	        	
 	        	// Create all the friend schedules if they don't exist already.
 	        	for (ScheduleEntity s : userSchedules) {
-	        		dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
-	        				true, Long.parseLong(s.getUserId()), s.getLastModified());
+	        		System.out.println("MainMenu: Add friend schedule.");
+	        		System.out.println("MainMenu: scheduleId: " + s.getScheduleId());
+	        		System.out.println("MainMenu: scheduleName: " + s.getScheduleName());
+	        		System.out.println("MainMenu: getUserId: " + s.getUserId());
+	        		System.out.println("MainMenu: getLastModified: " + s.getLastModified());
+	        		
+	        		UserData friend = dataSource.getUserFromSid(Long.parseLong(s.getUserId()));
+	        		
+	        		ScheduleData schedule = dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
+	        				true, friend.id, s.getLastModified());
 	        		
 	        		// Time block missing two attributes. Name and Block Type ID.
 	        		for (TimeBlockEntity t : s.getTimeBlocks()) {
 	        			dataSource.createTimeBlock(t.getTimeBlockId(), "Block", t.getStartTime(), 
 	        					t.getEndTime(), TimeBlockData.getDayIntFromString(t.getDay()),
-	        					1, t.getScheduleId(), t.getLongitude(), t.getLatitude());
+	        					1, schedule.id, t.getLongitude(), t.getLatitude());
 	        		}
 	        	}
 	        	dataSource.close();
