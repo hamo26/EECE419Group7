@@ -173,7 +173,8 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 
 		try {
 			updateTimeBlockQuery.delete(Tables.TIMEBLOCK)
-								.where(Tables.TIMEBLOCK.DAY.equal(TimeblockDay.valueOf(day)))
+								.where(Tables.TIMEBLOCK.DAY.equal(TimeblockDay.valueOf(day))
+										.and(Tables.TIMEBLOCK.SCHEDULE_ID.equal(timeBlocksEntity.getScheduleId())))
 								.execute();
 			createTimeBlocks(connection, timeBlocksEntity);
 			return getTimeBlocksForSchedule(connection, timeBlocksEntity.getScheduleId());
