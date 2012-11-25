@@ -94,16 +94,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 				return null;
 			} else {
 				ScheduleEntity scheduleEntity = scheduleEntitiesResult.get(0);
-				List<TimeBlockEntity> timeBlocks = getActiveScheduleQuery.select()
-						.from(Tables.TIMEBLOCK)
-						.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleEntity.getScheduleId()))
-						.fetchInto(TimeBlockEntity.class);
+				TimeBlocksEntity timeBlocksForSchedule = timeBlocksService.getTimeBlocksForSchedule(connection, scheduleEntity.getScheduleId());
+				
 				return new ScheduleEntity(scheduleEntity.getScheduleId(), 
 						scheduleEntity.getScheduleName(), 
 						scheduleEntity.isScheduleActive(), 
 						scheduleEntity.getUserId(), 
 						scheduleEntity.getT_lastModified().toString(), 
-						timeBlocks);
+						timeBlocksForSchedule.getTimeBlocks());
 			}
 		} catch (Exception e) {
 			throw schedushareExceptionFactory.createSchedushareException(e.getMessage());
