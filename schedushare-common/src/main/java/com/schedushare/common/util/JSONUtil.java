@@ -29,7 +29,7 @@ public class JSONUtil {
 	 * @return the e
 	 */
 	public <E extends RestEntity> E deserializeRepresentation(String jsonRepresentation, Class<E> cls) {
-		return gson.fromJson(jsonRepresentation, cls);
+		return jsonRepresentation != null ? gson.fromJson(jsonRepresentation, cls) : null;
 	}
 	
 	/**
