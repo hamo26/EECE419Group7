@@ -262,15 +262,19 @@ public class MainMenuActivity extends FacebookActivity {
 	        				GuiceConstants.ACTIVE_SCHEDULE_RESOURCE, new RestResultHandler(new JSONUtil()));
 	        		try {
 						RestResult<ScheduleEntity> restResult = getActiveScheduleTask.execute(u.getId()).get();
+						
 						if (restResult.isFailure()) {
 							// Output error.
 							Toast.makeText(this, "Diff failed.", Toast.LENGTH_LONG).show();
 						} else {
-							// Add to collection of active schedules.
-							userSchedules.add(restResult.getRestResult());
-							
-							// Update selected users with only users who have schedules in the back end.
-							selectedUsers.add(u);
+							if (restResult.getRestResult() == null) {
+							} else {
+								// Add to collection of active schedules.
+								userSchedules.add(restResult.getRestResult());
+								
+								// Update selected users with only users who have schedules in the back end.
+								selectedUsers.add(u);
+							}
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();

@@ -8,7 +8,7 @@ public class GuiceConstants {
 	public static int HOST_PORT = 8189;
 	
 	//Resource Constants
-	public static String SCHEDULE_TIME_BLOCKS_RESOURCE = "/timeblocks/schedules";
+	public static String SCHEDULE_TIME_BLOCKS_RESOURCE = "timeblocks/schedule";
 	public static String SCHEDULE_RESOURCE = "schedules";
 	public static final String USER_RESOURCE = "users";
 	public static final String TIME_BLOCKS_RESOURCE = "timeblocks";
