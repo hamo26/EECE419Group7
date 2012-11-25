@@ -1,40 +1,25 @@
 package com.schedushare.android.fragments;
 
-import java.util.Calendar;
-import java.util.concurrent.ExecutionException;
-
 import roboguice.fragment.RoboDialogFragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.schedushare.android.MainMenuActivity;
 import com.schedushare.android.R;
-import com.schedushare.android.db.SchedulesDataSource;
-import com.schedushare.android.schedule.task.CreateScheduleTask;
-import com.schedushare.common.domain.dto.ScheduleEntity;
-import com.schedushare.common.domain.rest.RestResult;
 
 public class NewScheduleDialogFragment extends RoboDialogFragment {
 	// The activity that creates an instance of this dialog fragment must
     // implement this interface in order to receive event callbacks.
     // Each method passes the DialogFragment in case the host needs to query it.
     public interface CreateScheduleDialogListener {
-        public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog);
+        public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog, String newScheduleName);
         public void onNewScheduleDialogNegativeClick(RoboDialogFragment dialog);
     }
-    
-    @Inject
-    Provider<CreateScheduleTask> getCreateScheduleTaskProvider;
 
     // Container for dialog's view.
     private View dialogView;
@@ -72,10 +57,12 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
         builder.setView(dialogView)
                .setPositiveButton(R.string.create_button_text, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                       createNewSchedule();
+                	   // Get user input.
+                	   EditText userInput = (EditText)dialogView.findViewById(R.id.new_schedule_dialog_name_input);
+                	   String scheduleName = userInput.getText().toString();
                        
                        // Notify activity of confirm.
-                       NewScheduleDialogFragment.this.listener.onNewScheduleDialogPositiveClick(NewScheduleDialogFragment.this);
+                       NewScheduleDialogFragment.this.listener.onNewScheduleDialogPositiveClick(NewScheduleDialogFragment.this, scheduleName);
                    }
                })
                .setNegativeButton(R.string.cancel_button_text, new DialogInterface.OnClickListener() {
@@ -88,41 +75,5 @@ public class NewScheduleDialogFragment extends RoboDialogFragment {
                });
         
         return builder.create();
-    }
-    
-    private void createNewSchedule() {
-    	// Get user input.
-    	EditText userInput = (EditText)this.dialogView.findViewById(R.id.new_schedule_dialog_name_input);
-    	String scheduleName = userInput.getText().toString();
-    	try {
-    		SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
-    		long facebookId = p.getLong(getString(R.string.settings_owner_facebook_id), 1);
-    		ScheduleEntity scheduleEntity = new ScheduleEntity(0, scheduleName, true, String.valueOf(facebookId), null);
-			RestResult<ScheduleEntity> createScheduleResult = getCreateScheduleTaskProvider.get()
-																						   .execute(scheduleEntity)
-																						   .get();
-			
-			if (createScheduleResult.isFailure()) {
-				Toast.makeText(getActivity(), createScheduleResult.getError().getException(), Toast.LENGTH_LONG).show();
-			} else {
-				Toast.makeText(getActivity(), createScheduleResult.getRestResult().getScheduleName(), Toast.LENGTH_LONG).show();
-				
-				Calendar currentTime = Calendar.getInstance();
-				
-				// Open connection to db and create new schedule.
-		    	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
-		    	dataSource.open();
-		    	dataSource.createSchedule(createScheduleResult.getRestResult().getScheduleId(),
-		    			createScheduleResult.getRestResult().getScheduleName(), false, 1, currentTime.getTime().toString());
-		    	dataSource.close();
-			}
-			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 }

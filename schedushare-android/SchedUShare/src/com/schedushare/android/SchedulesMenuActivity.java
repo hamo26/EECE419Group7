@@ -1,12 +1,22 @@
 package com.schedushare.android;
 
+import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.schedushare.android.db.SchedulesDataSource;
 import com.schedushare.android.fragments.NewScheduleDialogFragment;
 import com.schedushare.android.fragments.NewScheduleDialogFragment.CreateScheduleDialogListener;
 import com.schedushare.android.fragments.ScheduleListFragment;
+import com.schedushare.android.schedule.task.CreateScheduleTask;
+import com.schedushare.common.domain.dto.ScheduleEntity;
+import com.schedushare.common.domain.rest.RestResult;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.fragment.RoboDialogFragment;
 import roboguice.inject.ContentView;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -14,11 +24,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 @ContentView(R.layout.activity_schedules_menu)
 public class SchedulesMenuActivity extends RoboFragmentActivity implements CreateScheduleDialogListener {
 	// List views connected to the database for both user and friend schedules.
 	private ScheduleListFragment scheduleListFragment;
+	
+	@Inject Provider<CreateScheduleTask> getCreateScheduleTaskProvider;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,9 +53,9 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	
 	@Override
 	public void onRestart() {
-    	super.onRestart();
-    	
-    	this.scheduleListFragment.swapCursor();
+		super.onRestart();
+		
+		this.scheduleListFragment.swapCursor();
 	}
 	
 	@Override
@@ -75,8 +88,53 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	}
     
 	// Called when user clicks create in new schedule dialog box.
-	public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog) {
+	public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog, String newScheduleName) {
+		try {
+    		SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+    		long facebookId = p.getLong(getString(R.string.settings_owner_facebook_id), -1);
+    		ScheduleEntity scheduleEntity = new ScheduleEntity(0, newScheduleName, false, Long.toString(facebookId), null);
+			RestResult<ScheduleEntity> createScheduleResult = getCreateScheduleTaskProvider.get().execute(scheduleEntity).get();
+			
+			if (createScheduleResult.isFailure()) {
+				Toast.makeText(this, "Create failed.", Toast.LENGTH_LONG).show();
+				
+				System.out.println("NewScheduleDialog: " + createScheduleResult.getError().getException());
+			} else {
+				Toast.makeText(this, newScheduleName + " created.", Toast.LENGTH_LONG).show();
+				
+				// Get current time.
+				Calendar currentTime = Calendar.getInstance();
+				
+				// Open connection to db and create new schedule.
+		    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+		    	dataSource.open();
+		    	dataSource.createSchedule(createScheduleResult.getRestResult().getScheduleId(),
+		    			createScheduleResult.getRestResult().getScheduleName(), false,
+		    			p.getLong(getString(R.string.settings_owner_id), -1),
+		    			currentTime.getTime().toString());
+		    	dataSource.close();
+			}
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 		
+//    	SharedPreferences p = getActivity().getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+//    	
+//    	// Get current time.
+//		Calendar currentTime = Calendar.getInstance();
+//    	
+//		// Open connection to db and create new schedule.
+//    	SchedulesDataSource dataSource = new SchedulesDataSource(NewScheduleDialogFragment.this.getActivity());
+//    	dataSource.open();
+//    	dataSource.createSchedule(p.getLong(getString(R.string.settings_owner_active_schedule_id), -1),
+//    			scheduleName, false, p.getLong(getString(R.string.settings_owner_id), -1),
+//    			currentTime.getTime().toString());
+//    	dataSource.close();
+		
+		this.scheduleListFragment.swapCursor();
     }
 	
 	// Called when user clicks cancel in new schedule dialog box. 

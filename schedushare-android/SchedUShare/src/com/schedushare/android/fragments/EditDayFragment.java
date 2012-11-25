@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -85,13 +86,13 @@ public class EditDayFragment extends Fragment {
     			Collection<TimeBlockEntity> timeBlocksEntitites = new ArrayList<TimeBlockEntity>();
     			
     			for (TimeBlockData timeBlockData : this.timeBlocks) {
-    				timeBlocksEntitites.add(new TimeBlockEntity ((int) timeBlockData.sid,
+    				timeBlocksEntitites.add(new TimeBlockEntity ((int)timeBlockData.sid,
     						timeBlockData.startTime, 
     						timeBlockData.endTime,
-    						"Monday", 
+    						timeBlockData.getDayString(), 
     						timeBlockData.latitude, 
     						timeBlockData.longitude,
-    						(int) schedule.sid));
+    						(int)schedule.sid));
     			}
     			
     			TimeBlocksEntity timeBlocksEntity = new TimeBlocksEntity((int) this.schedule.sid, timeBlocksEntitites);
@@ -104,14 +105,14 @@ public class EditDayFragment extends Fragment {
 																				   .get();
 					if (restResult.isFailure()) {
 						SchedushareExceptionEntity error = restResult.getError();
+						
+						Toast.makeText(getActivity(), "Update time blocks failed.", Toast.LENGTH_LONG).show();
 					} else {
 						TimeBlocksEntity timeBlocksEntities = restResult.getRestResult();
 					}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     			

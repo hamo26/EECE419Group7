@@ -32,4 +32,24 @@ public class TimeBlockData {
 				return "Monday";
 		}
 	}
+	
+	public static int getDayIntFromString(String s) {
+		if (s.equals("Monday")) {
+			return 1;
+		} else if (s.equals("Tuesday")) {
+			return 2;
+		} else if (s.equals("Wednesday")) {
+			return 3;
+		} else if (s.equals("Thursday")) {
+			return 4;
+		} else if (s.equals("Friday")) {
+			return 5;
+		} else if (s.equals("Saturday")) {
+			return 6;
+		} else if (s.equals("Sunday")) {
+			return 7;
+		} else {
+			return 1;
+		}
+	}
 }

@@ -37,7 +37,9 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
+import com.schedushare.android.db.ScheduleData;
 import com.schedushare.android.db.SchedulesDataSource;
+import com.schedushare.android.db.TimeBlockData;
 import com.schedushare.android.db.UserData;
 import com.schedushare.android.fragments.EditDayFragment;
 import com.schedushare.android.fragments.FacebookAuthFragment;
@@ -48,6 +50,7 @@ import com.schedushare.android.util.ResourceUriBuilder;
 import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.dto.SchedushareExceptionEntity;
+import com.schedushare.common.domain.dto.TimeBlockEntity;
 import com.schedushare.common.domain.rest.RestResult;
 import com.schedushare.common.domain.rest.RestResultHandler;
 import com.schedushare.common.util.JSONUtil;
@@ -73,32 +76,16 @@ public class MainMenuActivity extends FacebookActivity {
         setContentView(R.layout.activity_main_menu);
         
         if (savedInstanceState == null) {
-        	
-//        	RestResult<ScheduleListEntity> getSchedulesResult;
-//			try {
-//				getSchedulesResult = getGetSchedulesTaskProvider.get().execute("test@email.com").get();
-//				
-//				SchedulesDataSource dataSource = new SchedulesDataSource(this);
-//				dataSource.open();
-//				
-//				if (getSchedulesResult.isFailure()) {
-//					Toast.makeText(this, getSchedulesResult.getError().getException(), Toast.LENGTH_LONG).show();
-//				} else {
-//					for (ScheduleEntity schedule : getSchedulesResult.getRestResult().getScheduleList()) {
-//						dataSource.createSchedule(schedule.getScheduleId(), schedule.getScheduleName(), false, 1, "whatever");
-//					}
-//				}
-//				
-//				dataSource.close();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			} catch (ExecutionException e) {
-//				e.printStackTrace();
-//			}
         	this.lastViewedDay = 0;
         	
         	startLocationManager();
-	        createTestData();
+        	
+        	// For debug only.
+	        //createTestData();
+        	
+        	// Extract active user from database.
+        	setActiveScheduleId();
+        	
 	        initializeCurrentScheduleLayout();
 	        initializeFacebookLayout();
         }
@@ -136,31 +123,45 @@ public class MainMenuActivity extends FacebookActivity {
     							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
     							editor.commit();
     							
-    							// Get user's Facebook ID to query back end for all their schedules.
-    							// If the user does not have any schedules stored in the backend,
-    							// create one for them and send it back.
-    							GetSchedulesTask getSchedulesTask = new GetSchedulesTask(new RestTemplate(),
-    									             new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT),
-    									             GuiceConstants.USER_SCHEDULE_RESOURCE, 
-    									             new RestResultHandler(new JSONUtil()));
-    							try {
-									RestResult<ScheduleListEntity> restResult = getSchedulesTask.execute(user.getId())
-													.get();
-									if (restResult.isFailure()) {
-										//Handle error
-										SchedushareExceptionEntity error = restResult.getError();
-									} else {
-										ScheduleListEntity scheduleListEntity = restResult.getRestResult();
-										//Render schedules from schedule list provided.
-									}
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (ExecutionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-    							System.out.println("MainMenu: owner fb id: " + user.getId());
+//    							// Get user's Facebook ID to query back end for all their schedules.
+//    							// If the user does not have any schedules stored in the back end,
+//    							// create one for them and send it back.
+//    							GetSchedulesTask getSchedulesTask = new GetSchedulesTask(new RestTemplate(),
+//    									new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT),
+//    									GuiceConstants.USER_SCHEDULE_RESOURCE, new RestResultHandler(new JSONUtil()));
+//    							try {
+//									RestResult<ScheduleListEntity> restResult = getSchedulesTask.execute(user.getId())
+//													.get();
+//									if (restResult.isFailure()) {
+//										// Handle error
+//										SchedushareExceptionEntity error = restResult.getError();
+//										
+//										Toast.makeText(MainMenuActivity.this, "Server authentication failed",
+//												Toast.LENGTH_LONG).show();
+//									} else {
+//										ScheduleListEntity scheduleListEntity = restResult.getRestResult();
+//										// Render schedules from schedule list provided.
+//									}
+//								} catch (InterruptedException e) {
+//									e.printStackTrace();
+//								} catch (ExecutionException e) {
+//									e.printStackTrace();
+//								}
+//    							System.out.println("MainMenu: owner fb id: " + user.getId());
+    							
+    							// TODO: Create user entry if he/she does not exist on the back end.
+    							// Also create the user's first schedule. Call it "First Schedule",
+    							// and send it back to update local copy.
+    							SharedPreferences p = MainMenuActivity.this.getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+    							
+    							SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
+    					    	dataSource.open();
+    					    	ScheduleData schedule = dataSource.getActiveScheduleFromOwnerId(p.getLong(getString(R.string.settings_owner_id), -1));
+    					    	
+    					    	// Update local db active schedule.
+    					    	dataSource.updateSchedule(schedule);
+    					    	
+    					        dataSource.close();
     						}
     					}
     				}
@@ -178,37 +179,57 @@ public class MainMenuActivity extends FacebookActivity {
 	                    .getSelectedUsers();
 	        	
 	        	SchedulesDataSource dataSource = new SchedulesDataSource(this);
-	        	dataSource.open();
-	        	int i = 101;
 	        	Collection<ScheduleEntity> userSchedules = new ArrayList<ScheduleEntity>();
+	        	ArrayList<GraphUser> selectedUsers = new ArrayList<GraphUser>();
+	        	
+	        	dataSource.open();
+	        	
 	        	for (GraphUser u : this.selectedUsers) {
-	        		System.out.println("friend id: " + u.getId());
-	        		UserData user = dataSource.createUser(Long.parseLong(u.getId()), u.getName());
-	        		dataSource.createSchedule(i, "friend schedule", true, user.id, "whatever");
+	        		System.out.println("MainMenu: friend id: " + u.getId());
+	        		
+	        		// Create user in local db if not already created.
+	        		if (dataSource.isUserCreated(Long.parseLong(u.getId())))
+	        			dataSource.createUser(Long.parseLong(u.getId()), u.getName());
 	        		
 	        		// Call back end with each User ID to get their active schedules and time blocks.
 	        		GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(),
-	        								  new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
-	        								  GuiceConstants.ACTIVE_SCHEDULE_RESOURCE, 
-	        								  new RestResultHandler(new JSONUtil()));
+	        				new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
+	        				GuiceConstants.ACTIVE_SCHEDULE_RESOURCE, new RestResultHandler(new JSONUtil()));
 	        		try {
-						RestResult<ScheduleEntity> restResult = getActiveScheduleTask.execute(u.getId())
-																					 .get();
+						RestResult<ScheduleEntity> restResult = getActiveScheduleTask.execute(u.getId()).get();
 						if (restResult.isFailure()) {
-							//Silently discard error.
+							// Output error.
+							Toast.makeText(this, "Diff failed.", Toast.LENGTH_LONG).show();
 						} else {
-							//Add to collection of active schedules.
+							// Add to collection of active schedules.
 							userSchedules.add(restResult.getRestResult());
+							
+							// Update selected users with only users who have schedules in the back end.
+							selectedUsers.add(u);
 						}
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 	        	}
+	        	
+	        	// Create all the friend schedules if they don't exist already.
+	        	for (ScheduleEntity s : userSchedules) {
+	        		dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
+	        				true, Long.parseLong(s.getUserId()), s.getLastModified());
+	        		
+	        		// Time block missing two attributes. Name and Block Type ID.
+	        		for (TimeBlockEntity t : s.getTimeBlocks()) {
+	        			dataSource.createTimeBlock(t.getTimeBlockId(), "Block", t.getStartTime(), 
+	        					t.getEndTime(), TimeBlockData.getDayIntFromString(t.getDay()),
+	        					1, t.getScheduleId(), t.getLongitude(), t.getLatitude());
+	        		}
+	        	}
 	        	dataSource.close();
+	        	
+	        	// Update the selected users to only those who have schedules in the back end.
+	        	this.selectedUsers = selectedUsers;
 	        	
 	        	// Start diff activiy with selected users if any.
 	        	if (this.selectedUsers.size() > 0) {
@@ -217,6 +238,9 @@ public class MainMenuActivity extends FacebookActivity {
 				    b.putByteArray("selectedUsers", getByteArray(this.selectedUsers));
 				    intent.putExtras(b);
 			        startActivity(intent);
+	        	} else {
+	        		Toast.makeText(this, "None of your friends have an active schedule to diff!",
+	        				Toast.LENGTH_LONG).show();
 	        	}
 	        }
         }
@@ -259,61 +283,6 @@ public class MainMenuActivity extends FacebookActivity {
         intent.setData(FriendPickerActivity.FRIEND_PICKER);
         intent.setClass(this, FriendPickerActivity.class);
         startActivityForResult(intent, FriendPickerActivity.REQUEST_CODE);
-    }
-    
-    // Creates test data.
-    private void createTestData() {
-    	Calendar dateTime = Calendar.getInstance();
-    	
-    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
-        dataSource.open();
-        dataSource.dropAllTables();
-        
-        SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
-        SharedPreferences.Editor editor = p.edit();
-		editor.putLong(getString(R.string.settings_owner_id), 1);
-		editor.putLong(getString(R.string.settings_owner_active_schedule_id), 1);
-		editor.commit();
-        
-        dataSource.createUser(p.getLong(getString(R.string.settings_owner_facebook_id), 1),
-        		p.getString(getString(R.string.settings_owner_facebook_name), "owner"));
-        dataSource.createSchedule(0, "schedule" + 0, true,
-    			p.getLong(getString(R.string.settings_owner_id), 1),
-    			dateTime.getTime().toString());
-        for (int i = 1; i < 100; i++) {
-        	dataSource.createSchedule(i, "schedule" + i, false,
-        			p.getLong(getString(R.string.settings_owner_id), 1),
-        			dateTime.getTime().toString());
-        }
-        System.out.println("MainMenu: TestData: owner fb id: " + p.getLong(getString(R.string.settings_owner_facebook_id), -1));
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
-        dateTime.set(Calendar.HOUR, 5);
-        dateTime.set(Calendar.MINUTE, 0);
-        dateTime.set(Calendar.SECOND, 0);
-        dateTime.set(Calendar.AM_PM, Calendar.AM);
-        
-        String startTime;
-        String endTime;
-		startTime = sdf.format(dateTime.getTime());
-		dateTime.set(Calendar.HOUR, 15);
-		endTime = sdf.format(dateTime.getTime());
-		
-		System.out.println("MainMenu: start: " + startTime.toString() + 
-				" end: " + endTime.toString());
-        
-        dataSource.createBlockType(1, "School");
-        dataSource.createBlockType(2, "Work");
-        dataSource.createBlockType(3, "Social");
-        dataSource.createBlockType(4, "Extra Curricular");
-        dataSource.createBlockType(5, "On Bus");
-        dataSource.createBlockType(6, "On Vacation");
-        dataSource.createTimeBlock(1, "EECE 419", startTime.toString(), endTime.toString(), 0, 1, 1, 5.55, 5.55);
-        dataSource.close();
-        
-		this.activeScheduleId = p.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
-        System.out.println("MainMenu: activeScheduleId: " + p.getLong(getString(R.string.settings_owner_active_schedule_id), -1));
-
     }
     
     // Start location listener.
@@ -407,6 +376,23 @@ public class MainMenuActivity extends FacebookActivity {
         fragmentTransaction.commit();
     }
     
+    private void setActiveScheduleId() {
+    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+    	dataSource.open();
+    	UserData owner = dataSource.checkOwnerCreated();   	
+    	this.activeScheduleId = dataSource.getActiveScheduleFromOwnerId(owner.id).id;
+        dataSource.close();
+        
+        // Check whether preferences have been created.
+        SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+        if (p.getLong(getString(R.string.settings_owner_id), -1) == -1) {
+	        SharedPreferences.Editor editor = p.edit();
+			editor.putLong(getString(R.string.settings_owner_id), owner.id);
+			editor.putLong(getString(R.string.settings_owner_active_schedule_id), this.activeScheduleId);
+			editor.commit();
+        }
+    }
+    
     private byte[] getByteArray(List<GraphUser> users) {
         // convert the list of GraphUsers to a list of String 
         // where each element is the JSON representation of the 
@@ -424,5 +410,60 @@ public class MainMenuActivity extends FacebookActivity {
         	e.printStackTrace();
         }   
         return null;
-    }  
+    }
+    
+    // Creates test data for debug.
+    private void createTestData() {
+    	Calendar dateTime = Calendar.getInstance();
+    	
+    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
+        dataSource.open();
+        dataSource.dropAllTables();
+        
+        SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
+        SharedPreferences.Editor editor = p.edit();
+		editor.putLong(getString(R.string.settings_owner_id), 1);
+		editor.putLong(getString(R.string.settings_owner_active_schedule_id), 1);
+		editor.commit();
+        
+        dataSource.createUser(p.getLong(getString(R.string.settings_owner_facebook_id), 1),
+        		p.getString(getString(R.string.settings_owner_facebook_name), "owner"));
+        dataSource.createSchedule(0, "schedule" + 0, true,
+    			p.getLong(getString(R.string.settings_owner_id), 1),
+    			dateTime.getTime().toString());
+        for (int i = 1; i < 100; i++) {
+        	dataSource.createSchedule(i, "schedule" + i, false,
+        			p.getLong(getString(R.string.settings_owner_id), 1),
+        			dateTime.getTime().toString());
+        }
+        System.out.println("MainMenu: TestData: owner fb id: " + p.getLong(getString(R.string.settings_owner_facebook_id), -1));
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
+        dateTime.set(Calendar.HOUR, 5);
+        dateTime.set(Calendar.MINUTE, 0);
+        dateTime.set(Calendar.SECOND, 0);
+        dateTime.set(Calendar.AM_PM, Calendar.AM);
+        
+        String startTime;
+        String endTime;
+		startTime = sdf.format(dateTime.getTime());
+		dateTime.set(Calendar.HOUR, 15);
+		endTime = sdf.format(dateTime.getTime());
+		
+		System.out.println("MainMenu: start: " + startTime.toString() + 
+				" end: " + endTime.toString());
+        
+        dataSource.createBlockType(1, "School");
+        dataSource.createBlockType(2, "Work");
+        dataSource.createBlockType(3, "Social");
+        dataSource.createBlockType(4, "Extra Curricular");
+        dataSource.createBlockType(5, "On Bus");
+        dataSource.createBlockType(6, "On Vacation");
+        dataSource.createTimeBlock(1, "EECE 419", startTime.toString(), endTime.toString(), 0, 1, 1, 5.55, 5.55);
+        dataSource.close();
+        
+		this.activeScheduleId = p.getLong(getString(R.string.settings_owner_active_schedule_id), 1);
+        System.out.println("MainMenu: activeScheduleId: " + p.getLong(getString(R.string.settings_owner_active_schedule_id), -1));
+
+    }
 }

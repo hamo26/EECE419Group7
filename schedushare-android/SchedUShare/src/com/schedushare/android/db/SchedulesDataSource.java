@@ -1,6 +1,7 @@
 package com.schedushare.android.db;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import android.content.ContentValues;
@@ -84,28 +85,87 @@ public class SchedulesDataSource {
 	
 	// Creates a new user entry in table.
 	public UserData createUser(long sid, String name) {
-		ContentValues values = new ContentValues();
-		values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
-		values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
+		UserData user = getUserFromSid(sid);
 		
-		long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_USER, null, values);
-		
-		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
-				SchedulesDataSource.allUserColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
-				null, null, null, null);
-		cursor.moveToFirst();
-		
-		return userFromCursor(cursor);
+		// Only create user if it doesn't yet exist.
+		if (user == null) {
+			ContentValues values = new ContentValues();
+			values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
+			values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
+			
+			long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_USER, null, values);
+			
+			Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
+					SchedulesDataSource.allUserColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
+					null, null, null, null);
+			cursor.moveToFirst();
+			
+			return userFromCursor(cursor);
+		} else {			
+			return user;
+		}
 	}
+	
+	// Get user from from id.
+	public UserData getUserFromId(long id) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
+				SchedulesDataSource.allUserColumns, SchedulesSQLiteHelper.COLUMN_ID +
+				" = " + id, null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return userFromCursor(cursor);
+		}
+	}
+	
 	
 	// Get user from from server id.
 	public UserData getUserFromSid(long sid) {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
 				SchedulesDataSource.allUserColumns, SchedulesSQLiteHelper.COLUMN_SID +
 				" = " + sid, null, null, null, null);
-		cursor.moveToFirst();
 		
-		return userFromCursor(cursor);
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return userFromCursor(cursor);
+		}
+	}
+	
+	// Checks whether owner has been created.
+	public UserData checkOwnerCreated() {
+		UserData owner = getUserFromId(1);
+		
+		// If owner has not been created, create and return owner entry.
+		if (owner == null) {
+			owner = createUser(0, "owner");
+			Calendar currentTime = Calendar.getInstance();
+			createSchedule(0, "First Schedule", true, owner.id, currentTime.getTime().toString());
+			createBlockType(1, "School");
+	        createBlockType(2, "Work");
+	        createBlockType(3, "Social");
+	        createBlockType(4, "Extra Curricular");
+	        createBlockType(5, "On Bus");
+	        createBlockType(6, "On Vacation");
+		}
+		
+		return owner;
+	}
+	
+	// Check whether user has been created.
+	public boolean isUserCreated(long sid) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
+				SchedulesDataSource.allUserColumns, SchedulesSQLiteHelper.COLUMN_SID +
+				" = " + sid, null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() == 0) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	// Returns user pointed to by cursor.
@@ -124,21 +184,34 @@ public class SchedulesDataSource {
 	
 	// Creates a new schedule entry in table.
 	public ScheduleData createSchedule(long sid, String name, boolean active, long ownerId, String lastModified) {
-		ContentValues values = new ContentValues();
-		values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
-		values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
-		values.put(SchedulesSQLiteHelper.COLUMN_ACTIVE, active);
-		values.put(SchedulesSQLiteHelper.COLUMN_OWNER_ID, ownerId);
-		values.put(SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED, lastModified);
+		ScheduleData schedule = getScheduleFromSid(sid);
 		
-		long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_SCHEDULE, null, values);
-		
-		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
-				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
-				null, null, null, null);
-		cursor.moveToFirst();
-		
-		return scheduleFromCursor(cursor);
+		// Only create if the schedule does not already exist.
+		if (schedule == null) {
+			ContentValues values = new ContentValues();
+			values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
+			values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
+			values.put(SchedulesSQLiteHelper.COLUMN_ACTIVE, active);
+			values.put(SchedulesSQLiteHelper.COLUMN_OWNER_ID, ownerId);
+			values.put(SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED, lastModified);
+			
+			long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_SCHEDULE, null, values);
+			
+			Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+					SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
+					null, null, null, null);
+			cursor.moveToFirst();
+			
+			return scheduleFromCursor(cursor);
+		} else {
+			schedule.name = name;
+			schedule.active = active;
+			schedule.ownerId = ownerId;
+			schedule.lastModified = lastModified;
+			updateSchedule(schedule);
+			
+			return schedule;
+		}
 	}
 	
 	// Deletes given schedule from table.
@@ -199,9 +272,38 @@ public class SchedulesDataSource {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
 				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_ID +
 				" = " + id, null, null, null, null);
-		cursor.moveToFirst();
 		
-		return scheduleFromCursor(cursor);
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return scheduleFromCursor(cursor);
+		}
+	}
+	
+	// Returns one schedule as per sid.
+	public ScheduleData getScheduleFromSid(long sid) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_SID +
+				" = " + sid, null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return scheduleFromCursor(cursor);
+		}
+	}
+	
+	public boolean isScheduleExists(long sid) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+				SchedulesDataSource.allScheduleColumns, SchedulesSQLiteHelper.COLUMN_SID +
+				" = " + sid, null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() == 0)
+			return false;
+		
+		return true;
 	}
 	
 	// Returns active schedule as per owner id.
@@ -211,9 +313,13 @@ public class SchedulesDataSource {
 				SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + ownerId + " AND " + 
 				SchedulesSQLiteHelper.COLUMN_ACTIVE + " = " + 1,
 				null, null, null, null);
-		cursor.moveToFirst();
 		
-		return scheduleFromCursor(cursor);
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return scheduleFromCursor(cursor);
+		}
 	}
 	
 	// Returns schedule pointed to by cursor.
@@ -235,27 +341,43 @@ public class SchedulesDataSource {
 	// Creates a new time block entry in table.
 	public TimeBlockData createTimeBlock(long sid, String name, String startTime, String endTime,
 			int day, long blockTypeId, long scheduleId, double longitude, double latitude) {
-		ContentValues values = new ContentValues();
-		values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
-		values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
-		values.put(SchedulesSQLiteHelper.COLUMN_START_TIME, startTime);
-		values.put(SchedulesSQLiteHelper.COLUMN_END_TIME, endTime);
-		values.put(SchedulesSQLiteHelper.COLUMN_DAY, day);
-		values.put(SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID, blockTypeId);
-		values.put(SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID, scheduleId);
-		values.put(SchedulesSQLiteHelper.COLUMN_LONGITUDE, longitude);
-		values.put(SchedulesSQLiteHelper.COLUMN_LATITUDE, latitude);
+		TimeBlockData timeBlock = getTimeBlockFromSid(sid);
 		
-		long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, null, values);
-		
-//		System.out.println("inserted time block with id: " + insertId);
-		
-		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
-				SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
-				null, null, null, null);
-		cursor.moveToFirst();
-		
-		return timeBlockFromCursor(cursor);
+		if (timeBlock == null) {
+			ContentValues values = new ContentValues();
+			values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
+			values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
+			values.put(SchedulesSQLiteHelper.COLUMN_START_TIME, startTime);
+			values.put(SchedulesSQLiteHelper.COLUMN_END_TIME, endTime);
+			values.put(SchedulesSQLiteHelper.COLUMN_DAY, day);
+			values.put(SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID, blockTypeId);
+			values.put(SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID, scheduleId);
+			values.put(SchedulesSQLiteHelper.COLUMN_LONGITUDE, longitude);
+			values.put(SchedulesSQLiteHelper.COLUMN_LATITUDE, latitude);
+			
+			long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, null, values);
+			
+//			System.out.println("inserted time block with id: " + insertId);
+			
+			Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+					SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
+					null, null, null, null);
+			cursor.moveToFirst();
+			
+			return timeBlockFromCursor(cursor);
+		} else {
+			timeBlock.name = name;
+			timeBlock.startTime = startTime;
+			timeBlock.endTime = endTime;
+			timeBlock.day = day;
+			timeBlock.blockTypeId = blockTypeId;
+			timeBlock.scheduleId = scheduleId;
+			timeBlock.longitude = longitude;
+			timeBlock.latitude = latitude;
+			updateTimeBlock(timeBlock);
+			
+			return timeBlock;
+		}
 	}
 	
 	// Deletes given time block from table.
@@ -304,14 +426,14 @@ public class SchedulesDataSource {
 	}
 	
 	// Checks whether the day is free for the given schedule.
-	public boolean isDayFree(long scheduleId, int day) throws SQLException {
+	public boolean isDayFree(long scheduleId, int day) {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
 				SchedulesDataSource.allTimeBlockColumns,
 				SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID + " = " + Long.toString(scheduleId) +
 				" AND " + SchedulesSQLiteHelper.COLUMN_DAY + " = " + Integer.toString(day),
 				null, null, null, null);
 	    
-	    if (cursor != null) {
+	    if (cursor == null || cursor.getCount() == 0) {
 	        return true;
 	    }
 	    return false;
@@ -336,15 +458,28 @@ public class SchedulesDataSource {
 		return timeBlocks;
 	}
 	
-	public boolean isTimeBlockExists(long id) throws SQLException {
+	public boolean isTimeBlockExists(long id) {
 	    Cursor cursor = this.database.query(true, SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
 	    		SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + 
 	    		" = " + id, null, null, null, null, null);
 	    
-	    if (cursor != null) {
+	    if (cursor == null || cursor.getCount() == 0) {
 	        return false;
 	    }
 	    return true;
+	}
+	
+	public TimeBlockData getTimeBlockFromSid(long sid) {
+	    Cursor cursor = this.database.query(true, SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+	    		SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_SID + 
+	    		" = " + sid, null, null, null, null, null);
+	    
+	    if (cursor == null || cursor.getCount() == 0) {
+	        return null;
+	    } else {
+	    	cursor.moveToFirst();
+	    	return timeBlockFromCursor(cursor);
+	    }
 	}
 	
 	// Returns time block pointed to by cursor.
@@ -399,7 +534,7 @@ public class SchedulesDataSource {
 	}
 	
 	// Get id of block type.
-	public long getBlockTypeId(String name) throws SQLException {
+	public long getBlockTypeId(String name) {
 	    Cursor cursor = this.database.query(true, SchedulesSQLiteHelper.TABLE_BLOCK_TYPE,
 	    		SchedulesDataSource.allBlockTypeColumns, SchedulesSQLiteHelper.COLUMN_NAME + 
 	    		" = '" + name + "'", null, null, null, null, null);
