@@ -3,7 +3,6 @@ package com.schedushare.core.timeblocks.service.impl;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -50,14 +49,26 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 	public TimeBlockEntity getTimeBlock(Connection connection,
 			int timeBlockId) throws SchedushareException {
 		SchedushareFactory getTimeBlockQuery = new SchedushareFactory(connection);
-		List<TimeBlockEntity> queryResult = getTimeBlockQuery.select()
-						 .from(Tables.TIMEBLOCK)
-						 .where(Tables.TIMEBLOCK.ID.equal(timeBlockId))
-						 .fetchInto(TimeBlockEntity.class);
-		if (queryResult.isEmpty()) {
+		Result<Record> timeBlocksRecords = getTimeBlockQuery.select()
+				.from(Tables.TIMEBLOCK)
+				.where(Tables.TIMEBLOCK.ID.equal(timeBlockId))
+				.fetch();
+		Collection<TimeBlockEntity> timeBlockEntities = new ArrayList<TimeBlockEntity>();
+		for (Record timeBlockRecord : timeBlocksRecords) {
+			timeBlockEntities.add(new TimeBlockEntity(timeBlockRecord.getValue(Tables.TIMEBLOCK.ID),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString(),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.NAME),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.TYPE),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.LATITUDE),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.LONGITUDE),
+													  timeBlockRecord.getValue(Tables.TIMEBLOCK.SCHEDULE_ID)));
+		}
+		if (timeBlocksRecords.isEmpty()) {
 			throw schedushareExceptionFactory.createSchedushareException("Time block does not exist.");
 		} else {
-			return queryResult.get(0);
+			return timeBlockEntities.iterator().next();
 		}
 	}
 
