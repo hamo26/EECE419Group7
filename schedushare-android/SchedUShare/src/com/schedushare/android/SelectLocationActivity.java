@@ -57,9 +57,25 @@ public class SelectLocationActivity extends RoboMapActivity {
 	    			
 	    			OverlayItem overlayItem = new OverlayItem(point, "Last Known Location", null);
 	    	        itemizedOverlay.addOverlayItem(overlayItem);
+	    		} else {
+	    			System.out.println("MapView: No known last location.");
+	    			
+	    			GeoPoint point = new GeoPoint((int)(49.2505 * 1e6), (int)(-123.1119 * 1e6));
+	    			this.mapView.getController().setCenter(point);
+	    			
+	    			OverlayItem overlayItem = new OverlayItem(point, "No Known Last Location", null);
+	    	        itemizedOverlay.addOverlayItem(overlayItem);
 	    		}
 	    	} catch (Exception e) {
 	    		e.printStackTrace();
+	    		
+	    		System.out.println("MapView: Location manager failed.");
+	    		
+	    		GeoPoint point = new GeoPoint((int)(49.2505 * 1e6), (int)(-123.1119 * 1e6));
+    			this.mapView.getController().setCenter(point);
+    			
+    			OverlayItem overlayItem = new OverlayItem(point, "No Known Last Location", null);
+    	        itemizedOverlay.addOverlayItem(overlayItem);
 	    	}
         } else {
         	GeoPoint point = new GeoPoint((int)(extras.getDouble("latitude") * 1e6), (int)(extras.getDouble("longitude") * 1e6));
@@ -70,7 +86,7 @@ public class SelectLocationActivity extends RoboMapActivity {
         }
     	
     	this.mapView.getOverlays().add(itemizedOverlay);
-        this.mapView.getController().setZoom(16);
+        this.mapView.getController().setZoom(14);
 //    	this.mapView.getController().zoomToSpan(itemizedOverlay.getLatSpanE6(), itemizedOverlay.getLonSpanE6());
     }
 
