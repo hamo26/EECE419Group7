@@ -2,6 +2,8 @@ package com.schedushare.common.domain.dto;
 
 import java.sql.Time;
 
+import javax.persistence.Column;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,61 +25,72 @@ public class TimeBlockEntity extends RestEntity {
 	public static final String TIME_BLOCK_TYPE  = "time-block-type";
 	
 	@SerializedName(TIME_BLOCK_ID)
+	@Column(name = "ID")
 	private final int timeBlockId;
+	
 	
 	@SerializedName(START_TIME)
 	private String startTime;
 	
+	
 	@SerializedName(END_TIME)
 	private String endTime;
 	
+	@Column(name = "DAY")
 	@SerializedName(DAY)
 	private final String day;
 	
+	@Column(name = "LATITUDE")
 	@SerializedName(LATITUDE)
 	private final Double latitude;
 
+	@Column(name = "LONGITUDE")
 	@SerializedName(LONGITUDE)
 	private final Double longitude;
 	
+	@Column(name = "SCHEDULE_ID")
 	@SerializedName(SCHEDULE_ID)
 	private final int scheduleId;
 	
+	@Column(name = "NAME")
 	@SerializedName(TIME_BLOCK_NAME)
 	private final String timeBlockName;
 	
+	@Column(name = "TYPE")
 	@SerializedName(TIME_BLOCK_TYPE)
 	private final String timeBlockType;
 	
+	@Column(name = "START_TIME")
 	private Time t_startTime;
 	
+	@Column(name = "END_TIME")
 	private Time t_endTime;
 	
-	/**
-	 * SQL Constructor.
-	 *
-	 * @param ID the id
-	 * @param START_TIME the start time
-	 * @param END_TIME the end time
-	 * @param DAY the day
-	 * @param LATITUDE the latitude
-	 * @param LONGITUDE the longitude
-	 * @param SCHEDULE_ID the schedule id
-	 * @param NAME the name
-	 * @param TYPE the type
-	 */
-	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, final String NAME, final String TYPE, 
-			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
-		this.timeBlockId = ID;
-		this.t_startTime = START_TIME;
-		this.t_endTime = END_TIME;
-		this.day = DAY;
-		this.latitude = LATITUDE;
-		this.longitude = LONGITUDE;
-		this.scheduleId = SCHEDULE_ID;
-		this.timeBlockName = NAME;
-		this.timeBlockType = TYPE;
-	}
+//	/**
+//	 * SQL Constructor.
+//	 *
+//	 * @param ID the id
+//	 * @param START_TIME the start time
+//	 * @param END_TIME the end time
+//	 * @param DAY the day
+//	 * @param LATITUDE the latitude
+//	 * @param LONGITUDE the longitude
+//	 * @param SCHEDULE_ID the schedule id
+//	 * @param NAME the name
+//	 * @param TYPE the type
+//	 */
+//	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, final String NAME, final String TYPE, 
+//			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
+//		this.timeBlockId = ID;
+//		this.t_startTime = START_TIME;
+//		this.t_endTime = END_TIME;
+//		this.day = DAY;
+//		this.latitude = LATITUDE;
+//		this.longitude = LONGITUDE;
+//		this.scheduleId = SCHEDULE_ID;
+//		this.timeBlockName = NAME;
+//		this.timeBlockType = TYPE;
+//	}
 	
 	/**
 	 * JSON Constructor.

@@ -36,7 +36,7 @@ public class RestResultHandler {
 		//Try exception first. TODO: use custom gson deserializer to check for this or a strict deserializer.
 		//This is probably an un-neccessary check.
 		SchedushareExceptionEntity schedushareExceptionDto = jsonUtil.deserializeRepresentation(jsonResult, SchedushareExceptionEntity.class);
-		if (schedushareExceptionDto.getException() != null) {
+		if (schedushareExceptionDto != null && schedushareExceptionDto.getException() != null) {
 			restResult = restResultBuilder
 					.setError(schedushareExceptionDto)
 					.build();
