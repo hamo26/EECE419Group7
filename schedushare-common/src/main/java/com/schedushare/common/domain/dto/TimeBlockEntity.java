@@ -19,7 +19,8 @@ public class TimeBlockEntity extends RestEntity {
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";
 	public static final String SCHEDULE_ID = "schedule-id";
-	
+	public static final String TIME_BLOCK_NAME = "time-block-name";
+	public static final String TIME_BLOCK_TYPE  = "time-block-type";
 	
 	@SerializedName(TIME_BLOCK_ID)
 	private final int timeBlockId;
@@ -42,6 +43,12 @@ public class TimeBlockEntity extends RestEntity {
 	@SerializedName(SCHEDULE_ID)
 	private final int scheduleId;
 	
+	@SerializedName(TIME_BLOCK_NAME)
+	private final String timeBlockName;
+	
+	@SerializedName(TIME_BLOCK_TYPE)
+	private final String timeBlockType;
+	
 	private Time t_startTime;
 	
 	private Time t_endTime;
@@ -49,11 +56,17 @@ public class TimeBlockEntity extends RestEntity {
 	/**
 	 * SQL Constructor.
 	 *
+	 * @param ID the id
 	 * @param START_TIME the start time
 	 * @param END_TIME the end time
 	 * @param DAY the day
+	 * @param LATITUDE the latitude
+	 * @param LONGITUDE the longitude
+	 * @param SCHEDULE_ID the schedule id
+	 * @param NAME the name
+	 * @param TYPE the type
 	 */
-	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, 
+	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, final String NAME, final String TYPE, 
 			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
 		this.timeBlockId = ID;
 		this.t_startTime = START_TIME;
@@ -62,25 +75,34 @@ public class TimeBlockEntity extends RestEntity {
 		this.latitude = LATITUDE;
 		this.longitude = LONGITUDE;
 		this.scheduleId = SCHEDULE_ID;
-		
+		this.timeBlockName = NAME;
+		this.timeBlockType = TYPE;
 	}
 	
 	/**
 	 * JSON Constructor.
 	 *
-	 * @param START_TIME the start time
-	 * @param END_TIME the end time
-	 * @param DAY the day
+	 * @param id the id
+	 * @param STARTTIME the starttime
+	 * @param endTime the end time
+	 * @param day the day
+	 * @param latitude the latitude
+	 * @param longitude the longitude
+	 * @param SCHEDULE_ID the schedule id
+	 * @param name the name
+	 * @param type the type
 	 */
-	public TimeBlockEntity(final int ID, final String STARTTIME, final String END_TIME, final String DAY, 
-			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
-		this.timeBlockId = ID;
-		this.startTime = STARTTIME;
-		this.endTime = END_TIME;
-		this.day = DAY;
-		this.latitude = LATITUDE;
-		this.longitude = LONGITUDE;
+	public TimeBlockEntity(final int id, final String startTime, final String endTime, final String day, 
+			final Double latitude, final Double longitude, final int SCHEDULE_ID, final String name, final String type) {
+		this.timeBlockId = id;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.day = day;
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.scheduleId = SCHEDULE_ID;
+		this.timeBlockName = name;
+		this.timeBlockType = type;
 	}
 
 	public String getStartTime() {
@@ -120,5 +142,12 @@ public class TimeBlockEntity extends RestEntity {
 	public int getScheduleId() {
 		return this.scheduleId;
 	}
-
+	
+	public String getTimeBlockName() {
+		return this.timeBlockName;
+	}
+	
+	public String getTimeBlockType() {
+		return this.timeBlockType;
+	}
 }

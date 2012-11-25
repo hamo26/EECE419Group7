@@ -50,6 +50,8 @@ CREATE TABLE `TIME_BLOCK` (
   `DAY` enum('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') DEFAULT NULL,
   `LONGITUDE` double DEFAULT NULL,
   `LATITUDE` double DEFAULT NULL,
+  `NAME` varchar(255) DEFAULT NULL,
+  `TYPE` varchar(255) DEFAULT NULL,
   `SCHEDULE_ID` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `TIME_BLOCK_OWNER_idx` (`SCHEDULE_ID`),

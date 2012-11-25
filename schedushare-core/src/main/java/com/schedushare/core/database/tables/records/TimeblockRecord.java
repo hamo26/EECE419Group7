@@ -74,6 +74,34 @@ public class TimeblockRecord extends org.jooq.impl.UpdatableRecordImpl<com.sched
 	}
 
 	/**
+	 * The table column <code>schedushare.timeblock.TYPE</code>
+	 */
+	public void setType(java.lang.String value) {
+		setValue(com.schedushare.core.database.tables.Timeblock.TIMEBLOCK.TYPE, value);
+	}
+
+	/**
+	 * The table column <code>schedushare.timeblock.TYPE</code>
+	 */
+	public java.lang.String getType() {
+		return getValue(com.schedushare.core.database.tables.Timeblock.TIMEBLOCK.TYPE);
+	}
+
+	/**
+	 * The table column <code>schedushare.timeblock.NAME</code>
+	 */
+	public void setName(java.lang.String value) {
+		setValue(com.schedushare.core.database.tables.Timeblock.TIMEBLOCK.NAME, value);
+	}
+
+	/**
+	 * The table column <code>schedushare.timeblock.NAME</code>
+	 */
+	public java.lang.String getName() {
+		return getValue(com.schedushare.core.database.tables.Timeblock.TIMEBLOCK.NAME);
+	}
+	
+	/**
 	 * The table column <code>schedushare.timeblock.SCHEDULE_ID</code>
 	 * <p>
 	 * This column is part of a FOREIGN KEY: <code><pre>

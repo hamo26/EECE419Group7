@@ -92,14 +92,18 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 															   										 Tables.TIMEBLOCK.LATITUDE,
 															   										 Tables.TIMEBLOCK.LONGITUDE, 
 															   										 Tables.TIMEBLOCK.SCHEDULE_ID, 
-															   										 Tables.TIMEBLOCK.START_TIME);
+															   										 Tables.TIMEBLOCK.START_TIME,
+															   										 Tables.TIMEBLOCK.NAME,
+															   										 Tables.TIMEBLOCK.TYPE);
 			for (TimeBlockEntity timeBlock : timeBlocks) {
 						insertIntoTimeBlock.values(timeBlock.getDay(), 
 												   timeBlock.getEndTime(), 
 												   timeBlock.getLatitude(), 
 												   timeBlock.getLongitude(),
 												   scheduleId, 
-												   timeBlock.getStartTime());
+												   timeBlock.getStartTime(),
+												   timeBlock.getTimeBlockName(),
+												   timeBlock.getTimeBlockType());
 			}
 			insertIntoTimeBlock.execute();
 			
@@ -129,6 +133,8 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 									.set(Tables.TIMEBLOCK.LATITUDE, timeBlock.getLatitude())
 									.set(Tables.TIMEBLOCK.LONGITUDE, timeBlock.getLongitude())
 									.set(Tables.TIMEBLOCK.START_TIME, timeBlock.getT_startTime())
+									.set(Tables.TIMEBLOCK.NAME, timeBlock.getTimeBlockName())
+									.set(Tables.TIMEBLOCK.TYPE, timeBlock.getTimeBlockType())
 									.where(Tables.TIMEBLOCK.ID.equal(timeBlock.getTimeBlockId()))
 									.execute();
 			}

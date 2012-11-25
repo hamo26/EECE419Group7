@@ -34,6 +34,16 @@ public class Timeblock extends org.jooq.impl.UpdatableTableImpl<com.schedushare.
 	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.Integer> ID = createField("ID", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
+	 * The table column <code>schedushare.timeblock.NAME</code>
+	 */
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.String> NAME = createField("NAME", org.jooq.impl.SQLDataType.VARCHAR, this);
+
+	/**
+	 * The table column <code>schedushare.timeblock.TYPE</code>
+	 */
+	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.lang.String> TYPE = createField("TYPE", org.jooq.impl.SQLDataType.VARCHAR, this);
+
+	/**
 	 * The table column <code>schedushare.timeblock.START_TIME</code>
 	 */
 	public final org.jooq.TableField<com.schedushare.core.database.tables.records.TimeblockRecord, java.sql.Time> START_TIME = createField("START_TIME", org.jooq.impl.SQLDataType.TIME, this);
