@@ -151,33 +151,46 @@ public class MainMenuActivity extends FacebookActivity {
 //								}
 //    							System.out.println("MainMenu: owner fb id: " + user.getId());
     							
-    							// TODO: Create user entry if he/she does not exist on the back end.
+    							
+    							// Create user entry if he/she does not exist on the back end.
     							// Also create the user's first schedule. Call it "First Schedule",
     							// and send it back to update local copy.
-    							CreateUserTask createUserTask = new CreateUserTask(new RestTemplate(), 
-    																			   new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
-    																			   GuiceConstants.USER_RESOURCE, 
-    																			   new RestResultHandler(new JSONUtil()));
+    							CreateUserTask createUserTask = new CreateUserTask(new RestTemplate(),
+    									new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
+    									GuiceConstants.USER_RESOURCE,new RestResultHandler(new JSONUtil()));
+    							
     							try {
     								String userFBID = Long.toString(settings.getLong(getString(R.string.settings_owner_facebook_id), -1));
-									RestResult<UserEntity> restResult = createUserTask.execute(new UserEntity(
-																		  userFBID,
-																		  "", 
-																		  settings.getString(getString(R.string.settings_owner_facebook_name), "User"), 
-																		  "")).get();
+									RestResult<UserEntity> restResult = createUserTask.execute(new UserEntity(userFBID, "",
+											settings.getString(getString(R.string.settings_owner_facebook_name), "User"),"")).get();
+									
 									if (restResult.isFailure()) {
-										GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(), 
-    																			   new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT), 
-    																			   GuiceConstants.ACTIVE_SCHEDULE_RESOURCE, 
-    																			   new RestResultHandler(new JSONUtil()));
+										GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(),
+												new ResourceUriBuilder(GuiceConstants.HOST, GuiceConstants.HOST_PORT),
+												GuiceConstants.ACTIVE_SCHEDULE_RESOURCE,
+												new RestResultHandler(new JSONUtil()));
 										RestResult<ScheduleEntity> getActiveScheduleResult = getActiveScheduleTask.execute(userFBID).get();
+										
 										if (getActiveScheduleResult.isFailure()) {
 											//Do something due to some back end error.
 										} else {
 											ScheduleEntity activeScheduleEntity = getActiveScheduleResult.getRestResult();
+											
 											if (activeScheduleEntity == null) {
 											} else {
-												//Do something with the active schedule returned.
+												// Update the local db copy of the active schedule.
+												SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
+				    					    	dataSource.open();
+				    					    	ScheduleData schedule = dataSource.getActiveScheduleFromOwnerId(
+				    					    			settings.getLong(getString(R.string.settings_owner_id), -1));
+				    					    	schedule.sid = activeScheduleEntity.getScheduleId();
+				    					    	schedule.name = activeScheduleEntity.getScheduleName();
+				    					    	dataSource.updateSchedule(schedule);
+				    					        dataSource.close();
+				    					        
+				    					        // Update the user preferences.
+				    					        editor.putLong(getString(R.string.settings_owner_active_schedule_sid), schedule.sid);
+				    					        editor.commit();
 											}
 										}
 									} else {
@@ -189,31 +202,31 @@ public class MainMenuActivity extends FacebookActivity {
 												new RestResultHandler(new JSONUtil()));
 										RestResult<ScheduleEntity> createScheduleEntityResult = 
 												createScheduleTask.execute(new ScheduleEntity(0, FIRST_SCHEDULE, Boolean.TRUE, userFBID, null)).get();
+										
 										if (createScheduleEntityResult.isFailure()) {
 											//Do something with error on the backend.
 										} else {
-											ScheduleEntity createdScheduleEntity = createScheduleEntityResult.getRestResult();
-											//Do something with newly created active schedule.
+											ScheduleEntity createdScheduleEntity = createScheduleEntityResult.getRestResult();		
+											
+											// Update the local db copy of the active schedule.
+											SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
+			    					    	dataSource.open();
+			    					    	ScheduleData schedule = dataSource.getActiveScheduleFromOwnerId(settings.getLong(getString(R.string.settings_owner_id), -1));
+			    					    	schedule.sid = createdScheduleEntity.getScheduleId();
+			    					    	dataSource.updateSchedule(schedule);
+			    					        dataSource.close();
+			    					        
+			    					        // Update the user preferences.
+			    					        editor.putLong(getString(R.string.settings_owner_active_schedule_sid), schedule.sid);
+			    					        editor.commit();
 										}
 										
 									}
 								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								} catch (ExecutionException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-    							SharedPreferences p = MainMenuActivity.this.getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
-    							
-    							SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
-    					    	dataSource.open();
-    					    	ScheduleData schedule = dataSource.getActiveScheduleFromOwnerId(p.getLong(getString(R.string.settings_owner_id), -1));
-    					    	
-    					    	// Update local db active schedule.
-    					    	dataSource.updateSchedule(schedule);
-    					    	
-    					        dataSource.close();
     						}
     					}
     				}
