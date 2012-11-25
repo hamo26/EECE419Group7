@@ -232,19 +232,14 @@ public class SchedulesDataSource {
 	
 	// Updates given schedule in table.
 	public void updateSchedule(ScheduleData schedule) {
-		int active = 0;
-		if (schedule.active)
-			active = 1;
-		
-		String sql = "UPDATE " + SchedulesSQLiteHelper.TABLE_SCHEDULE + " "
-				+ "SET " + SchedulesSQLiteHelper.COLUMN_SID + " = " + schedule.sid + ", "
-				+ SchedulesSQLiteHelper.COLUMN_NAME + " = '" + schedule.name + "', "
-				+ SchedulesSQLiteHelper.COLUMN_ACTIVE + " = " + active + ", "
-				+ SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + schedule.ownerId + ", "
-				+ SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED + " = '" + schedule.lastModified + "' "
-				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = " + schedule.id;
-		
-		this.database.execSQL(sql);
+		ContentValues values = new ContentValues();
+		values.put(SchedulesSQLiteHelper.COLUMN_SID, schedule.sid);
+		values.put(SchedulesSQLiteHelper.COLUMN_NAME, schedule.name);
+		values.put(SchedulesSQLiteHelper.COLUMN_ACTIVE, schedule.active);
+		values.put(SchedulesSQLiteHelper.COLUMN_OWNER_ID, schedule.ownerId);
+		values.put(SchedulesSQLiteHelper.COLUMN_LAST_MODIFIED, schedule.lastModified);
+		this.database.update(SchedulesSQLiteHelper.TABLE_SCHEDULE, values,
+				SchedulesSQLiteHelper.COLUMN_ID + " = " + schedule.id, null);
 	}
 	
 	// Returns a cursor that points to all schedules currently in table.
@@ -341,43 +336,27 @@ public class SchedulesDataSource {
 	// Creates a new time block entry in table.
 	public TimeBlockData createTimeBlock(long sid, String name, String startTime, String endTime,
 			int day, long blockTypeId, long scheduleId, double longitude, double latitude) {
-		TimeBlockData timeBlock = getTimeBlockFromSid(sid);
+		ContentValues values = new ContentValues();
+		values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
+		values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
+		values.put(SchedulesSQLiteHelper.COLUMN_START_TIME, startTime);
+		values.put(SchedulesSQLiteHelper.COLUMN_END_TIME, endTime);
+		values.put(SchedulesSQLiteHelper.COLUMN_DAY, day);
+		values.put(SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID, blockTypeId);
+		values.put(SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID, scheduleId);
+		values.put(SchedulesSQLiteHelper.COLUMN_LONGITUDE, longitude);
+		values.put(SchedulesSQLiteHelper.COLUMN_LATITUDE, latitude);
 		
-		if (timeBlock == null) {
-			ContentValues values = new ContentValues();
-			values.put(SchedulesSQLiteHelper.COLUMN_SID, sid);
-			values.put(SchedulesSQLiteHelper.COLUMN_NAME, name);
-			values.put(SchedulesSQLiteHelper.COLUMN_START_TIME, startTime);
-			values.put(SchedulesSQLiteHelper.COLUMN_END_TIME, endTime);
-			values.put(SchedulesSQLiteHelper.COLUMN_DAY, day);
-			values.put(SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID, blockTypeId);
-			values.put(SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID, scheduleId);
-			values.put(SchedulesSQLiteHelper.COLUMN_LONGITUDE, longitude);
-			values.put(SchedulesSQLiteHelper.COLUMN_LATITUDE, latitude);
-			
-			long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, null, values);
-			
-//			System.out.println("inserted time block with id: " + insertId);
-			
-			Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
-					SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
-					null, null, null, null);
-			cursor.moveToFirst();
-			
-			return timeBlockFromCursor(cursor);
-		} else {
-			timeBlock.name = name;
-			timeBlock.startTime = startTime;
-			timeBlock.endTime = endTime;
-			timeBlock.day = day;
-			timeBlock.blockTypeId = blockTypeId;
-			timeBlock.scheduleId = scheduleId;
-			timeBlock.longitude = longitude;
-			timeBlock.latitude = latitude;
-			updateTimeBlock(timeBlock);
-			
-			return timeBlock;
-		}
+		long insertId = this.database.insert(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, null, values);
+		
+//		System.out.println("inserted time block with id: " + insertId);
+		
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_TIME_BLOCK,
+				SchedulesDataSource.allTimeBlockColumns, SchedulesSQLiteHelper.COLUMN_ID + " = " + insertId,
+				null, null, null, null);
+		cursor.moveToFirst();
+		
+		return timeBlockFromCursor(cursor);
 	}
 	
 	// Deletes given time block from table.
@@ -390,19 +369,18 @@ public class SchedulesDataSource {
 	
 	// Updates given time block in table.
 	public void updateTimeBlock(TimeBlockData timeBlock) {
-		String sql = "UPDATE " + SchedulesSQLiteHelper.TABLE_TIME_BLOCK + " "
-				+ "SET " + SchedulesSQLiteHelper.COLUMN_SID + " = " + timeBlock.sid + ", "
-				+ SchedulesSQLiteHelper.COLUMN_NAME + " = '" + timeBlock.name + "', "
-				+ SchedulesSQLiteHelper.COLUMN_START_TIME + " = '" + timeBlock.startTime + "', "
-				+ SchedulesSQLiteHelper.COLUMN_END_TIME + " = '" + timeBlock.endTime + "', "
-				+ SchedulesSQLiteHelper.COLUMN_DAY + " = " + Integer.toString(timeBlock.day) + ", "
-				+ SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID + " = " + Long.toString(timeBlock.blockTypeId) + ", "
-				+ SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID + " = " + Long.toString(timeBlock.scheduleId) + ", "
-				+ SchedulesSQLiteHelper.COLUMN_LONGITUDE + " = " + Double.toString(timeBlock.longitude) + ", "
-				+ SchedulesSQLiteHelper.COLUMN_LATITUDE + " = " + Double.toString(timeBlock.latitude) + " "
-				+ "WHERE " + SchedulesSQLiteHelper.COLUMN_ID + " = " + timeBlock.id + ";";
-		
-		this.database.execSQL(sql);
+		ContentValues values = new ContentValues();
+		values.put(SchedulesSQLiteHelper.COLUMN_SID, timeBlock.sid);
+		values.put(SchedulesSQLiteHelper.COLUMN_NAME, timeBlock.name);
+		values.put(SchedulesSQLiteHelper.COLUMN_START_TIME, timeBlock.startTime);
+		values.put(SchedulesSQLiteHelper.COLUMN_END_TIME, timeBlock.endTime);
+		values.put(SchedulesSQLiteHelper.COLUMN_DAY, timeBlock.day);
+		values.put(SchedulesSQLiteHelper.COLUMN_BLOCK_TYPE_ID, timeBlock.blockTypeId);
+		values.put(SchedulesSQLiteHelper.COLUMN_SCHEDULE_ID, timeBlock.scheduleId);
+		values.put(SchedulesSQLiteHelper.COLUMN_LONGITUDE, timeBlock.longitude);
+		values.put(SchedulesSQLiteHelper.COLUMN_LATITUDE, timeBlock.latitude);
+		this.database.update(SchedulesSQLiteHelper.TABLE_TIME_BLOCK, values,
+				SchedulesSQLiteHelper.COLUMN_ID + " = " + timeBlock.id, null);
 	}
 	
 	// Returns a cursor that points to all time blocks of a given schedule and day.
