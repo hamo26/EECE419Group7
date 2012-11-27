@@ -1,6 +1,10 @@
 package com.schedushare.android.fragments;
 
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -90,16 +94,29 @@ public class EditDayFragment extends Fragment {
     		if (resultCode != Activity.RESULT_CANCELED) {
     			Collection<TimeBlockEntity> timeBlocksEntitites = new ArrayList<TimeBlockEntity>();
     			
+    			Calendar t1 = Calendar.getInstance();
+    			Calendar t2 = Calendar.getInstance();
+    			SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss aa");
+    			
     			for (TimeBlockData timeBlock : this.timeBlocks) {
-    				timeBlocksEntitites.add(new TimeBlockEntity ((int)timeBlock.sid,
-    						timeBlock.startTime, 
-    						timeBlock.endTime,
-    						timeBlock.getDayString(), 
-    						timeBlock.latitude, 
-    						timeBlock.longitude,
-    						(int)schedule.sid,
-    						timeBlock.name,
-    						timeBlock.getBlockTypeString()));
+    				try {
+						t1.setTime(timeFormat.parse(timeBlock.startTime));
+						t2.setTime(timeFormat.parse(timeBlock.endTime));
+						Time startTime = new Time(t1.getTime().getTime());
+						Time endTime = new Time(t2.getTime().getTime());
+						
+	    				timeBlocksEntitites.add(new TimeBlockEntity ((int)timeBlock.sid,
+	    						startTime.toString(), 
+	    						endTime.toString(),
+	    						timeBlock.getDayString(), 
+	    						timeBlock.latitude, 
+	    						timeBlock.longitude,
+	    						(int)schedule.sid,
+	    						timeBlock.name,
+	    						timeBlock.getBlockTypeString()));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
     			}
     			
     			TimeBlocksEntity timeBlocksEntity = new TimeBlocksEntity((int)this.schedule.sid, timeBlocksEntitites);

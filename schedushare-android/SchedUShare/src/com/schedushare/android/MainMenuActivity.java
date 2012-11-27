@@ -3,6 +3,7 @@ package com.schedushare.android;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -295,11 +296,27 @@ public class MainMenuActivity extends FacebookActivity {
 	        		ScheduleData schedule = dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
 	        				true, friend.id, s.getLastModified());
 	        		
-	        		// Time block missing two attributes. Name and Block Type ID.
+	        		Calendar startTime = Calendar.getInstance();
+	        		Calendar endTime = Calendar.getInstance();
+	        		SimpleDateFormat serverTimeFormat = new SimpleDateFormat("kk:mm:ss");
+	        		SimpleDateFormat appTimeFormat = new SimpleDateFormat("hh:mm:ss aa");
 	        		for (TimeBlockEntity t : s.getTimeBlocks()) {
-	        			dataSource.createTimeBlock(t.getTimeBlockId(), "Block", t.getStartTime(), 
-	        					t.getEndTime(), TimeBlockData.getDayIntFromString(t.getDay()),
-	        					1, schedule.id, t.getLongitude(), t.getLatitude());
+	        			try {
+	        				System.out.println("MainMenu: server start time: " + t.getStartTime());
+	        				System.out.println("MainMenu: server end time: " + t.getEndTime());
+	        				
+							startTime.setTime(serverTimeFormat.parse(t.getStartTime()));
+							endTime.setTime(serverTimeFormat.parse(t.getEndTime()));
+							
+							dataSource.createTimeBlock(t.getTimeBlockId(), "Block",
+									appTimeFormat.format(startTime.getTime()), 
+									appTimeFormat.format(endTime.getTime()),
+									TimeBlockData.getDayIntFromString(t.getDay()),
+		        					1, schedule.id, t.getLongitude(), t.getLatitude());
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	        		}
 	        	}
 	        	dataSource.close();
