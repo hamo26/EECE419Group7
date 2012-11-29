@@ -106,14 +106,14 @@ public class EditDayFragment extends Fragment {
 						Time endTime = new Time(t2.getTime().getTime());
 						
 	    				timeBlocksEntitites.add(new TimeBlockEntity ((int)timeBlock.sid,
-	    						startTime.toString(), 
-	    						endTime.toString(),
-	    						timeBlock.getDayString(), 
+	    						startTime, 
+	    						endTime,
+	    						timeBlock.getDayString(),
+	    						timeBlock.name,
+	    						timeBlock.getBlockTypeString(),
 	    						timeBlock.latitude, 
 	    						timeBlock.longitude,
-	    						(int)schedule.sid,
-	    						timeBlock.name,
-	    						timeBlock.getBlockTypeString()));
+	    						(int)schedule.sid));
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
