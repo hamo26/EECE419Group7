@@ -1,6 +1,7 @@
 package com.schedushare.core.timeblocks.service.impl;
 
 import java.sql.Connection;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -54,11 +55,20 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 				.where(Tables.TIMEBLOCK.ID.equal(timeBlockId))
 				.fetch();
 		Collection<TimeBlockEntity> timeBlockEntities = new ArrayList<TimeBlockEntity>();
+		String startTime;
+		String endTime;
+		String day;
 		for (Record timeBlockRecord : timeBlocksRecords) {
+			startTime = timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME) == null ? null : 
+				timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME).toString();
+			endTime = timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME) == null ? null : 
+				timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME).toString();
+			day = timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY) == null ? null : 
+										timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString();
 			timeBlockEntities.add(new TimeBlockEntity(timeBlockRecord.getValue(Tables.TIMEBLOCK.ID),
-													  timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME),
-													  timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME),
-													  timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString(),
+													  startTime,
+													  endTime,
+													  day,
 													  timeBlockRecord.getValue(Tables.TIMEBLOCK.NAME),
 													  timeBlockRecord.getValue(Tables.TIMEBLOCK.TYPE),
 													  timeBlockRecord.getValue(Tables.TIMEBLOCK.LATITUDE),
@@ -84,11 +94,21 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 					.from(Tables.TIMEBLOCK)
 					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId)).fetch();
 			Collection<TimeBlockEntity> timeBlockEntities = new ArrayList<TimeBlockEntity>();
+
+			String startTime;
+			String endTime;
+			String day;
 			for (Record timeBlockRecord : timeBlocksRecords) {
+				startTime = timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME) == null ? null :
+													timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME).toString().toString();
+				endTime = timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME) == null ? null :
+					timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME).toString().toString();
+				day = timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY) == null ? null : 
+					timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString() ;
 				timeBlockEntities.add(new TimeBlockEntity(timeBlockRecord.getValue(Tables.TIMEBLOCK.ID),
-														  timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME),
-														  timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME),
-														  timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString(),
+														  startTime,
+														  endTime,
+														  day,
 														  timeBlockRecord.getValue(Tables.TIMEBLOCK.NAME),
 														  timeBlockRecord.getValue(Tables.TIMEBLOCK.TYPE),
 														  timeBlockRecord.getValue(Tables.TIMEBLOCK.LATITUDE),
@@ -150,10 +170,10 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 			for (TimeBlockEntity timeBlock : timeBlocks) {
 				updateTimeBlockQuery.update(Tables.TIMEBLOCK)
 									.set(Tables.TIMEBLOCK.DAY, TimeblockDay.valueOf(timeBlock.getDay()))
-									.set(Tables.TIMEBLOCK.END_TIME, timeBlock.getT_endTime())
+									.set(Tables.TIMEBLOCK.END_TIME, Time.valueOf(timeBlock.getEndTime()))
 									.set(Tables.TIMEBLOCK.LATITUDE, timeBlock.getLatitude())
 									.set(Tables.TIMEBLOCK.LONGITUDE, timeBlock.getLongitude())
-									.set(Tables.TIMEBLOCK.START_TIME, timeBlock.getT_startTime())
+									.set(Tables.TIMEBLOCK.START_TIME, Time.valueOf(timeBlock.getStartTime()))
 									.set(Tables.TIMEBLOCK.NAME, timeBlock.getTimeBlockName())
 									.set(Tables.TIMEBLOCK.TYPE, timeBlock.getTimeBlockType())
 									.where(Tables.TIMEBLOCK.ID.equal(timeBlock.getTimeBlockId()))

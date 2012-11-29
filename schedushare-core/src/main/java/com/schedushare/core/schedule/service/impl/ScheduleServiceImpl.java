@@ -21,6 +21,7 @@ import com.schedushare.common.domain.exception.SchedushareException;
 import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
 import com.schedushare.core.database.SchedushareFactory;
 import com.schedushare.core.database.Tables;
+import com.schedushare.core.database.enums.TimeblockDay;
 import com.schedushare.core.schedule.service.ScheduleService;
 import com.schedushare.core.timeblocks.service.TimeBlocksService;
 
@@ -59,12 +60,20 @@ public class ScheduleServiceImpl implements ScheduleService {
 			Result<Record> timeBlocksRecords = getScheduleQuery.select()
 					.from(Tables.TIMEBLOCK)
 					.where(Tables.TIMEBLOCK.SCHEDULE_ID.equal(scheduleId)).fetch();
-			
+			String startTime;
+			String endTime;
+			String day;
 			for (Record timeBlockRecord : timeBlocksRecords) {
+				startTime = timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME) == null ? null : 
+					timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME).toString();
+				endTime = timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME) == null ? null : 
+					timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME).toString();
+				day = timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY) == null ? null : 
+											timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString() ;
 				timeBlockEntities.add(new TimeBlockEntity(timeBlockRecord.getValue(Tables.TIMEBLOCK.ID),
-														  timeBlockRecord.getValue(Tables.TIMEBLOCK.START_TIME),
-														  timeBlockRecord.getValue(Tables.TIMEBLOCK.END_TIME),
-														  timeBlockRecord.getValue(Tables.TIMEBLOCK.DAY).toString(),
+														  startTime,
+														  endTime,
+														  day,
 														  timeBlockRecord.getValue(Tables.TIMEBLOCK.NAME),
 														  timeBlockRecord.getValue(Tables.TIMEBLOCK.TYPE),
 														  timeBlockRecord.getValue(Tables.TIMEBLOCK.LATITUDE),

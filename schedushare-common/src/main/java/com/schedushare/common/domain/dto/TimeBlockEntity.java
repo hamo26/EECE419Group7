@@ -77,7 +77,7 @@ public class TimeBlockEntity extends RestEntity {
 	 * @param LONGITUDE the longitude
 	 * @param SCHEDULE_ID the schedule id
 	 * @param NAME the name
-	 * @param TYPE the type
+	 * @param TYPE the typegetStartTime
 	 */
 	public TimeBlockEntity(final int ID, final Time START_TIME, final Time END_TIME, final String DAY, final String NAME, final String TYPE, 
 			final Double LATITUDE, final Double LONGITUDE, final int SCHEDULE_ID) {
@@ -106,7 +106,7 @@ public class TimeBlockEntity extends RestEntity {
 	 * @param type the type
 	 */
 	public TimeBlockEntity(final int id, final String startTime, final String endTime, final String day, 
-			final Double latitude, final Double longitude, final int SCHEDULE_ID, final String name, final String type) {
+			final String name, final String type, final Double latitude, final Double longitude, final int SCHEDULE_ID) {
 		this.timeBlockId = id;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -119,11 +119,17 @@ public class TimeBlockEntity extends RestEntity {
 	}
 
 	public String getStartTime() {
+		if (t_startTime != null) {
+			return t_startTime.toString();
+		} 
 		return startTime;
 	}
 
 
 	public String getEndTime() {
+		if (t_endTime != null) {
+			return t_endTime.toString();
+		}
 		return endTime;
 	}
 
