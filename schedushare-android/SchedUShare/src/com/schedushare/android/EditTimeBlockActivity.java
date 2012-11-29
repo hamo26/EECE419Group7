@@ -322,6 +322,12 @@ public class EditTimeBlockActivity extends RoboActivity {
     
     public void selectLocation(View view) {
     	Intent intent = new Intent(this, SelectLocationActivity.class);
+    	Bundle b = new Bundle();
+    	if (this.newTimeBlock.latitude != 0f || this.newTimeBlock.longitude != 0f) {
+    		b.putDouble("latitude", this.newTimeBlock.latitude);
+    		b.putDouble("longitude", this.newTimeBlock.longitude);
+    		intent.putExtras(b);
+    	}
         startActivityForResult(intent, SelectLocationActivity.REQUEST_CODE);
     }    
 }

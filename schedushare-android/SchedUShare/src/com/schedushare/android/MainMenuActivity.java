@@ -3,6 +3,7 @@ package com.schedushare.android;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -253,8 +254,7 @@ public class MainMenuActivity extends FacebookActivity {
 	        		System.out.println("MainMenu: friend id: " + u.getId());
 	        		
 	        		// Create user in local db if not already created.
-	        		if (dataSource.isUserCreated(Long.parseLong(u.getId())))
-	        			dataSource.createUser(Long.parseLong(u.getId()), u.getName());
+	        		dataSource.createUser(Long.parseLong(u.getId()), u.getName());
 	        		
 	        		// Call back end with each User ID to get their active schedules and time blocks.
 	        		GetActiveScheduleTask getActiveScheduleTask = new GetActiveScheduleTask(new RestTemplate(),
@@ -285,14 +285,38 @@ public class MainMenuActivity extends FacebookActivity {
 	        	
 	        	// Create all the friend schedules if they don't exist already.
 	        	for (ScheduleEntity s : userSchedules) {
-	        		dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
-	        				true, Long.parseLong(s.getUserId()), s.getLastModified());
+	        		System.out.println("MainMenu: Add friend schedule.");
+	        		System.out.println("MainMenu: scheduleId: " + s.getScheduleId());
+	        		System.out.println("MainMenu: scheduleName: " + s.getScheduleName());
+	        		System.out.println("MainMenu: getUserId: " + s.getUserId());
+	        		System.out.println("MainMenu: getLastModified: " + s.getLastModified());
 	        		
-	        		// Time block missing two attributes. Name and Block Type ID.
+	        		UserData friend = dataSource.getUserFromSid(Long.parseLong(s.getUserId()));
+	        		
+	        		ScheduleData schedule = dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
+	        				true, friend.id, s.getLastModified());
+	        		
+	        		Calendar startTime = Calendar.getInstance();
+	        		Calendar endTime = Calendar.getInstance();
+	        		SimpleDateFormat serverTimeFormat = new SimpleDateFormat("kk:mm:ss");
+	        		SimpleDateFormat appTimeFormat = new SimpleDateFormat("hh:mm:ss aa");
 	        		for (TimeBlockEntity t : s.getTimeBlocks()) {
-	        			dataSource.createTimeBlock(t.getTimeBlockId(), "Block", t.getStartTime(), 
-	        					t.getEndTime(), TimeBlockData.getDayIntFromString(t.getDay()),
-	        					1, t.getScheduleId(), t.getLongitude(), t.getLatitude());
+	        			try {
+	        				System.out.println("MainMenu: server start time: " + t.getStartTime());
+	        				System.out.println("MainMenu: server end time: " + t.getEndTime());
+	        				
+							startTime.setTime(serverTimeFormat.parse(t.getStartTime()));
+							endTime.setTime(serverTimeFormat.parse(t.getEndTime()));
+							
+							dataSource.createTimeBlock(t.getTimeBlockId(), "Block",
+									appTimeFormat.format(startTime.getTime()), 
+									appTimeFormat.format(endTime.getTime()),
+									TimeBlockData.getDayIntFromString(t.getDay()),
+		        					1, schedule.id, t.getLongitude(), t.getLatitude());
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 	        		}
 	        	}
 	        	dataSource.close();
