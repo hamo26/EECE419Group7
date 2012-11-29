@@ -2,8 +2,6 @@ package com.schedushare.common.domain.dto;
 
 import java.sql.Time;
 
-import javax.persistence.Column;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -25,7 +23,6 @@ public class TimeBlockEntity extends RestEntity {
 	public static final String TIME_BLOCK_TYPE  = "time-block-type";
 	
 	@SerializedName(TIME_BLOCK_ID)
-	@Column(name = "ID")
 	private final int timeBlockId;
 	
 	
@@ -36,34 +33,26 @@ public class TimeBlockEntity extends RestEntity {
 	@SerializedName(END_TIME)
 	private String endTime;
 	
-	@Column(name = "DAY")
 	@SerializedName(DAY)
 	private final String day;
 	
-	@Column(name = "LATITUDE")
 	@SerializedName(LATITUDE)
 	private final Double latitude;
 
-	@Column(name = "LONGITUDE")
 	@SerializedName(LONGITUDE)
 	private final Double longitude;
 	
-	@Column(name = "SCHEDULE_ID")
 	@SerializedName(SCHEDULE_ID)
 	private final int scheduleId;
 	
-	@Column(name = "NAME")
 	@SerializedName(TIME_BLOCK_NAME)
 	private final String timeBlockName;
 	
-	@Column(name = "TYPE")
 	@SerializedName(TIME_BLOCK_TYPE)
 	private final String timeBlockType;
 	
-	@Column(name = "START_TIME")
 	private Time t_startTime;
 	
-	@Column(name = "END_TIME")
 	private Time t_endTime;
 	
 	/**
