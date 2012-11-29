@@ -126,6 +126,14 @@ public class MainMenuActivity extends FacebookActivity {
     							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
     							editor.commit();
     							
+    							SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
+    							dataSource.open();
+    							UserData owner = dataSource.getUserFromId(settings.getLong(getString(R.string.settings_owner_id), -1));
+    							owner.sid = Long.parseLong(user.getId());
+    							dataSource.updateUser(owner);
+    							dataSource.close();
+    							
+    							
 //    							// Get user's Facebook ID to query back end for all their schedules.
 //    							// If the user does not have any schedules stored in the back end,
 //    							// create one for them and send it back.
@@ -180,7 +188,6 @@ public class MainMenuActivity extends FacebookActivity {
 											if (activeScheduleEntity == null) {
 											} else {
 												// Update the local db copy of the active schedule.
-												SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
 				    					    	dataSource.open();
 				    					    	ScheduleData schedule = dataSource.getActiveScheduleFromOwnerId(
 				    					    			settings.getLong(getString(R.string.settings_owner_id), -1));
@@ -210,7 +217,6 @@ public class MainMenuActivity extends FacebookActivity {
 											ScheduleEntity createdScheduleEntity = createScheduleEntityResult.getRestResult();		
 											
 											// Update the local db copy of the active schedule.
-											SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
 			    					    	dataSource.open();
 			    					    	ScheduleData schedule = dataSource.getActiveScheduleFromOwnerId(settings.getLong(getString(R.string.settings_owner_id), -1));
 			    					    	schedule.sid = createdScheduleEntity.getScheduleId();
@@ -293,6 +299,11 @@ public class MainMenuActivity extends FacebookActivity {
 	        		
 	        		UserData friend = dataSource.getUserFromSid(Long.parseLong(s.getUserId()));
 	        		
+	        		if (dataSource.getScheduleFromSid(s.getScheduleId()) != null) {
+	        			System.out.println("MainMenu: friend schedule deleted.");
+	        			dataSource.deleteSchedule(s.getScheduleId());
+	        		}
+	        		
 	        		ScheduleData schedule = dataSource.createSchedule(s.getScheduleId(), s.getScheduleName(), 
 	        				true, friend.id, s.getLastModified());
 	        		
@@ -308,13 +319,12 @@ public class MainMenuActivity extends FacebookActivity {
 							startTime.setTime(serverTimeFormat.parse(t.getStartTime()));
 							endTime.setTime(serverTimeFormat.parse(t.getEndTime()));
 							
-							dataSource.createTimeBlock(t.getTimeBlockId(), "Block",
+							dataSource.createTimeBlock(t.getTimeBlockId(), t.getTimeBlockName(),
 									appTimeFormat.format(startTime.getTime()), 
 									appTimeFormat.format(endTime.getTime()),
 									TimeBlockData.getDayIntFromString(t.getDay()),
 		        					1, schedule.id, t.getLongitude(), t.getLatitude());
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 	        		}
