@@ -326,6 +326,21 @@ public class SchedulesDataSource {
 		}
 	}
 	
+	// Searches for a schedule of the same name.
+	public ScheduleData getScheduleFromName(String name) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+				SchedulesDataSource.allScheduleColumns,
+				SchedulesSQLiteHelper.COLUMN_NAME + " = ?",
+				new String[]{name}, null, null, null);
+		
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return scheduleFromCursor(cursor);
+		}
+	}
+	
 	// Returns schedule pointed to by cursor.
 	private ScheduleData scheduleFromCursor(Cursor cursor) {
 		ScheduleData schedule = new ScheduleData();

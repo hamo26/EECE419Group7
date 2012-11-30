@@ -97,6 +97,15 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
     
 	// Called when user clicks create in new schedule dialog box.
 	public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog, String newScheduleName) {
+		// Check whether schedule name already exists.
+		SchedulesDataSource dataSource = new SchedulesDataSource(this);
+		dataSource.open();
+		if (dataSource.getScheduleFromName(newScheduleName) != null) {
+			Toast.makeText(this, "Schedule Name already exist!\nPlease enter a different name.", Toast.LENGTH_LONG).show();
+			dataSource.close();
+			return;
+		}
+		
 		try {
     		SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
     		long facebookId = p.getLong(getString(R.string.settings_owner_facebook_id), -1);
@@ -114,7 +123,6 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 				Calendar currentTime = Calendar.getInstance();
 				
 				// Open connection to db and create new schedule.
-		    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
 		    	dataSource.open();
 		    	dataSource.createSchedule(createScheduleResult.getRestResult().getScheduleId(),
 		    			createScheduleResult.getRestResult().getScheduleName(), false,
