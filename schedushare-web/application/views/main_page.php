@@ -39,12 +39,14 @@
             
            
         </div>
+
         <div id="time_tables" class="span6">
         </div>
         <div class="span3">
             <button href="#create_schedule_modal" class="btn-primary hidden" id="new_schedule_btn" data-toggle="modal">+ New Schedule</button>
             <button href="#create_event_modal" class="btn-primary" id="new_event_btn" data-toggle="modal" >+ New Event</button>
-            <h3><img src="https://graph.facebook.com/<?php echo $user; ?>/picture">&nbsp;My Schedules</h3>
+            
+            <h4><img src="https://graph.facebook.com/<?php echo $user; ?>/picture">&nbsp;My Schedules</h4>
             <div id="my_schedules">
             </div> 
             
@@ -91,6 +93,9 @@
                     <button class="btn btn-primary" id="create_event_submit" data-dismiss="modal">Save changes</button>
                 </div>
             </div>
+
+<!--            ERROR MSG --> 
+
         </div>
     </div>
 </div>
@@ -103,7 +108,7 @@ var colors = new Array();
 var color_index = 0;
 var num_of_colors = 6;
 var loaded_schedules = new Array();
-var loaded_active_schedule;
+var my_loaded_schedule;
 var short_list = new Array();
 
 $(document).ready(function(){     
@@ -131,7 +136,10 @@ $(document).ready(function(){
        new_schedule.append('<i class="icon-eye-open pull-left"></i>');
        
        //unload the old time blocks
-       unload_timeblocks(loaded_active_schedule);
+       unload_timeblocks(my_loaded_schedule);
+       
+       //set new schedule
+       my_loaded_schedule = schedule_id;
        
        //load new schedule
        load_timeblocks(schedule_id,name);
@@ -270,13 +278,19 @@ function check_login(){
         dataType: "json",
         success: function(data){
 
-            console.log("user found");
-            console.log(data);
-            var user_id = data["user-id"];
-            console.log(user_id);
+            if(!data){
+                console.log("no response from server!!");
+                
+                $('#my_schedules').append("<i>we are experiencing server issue, please try again later...</i>");
+            }else{
+                console.log("user found");
+                
+                console.log(data);
+                var user_id = data["user-id"];
+                console.log(user_id);
 
-            load_schedules(data);
-
+                load_schedules(data);
+            }
         },
         error: function(data){
             console.log("user not found!");
@@ -294,13 +308,30 @@ function register_user(){
         success: function(data){
 
             console.log("user created!");
-
+            check_login();
         },
         error: function(data){
             console.log("register error!");
-
+            
+            //most likely server error
+            $('#my_schedules').append("<i>we are experiencing server issue, please try again later...</i>");
+            
+            load_error('Server error! Please try again later!');
         }
     });
+}
+
+function load_error(msg){
+    $('#time_tables').prepend('<div id="error_msg_area"></div>');
+            
+    $('#error_msg_area').empty();
+
+    $('#error_msg_area').append(
+        $(document.createElement("div")).addClass('alert alert-error').append(
+            msg,
+            '<button type="button" class="close" data-dismiss="alert">×</button>'
+        )
+    );
 }
 
 function find_friend(friend_name){
@@ -357,7 +388,11 @@ function make_new_event(name,start,end,location,people){
         },
         error: function(data){
             console.log("event error!");
-            console.log(data); 
+            console.log(data);
+            
+            load_error('An error has occured while creating event! Be sure all fields are filled in!');
+
+           addEvent(name,start,end);     
         }
     });
 }

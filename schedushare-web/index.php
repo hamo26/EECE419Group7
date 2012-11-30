@@ -123,7 +123,6 @@ if (defined('ENVIRONMENT'))
 	// $assign_to_config['name_of_config_item'] = 'value of config item';
 
 
-
 // --------------------------------------------------------------------
 // END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE
 // --------------------------------------------------------------------
@@ -174,8 +173,18 @@ if (defined('ENVIRONMENT'))
 
 	// Name of the "system folder"
 	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
-
-
+        
+        //REST CLIENT PATH
+        if(BASEPATH == '/app/www/system/'){
+            //define('RESTPATH','http://50.92.2.84:8189');
+            define('RESTPATH','http://50.92.31.17:8189');
+        }
+        else{
+            //define('RESTPATH','http://localhost:8189');
+            //define('RESTPATH','http://50.92.2.84:8189');
+            define('RESTPATH','http://50.92.31.17:8189');
+        }
+        
 	// The path to the "application" folder
 	if (is_dir($application_folder))
 	{

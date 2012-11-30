@@ -18,7 +18,7 @@ function load_active_schedule(user_id, user_name){
         }else{
             console.log("user has no active schedule, or is not a user of schedushare");
             
-            var tag = '<span class="label label-important pull-right">No Schedule!</span>';
+            var tag = '<span class="label label-warning pull-right"><i class="icon-ban-circle"></i><i class="icon-calendar"></i>!</span>';
             
             $('#sl-'+user_id).append(tag);
         }
@@ -57,9 +57,9 @@ function load_schedules(user){
                     load_timeblocks(value["schedule-id"],user["name"]);
                     //loaded_schedules[value["schedule-id"]] = user["name"];
                     loaded_schedules.push(new Array(value["schedule-id"],user["name"]));
-                    loaded_active_schedule = value["schedule-id"];
+                    my_loaded_schedule = value["schedule-id"];
                     
-                    active_tag = '<span class="label label-success pull-right">Active</span>';
+                    active_tag = '<span class="label label-success pull-right">A</span>';
                     viewing_tag = '<i class="icon-eye-open"></i>';
                 }
 
@@ -211,6 +211,8 @@ function getDayOfWeek(day){
 
 function clear_table(){
     $('#time_tables').fullCalendar( 'removeEvents').fullCalendar('removeEventSources'); 
+    
+    
 }
 
 //testing
