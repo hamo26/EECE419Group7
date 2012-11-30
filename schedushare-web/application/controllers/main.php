@@ -30,9 +30,12 @@ class Main extends CI_Controller {
         $app_id = '244995238959505';
         $app_secret = 'd47346c1d60a1b60df939ef5464b28a2';
         
-        $facebook = $this->getfacebooktoken($app_id, $app_secret); //get FB token
-        
-        $user = $facebook->getUser(); //get user token
+        try{
+            $facebook = $this->getfacebooktoken($app_id, $app_secret); //get FB token
+            $user = $facebook->getUser(); //get user token
+        }catch(FacebookApiException $e){
+            show_error($e,500);
+        }
         
         if(!$user){
             //Test Code
@@ -169,7 +172,7 @@ class Main extends CI_Controller {
         
         $schedule_id = $this->input->get("scheduleid");
         
-        $response = $this->get_request(RESTPATH.'/schedushare/timeblocks/schedules/'.$schedule_id,2);
+        $response = $this->get_request(RESTPATH.'/schedushare/timeblocks/schedule/'.$schedule_id,2);
         
         echo $response;
     }
@@ -254,6 +257,7 @@ class Main extends CI_Controller {
                  "people" => $people
             ));
 
+            show_error('test error!',500);
         }else{        
             //load view
 
@@ -358,6 +362,10 @@ class Main extends CI_Controller {
             // grab URL and pass it to the browser
             $content = rtrim(curl_exec($ch),1);
 
+            if(curl_error($ch)){
+                show_error(curl_error($ch),500);
+            }
+            
             // close cURL resource, and free up system resources
             curl_close($ch);
 
@@ -401,6 +409,10 @@ class Main extends CI_Controller {
             
             $response = rtrim(curl_exec($ch),1);
             
+            if(curl_error($ch)){
+                show_error(curl_error($ch),500);
+            }
+            
             curl_close($ch);
             
             return $response;
@@ -425,11 +437,15 @@ class Main extends CI_Controller {
     /***********************************************************/
     //FACEBOOK API ABSTRACTION
     function getfacebooktoken($app_id, $app_secret){
+        
+        try{
         $facebook = new Facebook(array(
             'appId'  => $app_id,
             'secret' => $app_secret,
         ));
-
+        }catch(FacebookApiException $e){
+            show_error($e,500);
+        }  
         return $facebook;
     }
     

@@ -3,6 +3,7 @@ package com.schedushare.android;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
+import com.facebook.Session;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
@@ -69,11 +70,18 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Session session = Session.getActiveSession();
+		
 		switch (item.getItemId()) {
 			case R.id.create_schedule_option:
-				// Open dialog box to create new schedule.
-				RoboDialogFragment newFragment = new NewScheduleDialogFragment();
-			    newFragment.show(getSupportFragmentManager(), "new_schedule");
+				if (session != null && session.isOpened()) {
+					// Open dialog box to create new schedule.
+					RoboDialogFragment newFragment = new NewScheduleDialogFragment();
+				    newFragment.show(getSupportFragmentManager(), "new_schedule");
+				} else {
+					Toast.makeText(this, "You must log into Facebook.", Toast.LENGTH_LONG).show();
+				}
+				
 			    break;
 			default:
 				break;
@@ -89,6 +97,15 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
     
 	// Called when user clicks create in new schedule dialog box.
 	public void onNewScheduleDialogPositiveClick(RoboDialogFragment dialog, String newScheduleName) {
+		// Check whether schedule name already exists.
+		SchedulesDataSource dataSource = new SchedulesDataSource(this);
+		dataSource.open();
+		if (dataSource.getScheduleFromName(newScheduleName) != null) {
+			Toast.makeText(this, "Schedule Name already exist!\nPlease enter a different name.", Toast.LENGTH_LONG).show();
+			dataSource.close();
+			return;
+		}
+		
 		try {
     		SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
     		long facebookId = p.getLong(getString(R.string.settings_owner_facebook_id), -1);
@@ -106,7 +123,6 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 				Calendar currentTime = Calendar.getInstance();
 				
 				// Open connection to db and create new schedule.
-		    	SchedulesDataSource dataSource = new SchedulesDataSource(this);
 		    	dataSource.open();
 		    	dataSource.createSchedule(createScheduleResult.getRestResult().getScheduleId(),
 		    			createScheduleResult.getRestResult().getScheduleName(), false,

@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.facebook.Session;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.ScheduleData;
@@ -135,21 +136,35 @@ public class EditScheduleActivity extends RoboFragmentActivity
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Session session = Session.getActiveSession();
+		
 		switch (item.getItemId()) {
 			case R.id.delete_schedule_option:
-				// Open dialog box to delete schedule.
-				DialogFragment newFragment = new DeleteScheduleDialogFragment();
-			    newFragment.show(getSupportFragmentManager(), "delete_schedule");
+				if (session != null && session.isOpened()) {
+					// Open dialog box to delete schedule.
+					DialogFragment newFragment = new DeleteScheduleDialogFragment();
+				    newFragment.show(getSupportFragmentManager(), "delete_schedule");
+				} else {
+					Toast.makeText(this, "You must log into Facebook!", Toast.LENGTH_LONG).show();
+				}
 			    break;
 			case R.id.rename_schedule_option:
-				// Open dialog box to delete schedule.
-				DialogFragment newFragment2 = new RenameScheduleDialogFragment();
-			    newFragment2.show(getSupportFragmentManager(), "rename_schedule");
+				if (session != null && session.isOpened()) {
+					// Open dialog box to delete schedule.
+					DialogFragment newFragment2 = new RenameScheduleDialogFragment();
+				    newFragment2.show(getSupportFragmentManager(), "rename_schedule");
+				} else {
+					Toast.makeText(this, "You must log into Facebook!", Toast.LENGTH_LONG).show();
+				}
 			    break;
 			case R.id.set_active_schedule_option:
-				// Open dialog box to set active schedule.
-				DialogFragment newFragment3 = new SetActiveScheduleDialogFragment();
-			    newFragment3.show(getSupportFragmentManager(), "set_active_schedule");
+				if (session != null && session.isOpened()) {
+					// Open dialog box to set active schedule.
+					DialogFragment newFragment3 = new SetActiveScheduleDialogFragment();
+				    newFragment3.show(getSupportFragmentManager(), "set_active_schedule");
+				} else {
+					Toast.makeText(this, "You must log into Facebook!", Toast.LENGTH_LONG).show();
+				}
 			    break;
 			default:
 				break;

@@ -106,6 +106,15 @@ public class SchedulesDataSource {
 		}
 	}
 	
+	// Updates given schedule in table.
+	public void updateUser(UserData user) {
+		ContentValues values = new ContentValues();
+		values.put(SchedulesSQLiteHelper.COLUMN_SID, user.sid);
+		values.put(SchedulesSQLiteHelper.COLUMN_NAME, user.name);
+		this.database.update(SchedulesSQLiteHelper.TABLE_USER, values,
+				SchedulesSQLiteHelper.COLUMN_ID + " = " + user.id, null);
+	}
+	
 	// Get user from from id.
 	public UserData getUserFromId(long id) {
 		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_USER,
@@ -308,6 +317,21 @@ public class SchedulesDataSource {
 				SchedulesSQLiteHelper.COLUMN_OWNER_ID + " = " + ownerId + " AND " + 
 				SchedulesSQLiteHelper.COLUMN_ACTIVE + " = " + 1,
 				null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() == 0) {
+			return null;
+		} else {
+			cursor.moveToFirst();
+			return scheduleFromCursor(cursor);
+		}
+	}
+	
+	// Searches for a schedule of the same name.
+	public ScheduleData getScheduleFromName(String name) {
+		Cursor cursor = this.database.query(SchedulesSQLiteHelper.TABLE_SCHEDULE,
+				SchedulesDataSource.allScheduleColumns,
+				SchedulesSQLiteHelper.COLUMN_NAME + " = ?",
+				new String[]{name}, null, null, null);
 		
 		if (cursor == null || cursor.getCount() == 0) {
 			return null;

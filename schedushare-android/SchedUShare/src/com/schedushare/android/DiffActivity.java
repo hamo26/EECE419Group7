@@ -137,7 +137,11 @@ public class DiffActivity extends RoboFragmentActivity {
             		} else {
             			SchedulesDataSource dataSource = new SchedulesDataSource(DiffActivity.this);
                 		dataSource.open();
+                		
+                		System.out.println("Diff: button tag: " + (Long)view.getTag());
                 		UserData u = dataSource.getUserFromSid((Long)view.getTag());
+                		System.out.println("Diff: user object: " + u);
+                		
                 		ScheduleData s = dataSource.getActiveScheduleFromOwnerId(u.id);
                 		dataSource.close();
                 		

@@ -24,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.facebook.Session;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.EditScheduleActivity;
@@ -166,12 +167,18 @@ public class EditDayFragment extends Fragment {
 		this.listView = new ListView(getActivity());
 		this.listView.setOnItemClickListener(new OnItemClickListener() {  
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// Start EditScheduleActivity with the selected schedule.
-				Intent intent = new Intent(getActivity(), EditTimeBlockActivity.class);
-				intent.putExtra("scheduleId", EditDayFragment.this.schedule.id);
-				intent.putExtra("startTime", EditScheduleActivity.TIME_DATA[position]);
-				intent.putExtra("day", EditDayFragment.this.day);
-		        startActivityForResult(intent, EditTimeBlockActivity.REQUEST_CODE);
+				Session session = Session.getActiveSession();
+				
+				if (session != null && session.isOpened()) {
+					// Start EditScheduleActivity with the selected schedule.
+					Intent intent = new Intent(getActivity(), EditTimeBlockActivity.class);
+					intent.putExtra("scheduleId", EditDayFragment.this.schedule.id);
+					intent.putExtra("startTime", EditScheduleActivity.TIME_DATA[position]);
+					intent.putExtra("day", EditDayFragment.this.day);
+			        startActivityForResult(intent, EditTimeBlockActivity.REQUEST_CODE);
+				} else {
+					Toast.makeText(getActivity(), "You must log into Facebook!", Toast.LENGTH_LONG).show();
+				}
 			}  
 		});
 		this.listView.setAdapter(adapter);
