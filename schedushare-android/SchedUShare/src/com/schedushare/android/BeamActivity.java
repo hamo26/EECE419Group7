@@ -134,8 +134,11 @@ public class BeamActivity extends RoboFragmentActivity implements CreateNdefMess
 			SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
 			SchedulesDataSource dataSource = new SchedulesDataSource(this);
 	    	dataSource.open();
-			dataSource.createUser(receivedSchedule.user.sid, receivedSchedule.user.name);
-			dataSource.createSchedule(receivedSchedule.schedule.sid, receivedSchedule.schedule.name, true, receivedSchedule.schedule.ownerId, receivedSchedule.schedule.lastModified);
+			UserData user = dataSource.createUser(receivedSchedule.user.sid, receivedSchedule.user.name);
+			ScheduleData lastSchedule = dataSource.getActiveScheduleFromOwnerId(user.id);
+			if (lastSchedule != null)
+				dataSource.deleteSchedule(lastSchedule);
+			dataSource.createSchedule(receivedSchedule.schedule.sid, receivedSchedule.schedule.name, true, user.id, receivedSchedule.schedule.lastModified);
 			for(TimeBlockData t : receivedSchedule.timeBlocks){
 				dataSource.createTimeBlock(t.sid, t.name, t.startTime, t.endTime, t.day, t.blockTypeId, t.scheduleId, t.longitude, t.latitude);
 			}
@@ -215,8 +218,11 @@ public class BeamActivity extends RoboFragmentActivity implements CreateNdefMess
 			SharedPreferences p = getSharedPreferences(MainMenuActivity.PREFS_NAME, 0);
 			SchedulesDataSource dataSource = new SchedulesDataSource(this);
 	    	dataSource.open();
-			dataSource.createUser(receivedSchedule.user.sid, receivedSchedule.user.name);
-			dataSource.createSchedule(receivedSchedule.schedule.sid, receivedSchedule.schedule.name, true, receivedSchedule.schedule.ownerId, receivedSchedule.schedule.lastModified);
+			UserData user = dataSource.createUser(receivedSchedule.user.sid, receivedSchedule.user.name);
+			ScheduleData lastSchedule = dataSource.getActiveScheduleFromOwnerId(user.id);
+			if (lastSchedule != null)
+				dataSource.deleteSchedule(lastSchedule);
+			dataSource.createSchedule(receivedSchedule.schedule.sid, receivedSchedule.schedule.name, true, user.id, receivedSchedule.schedule.lastModified);
 			for(TimeBlockData t : receivedSchedule.timeBlocks){
 				dataSource.createTimeBlock(t.sid, t.name, t.startTime, t.endTime, t.day, t.blockTypeId, t.scheduleId, t.longitude, t.latitude);
 			}
