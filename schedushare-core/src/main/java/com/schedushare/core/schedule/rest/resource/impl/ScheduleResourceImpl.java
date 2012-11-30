@@ -18,7 +18,7 @@ import com.schedushare.common.util.JSONUtil;
 import com.schedushare.core.database.SchedusharePersistenceConstants;
 import com.schedushare.core.guice.SelfInjectingServerResource;
 import com.schedushare.core.schedule.rest.resource.ScheduleResource;
-import com.schedushare.core.schedule.service.ScheduleService;
+import com.schedushare.core.schedule.service.UserScheduleService;
 
 
 /**
@@ -29,7 +29,7 @@ public class ScheduleResourceImpl extends SelfInjectingServerResource implements
 	private Connection connection;
 	
 	@Inject
-	private ScheduleService scheduleService;
+	private UserScheduleService scheduleService;
 	
 	@Inject
 	@Named("jsonUtil")

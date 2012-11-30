@@ -19,7 +19,7 @@ import com.schedushare.core.database.SchedushareFactory;
 import com.schedushare.core.database.Tables;
 import com.schedushare.core.database.enums.TimeblockDay;
 import com.schedushare.core.database.tables.records.TimeblockRecord;
-import com.schedushare.core.schedule.service.ScheduleService;
+import com.schedushare.core.schedule.service.UserScheduleService;
 import com.schedushare.core.timeblocks.service.TimeBlocksService;
 
 /**
@@ -29,7 +29,7 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 
 	private SchedushareExceptionFactory schedushareExceptionFactory;
 	
-	private ScheduleService scheduleService;
+	private UserScheduleService scheduleService;
 	
 	/**
 	 * Default constructor.
@@ -40,7 +40,7 @@ public class TimeBlocksServiceImpl implements TimeBlocksService {
 	@Inject
 	public TimeBlocksServiceImpl(
 			final SchedushareExceptionFactory schedushareExceptionFactory,
-			final ScheduleService scheduleService) {
+			final UserScheduleService scheduleService) {
 		
 		this.schedushareExceptionFactory = schedushareExceptionFactory;
 		this.scheduleService = scheduleService;
