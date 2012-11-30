@@ -6,13 +6,13 @@ import com.google.inject.ImplementedBy;
 import com.schedushare.common.domain.dto.ScheduleEntity;
 import com.schedushare.common.domain.dto.ScheduleListEntity;
 import com.schedushare.common.domain.exception.SchedushareException;
-import com.schedushare.core.schedule.service.impl.ScheduleServiceImpl;
+import com.schedushare.core.schedule.service.impl.UserScheduleServiceImpl;
 
 /**
  * The schedule service talkign directly to the database.
  */
-@ImplementedBy(ScheduleServiceImpl.class)
-public interface ScheduleService {
+@ImplementedBy(UserScheduleServiceImpl.class)
+public interface UserScheduleService {
 
 	/**
 	 * Gets a schedule.

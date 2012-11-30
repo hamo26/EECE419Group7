@@ -22,19 +22,19 @@ import com.schedushare.common.domain.exception.SchedushareExceptionFactory;
 import com.schedushare.core.database.SchedushareFactory;
 import com.schedushare.core.database.Tables;
 import com.schedushare.core.database.enums.TimeblockDay;
-import com.schedushare.core.schedule.service.ScheduleService;
+import com.schedushare.core.schedule.service.UserScheduleService;
 import com.schedushare.core.timeblocks.service.TimeBlocksService;
 
 /**
- * Implements {@link ScheduleService}.
+ * Implements {@link UserScheduleService}.
  */
-public class ScheduleServiceImpl implements ScheduleService {
+public class UserScheduleServiceImpl implements UserScheduleService {
 
 	private final SchedushareExceptionFactory schedushareExceptionFactory;
 	private final TimeBlocksService timeBlocksService;
 	
 	@Inject
-	public ScheduleServiceImpl(final SchedushareExceptionFactory schedushareExceptionFactory,
+	public UserScheduleServiceImpl(final SchedushareExceptionFactory schedushareExceptionFactory,
 							   final TimeBlocksService timeBlocksService) {
 		this.schedushareExceptionFactory = schedushareExceptionFactory;
 		this.timeBlocksService = timeBlocksService;
