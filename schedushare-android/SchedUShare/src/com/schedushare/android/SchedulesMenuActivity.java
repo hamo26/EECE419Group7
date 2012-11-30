@@ -3,6 +3,7 @@ package com.schedushare.android;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
+import com.facebook.Session;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.schedushare.android.db.SchedulesDataSource;
@@ -69,11 +70,18 @@ public class SchedulesMenuActivity extends RoboFragmentActivity implements Creat
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Session session = Session.getActiveSession();
+		
 		switch (item.getItemId()) {
 			case R.id.create_schedule_option:
-				// Open dialog box to create new schedule.
-				RoboDialogFragment newFragment = new NewScheduleDialogFragment();
-			    newFragment.show(getSupportFragmentManager(), "new_schedule");
+				if (session != null && session.isOpened()) {
+					// Open dialog box to create new schedule.
+					RoboDialogFragment newFragment = new NewScheduleDialogFragment();
+				    newFragment.show(getSupportFragmentManager(), "new_schedule");
+				} else {
+					Toast.makeText(this, "You must log into Facebook.", Toast.LENGTH_LONG).show();
+				}
+				
 			    break;
 			default:
 				break;

@@ -3,7 +3,7 @@ package com.schedushare.android.guice;
 public class GuiceConstants {
 
 
-	public static String HOST = "50.92.2.84";
+	public static String HOST = "50.92.31.17";
 	
 	public static int HOST_PORT = 8189;
 	

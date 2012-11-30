@@ -109,6 +109,8 @@ public class MainMenuActivity extends FacebookActivity {
     
     @Override
     protected void onSessionStateChange(SessionState state, Exception exception) {
+    	System.out.println("MainMenu: Returned session.");
+    	
     	// user has either logged in or not ...
     	if (state.isOpened()) {
     		// make request to the /me API
@@ -123,7 +125,7 @@ public class MainMenuActivity extends FacebookActivity {
     							SharedPreferences.Editor editor = settings.edit();
     							editor.putLong(getString(R.string.settings_owner_facebook_id), Long.parseLong(user.getId()));
     							editor.putString(getString(R.string.settings_owner_facebook_name), user.getName());
-    							editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
+    							//editor.putString(getString(R.string.settings_owner_facebook_username), user.getUsername());
     							editor.commit();
     							
     							SchedulesDataSource dataSource = new SchedulesDataSource(MainMenuActivity.this);
